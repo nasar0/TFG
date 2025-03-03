@@ -1,0 +1,142 @@
+// src/componentes/Navbar.jsx
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+
+function Navbar() {
+  const location = useLocation(); // Obtiene la ruta actual
+  const [isMenOpen, setIsMenOpen] = useState(false);
+  const [isWomenOpen, setIsWomenOpen] = useState(false);
+
+  return (
+    <nav className="bg-white shadow-md uppercase text-[15px] font-[400] " >
+      <div className='flex justify-evenly  text-[11px] items-center'>
+         <div>
+          <Link to={"/contact"}>Contact us</Link>
+         </div>
+         <Link to={"/"}><h2 className='font-black text-7xl'>K<span className='mirror'>k</span>armx</h2> </Link>
+         <div className='flex items-center gap-5' >
+          <Link to={"/login"}>Login</Link>
+          <Link to={"/buscador"} className='w-5'><img src="../../public/img/icons8-search-50.png" alt=""/></Link>
+          <Link to={"/cart"} className='w-5' ><img src="../../public/img/icons8-cart-50.png" alt=""/></Link>
+         </div>
+      </div>
+      <ul className="flex space-x-6 p-4">
+        <li
+          onMouseEnter={() => setIsMenOpen(true)}
+          onMouseLeave={() => setIsMenOpen(false)}
+          className="relative"
+        >
+          <Link
+            to="/men"
+            className={`px-4 py-2 hover:bg-gray-100 rounded `}
+          >
+            Men
+          </Link>
+          {isMenOpen && (
+            <ul className="absolute top-full left-0 bg-white shadow-lg rounded mt-1 w-48">
+              <li>
+                <Link
+                  to="/men/clothing"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Clothing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/men/shoes"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Shoes
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/men/bags"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Bags
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/men/accessories"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Accessories
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/men/jewelry"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Jewelry
+                </Link>
+              </li>
+            </ul>
+          )}
+        </li>
+        <li
+          onMouseEnter={() => setIsWomenOpen(true)}
+          onMouseLeave={() => setIsWomenOpen(false)}
+          className="relative"
+        >
+          <Link
+            to="/women"
+            className={`px-4 py-2 hover:bg-gray-100 rounded `}
+          >
+            Women
+          </Link>
+          {isWomenOpen && (
+            <ul className="absolute top-full left-0 bg-white shadow-lg rounded mt-1 w-48">
+              <li>
+                <Link
+                  to="/women/clothing"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Clothing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/women/shoes"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Shoes
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/women/bags"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Bags
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/women/accessories"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Accessories
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/women/jewelry"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                >
+                  Jewelry
+                </Link>
+              </li>
+            </ul>
+          )}
+        </li>
+      </ul>
+      
+    </nav>
+  );
+}
+
+export default Navbar;
