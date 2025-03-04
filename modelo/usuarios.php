@@ -40,11 +40,10 @@
             return false; 
         }
         public function estadisticas(){
-            $sent="SELECT COUNT(usuarios.ID_Usuario), COUNT(DISTINCT productos.ID_Productos),COUNT(DISTINCT categoria.ID_Categoría),SUM( pagos.Monto) FROM usuarios, productos,categoria,pagos WHERE pagos.ID_Usuario=usuarios.ID_Usuario;";
+            $sent="SELECT (SELECT COUNT(*) FROM usuarios) AS TotalUsuarios, (SELECT COUNT(*) FROM productos) AS TotalProductos,(SELECT COUNT(*) FROM categoria) AS TotalCategorias,(SELECT SUM(Monto) FROM pagos) AS TotalPagos FROM dual;";
             $consulta = $this->db->getCon()->prepare($sent);
             $consulta->execute();
             $consulta->bind_result($usu, $prod, $cat, $vent);
-
             $estasts = [];
             
             if ($consulta->fetch()) { 
@@ -86,8 +85,31 @@
         public function buscarUsuarios(){
 
         }
-        public function ActualizarUsuarios(){
-            
+        public function ActualizarUsuarios($nombre, $correo, $direccion, $telefono, $rol, $id_usuario) {
+            // Preparar la consulta SQL para actualizar el usuario
+            $sent = "UPDATE usuarios SET 
+                    Nombre = ?, 
+                    Correo = ?, 
+                    Dirección = ?, 
+                    Teléfono = ?, 
+                    Rol = ? 
+                    WHERE ID_Usuario = ?";
+        
+            // Preparar la sentencia
+            $consulta = $this->db->getCon()->prepare($sent);
+        
+            // Vincular los parámetros
+            $consulta->bind_param("ssssii", $nombre, $correo, $direccion, $telefono, $rol, $id_usuario);
+        
+            // Ejecutar la consulta
+            if ($consulta->execute()) {
+                return true; // Actualización exitosa
+            } else {
+                throw new Exception("Error al actualizar el usuario: " . $consulta->error);
+            }
+        
+            // Cerrar la sentencia
+            $consulta->close();
         }
         public function EliminarUsuarios($id) {
             try {

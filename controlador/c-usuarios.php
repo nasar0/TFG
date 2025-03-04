@@ -69,7 +69,33 @@
                 } else {
                   echo json_encode(["success" => false, "message" => "Error al eliminar el usuario".$id]);
                 }
-
+                break;
+            case "modificar":
+                // Verificar que los datos necesarios estén presentes
+                if (!isset($data["id"])) {
+                    echo json_encode(["success" => false, "message" => "Datos incompletos para la modificación"]);
+                    exit;
+                }
+            
+                // Extraer los datos del JSON
+                $id_usuario = $data["id"];
+                $nombre = $data["nombre"];
+                $correo = $data["correo"];
+                $direccion = $data["direccion"];
+                $telefono = $data["telefono"];
+                $rol = $data["rol"];
+            
+                // Llamar a la función ActualizarUsuarios
+                try {
+                    $resultado = $GLOBALUSER->ActualizarUsuarios($nombre, $correo, $direccion, $telefono, $rol, $id_usuario);
+                    if ($resultado) {
+                        echo json_encode(["success" => true, "message" => "Usuario actualizado correctamente"]);
+                    } else {
+                        echo json_encode(["success" => false, "message" => "Error al actualizar el usuario"]);
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(["success" => false, "message" => $e->getMessage()]);
+                }
                 break;
         default:
             echo json_encode(["success" => false, "message" => "Acción no válida"]);
