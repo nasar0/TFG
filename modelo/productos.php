@@ -1,7 +1,7 @@
 <?php
     require_once("conexion.php");
 
-class producto {
+class productos {
     private $db;
     private $id;
     private $nombre;
@@ -12,6 +12,7 @@ class producto {
     private $color;
     private $img_url;
     private $genero;
+    private $categoria;
 
     // Constructor
     public function __construct() {
@@ -25,6 +26,7 @@ class producto {
         $this->color = "";
         $this->img_url = "";
         $this->genero = "";
+        $this->categoria= 0;
     }
     public function __get($nom)
     {
@@ -36,12 +38,12 @@ class producto {
     public function getAll() {
         $sent = "SELECT * FROM productos";
         $consulta = $this->db->getCon()->prepare($sent);
-        $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero);
+        $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero,$categoria);
         $consulta->execute();
 
         $productos = [];
         while ($consulta->fetch()) {
-            $producto = new producto();
+            $producto = new stdClass();
             $producto->id = $id;
             $producto->nombre = $nombre;
             $producto->descripcion = $descripcion;
@@ -51,6 +53,7 @@ class producto {
             $producto->color = $color;
             $producto->img_url = $img_url;
             $producto->genero = $genero;
+            $producto->categoria= $categoria;
             $productos[] = $producto;
         }
 
@@ -58,11 +61,11 @@ class producto {
         return $productos;
     }
     // Métodos para insertar, actualizar, eliminar productos
-    public function insertar($n,$d,$p,$s,$t,$c,$i,$g) {
+    public function insertar($n,$d,$p,$s,$t,$c,$i,$g,$cc) {
         try {
-            $sent="INSERT INTO productos (Nombre_Producto, Descripción, Precio, Stock,Tamaño,Color,Img_URL,Genero) VALUES (?, ?, ?, ?, ?,?, ?, ?)";
+            $sent="INSERT INTO productos (Nombre_Producto, Descripción, Precio, Stock,Tamaño,Color,Img_URL,Genero,categoria) VALUES (?, ?, ?, ?, ?,?, ?, ?)";
             $consulta = $this->db->getCon()->prepare($sent);
-            $consulta->bind_param("ssiisss",$n,$d,$p,$s,$t,$c,$i,$g);
+            $consulta->bind_param("ssiisssi",$n,$d,$p,$s,$t,$c,$i,$g,$cc);
             $consulta->execute();
         } catch (Exception $e) {
             
@@ -72,7 +75,25 @@ class producto {
     
     }
     public function eliminar() {
+        try {
+            // Iniciar la transacción
+            $this->db->getCon()->begin_transaction();
+            
+            // Eliminar de 'productos'
+            $sent = "DELETE FROM productos WHERE ID_Productos = ?";
+            $consulta = $this->db->getCon()->prepare($sent);
+            $consulta->bind_param("i", $id);
+            $consulta->execute();
+            $consulta->close();
     
+            // Confirmar la transacción
+            $this->db->getCon()->commit();
+            return true;
+        } catch (Exception $e) {
+            // Si algo falla, hacer rollback para evitar inconsistencias
+            $this->db->getCon()->rollback();
+            return false;
+        }
     }
 
 

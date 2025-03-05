@@ -84,10 +84,11 @@
                 $direccion = $data["direccion"];
                 $telefono = $data["telefono"];
                 $rol = $data["rol"];
-            
+                error_log($nombre);
                 // Llamar a la función ActualizarUsuarios
                 try {
-                    $resultado = $GLOBALUSER->ActualizarUsuarios($nombre, $correo, $direccion, $telefono, $rol, $id_usuario);
+                    $resultado = $GLOBALUSER->ActualizarUsuarios($nombre, $correo , $direccion, $telefono,$rol, $id_usuario);
+                    
                     if ($resultado) {
                         echo json_encode(["success" => true, "message" => "Usuario actualizado correctamente"]);
                     } else {

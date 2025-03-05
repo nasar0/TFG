@@ -105,11 +105,12 @@
             if ($consulta->execute()) {
                 return true; // Actualización exitosa
             } else {
-                throw new Exception("Error al actualizar el usuario: " . $consulta->error);
+                // Cerrar la sentencia
+                $consulta->close();
+                return false; 
             }
         
-            // Cerrar la sentencia
-            $consulta->close();
+            
         }
         public function EliminarUsuarios($id) {
             try {
