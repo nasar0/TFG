@@ -16,11 +16,40 @@
         echo json_encode(["success" => false, "message" => "Acción no definida"]);
         exit;
     }
+    $action = $_POST['action'] ?? null;
+
+    if ($action === 'subirImg') {
+    if (isset($_FILES['imagen'])) {
+        $nombreArchivo = basename($_FILES['imagen']['name']);
+        $rutaArchivo = $directorio . $nombreArchivo;
+
+        // Mover el archivo subido a la carpeta de imágenes
+        if (move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaArchivo)) {
+        echo json_encode([
+            'success' => true,
+            'url' => $rutaArchivo, // URL de la imagen
+        ]);
+        } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error al mover el archivo.',
+        ]);
+        }
+    } else {
+        echo json_encode([
+        'success' => false,
+        'message' => 'No se recibió ninguna imagen.',
+        ]);
+    }
+    exit;
+    }
 
     switch ($data["action"]) {
         case "listar":
             $lista = $GLOBALPRODUCT->getAll();
             echo json_encode($lista);
+            break;
+        case "subirImg":
             break;
         default:
             echo json_encode(["success" => false, "message" => "Acción no válida"]);
