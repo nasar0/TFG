@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
 const AdminProductos = () => {
-  const [listar, setListar] = useState([]);
-  const [editando, setEditando] = useState(null);
-  const [modalAbierto, setModalAbierto] = useState(false);
+  const [listar, setListar] = useState([]); // Lista de productos
+  const [modalProductoAbierto, setModalProductoAbierto] = useState(false); // Modal para datos del producto
+  const [modalImagenesAbierto, setModalImagenesAbierto] = useState(false); // Modal para imágenes
+  const [productoActual, setProductoActual] = useState(null); // Producto seleccionado
   const [nombre, setNombre] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [precio, setPrecio] = useState(0);
   const [stock, setStock] = useState(0);
   const [tamano, setTamano] = useState('');
   const [color, setColor] = useState('');
-  const [img_url, setImg_url] = useState('');
   const [genero, setGenero] = useState('');
   const [categoria, setCategoria] = useState(0);
-  const [imagenSeleccionada, setImagenSeleccionada] = useState(null); // Estado para la imagen seleccionada
+  const [imagenesSeleccionadas, setImagenesSeleccionadas] = useState([]); // Imágenes seleccionadas
+  const [imagenesActuales, setImagenesActuales] = useState([]); // Imágenes actuales del producto
 
   // Cargar la lista de productos al inicio
   useEffect(() => {
     cargarProductos();
   }, []);
 
+  // Función para cargar los productos
   const cargarProductos = () => {
     fetch('http://localhost/TFG/controlador/c-productos.php', {
       method: 'POST',
@@ -35,90 +37,106 @@ const AdminProductos = () => {
       });
   };
 
-  // Eliminar un producto
-  const eliminar = (id) => {
-    fetch('http://localhost/TFG/controlador/c-productos.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ action: "eliminar", id }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setListar(listar.filter((producto) => producto.id_producto !== id));
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+  // Función para abrir el modal de datos del producto
+  const abrirModalProducto = (producto = null) => {
+    if (producto) {
+      // Si se está editando un producto, llenar los campos con sus datos
+      setProductoActual(producto);
+      setNombre(producto.nombre);
+      setDescripcion(producto.descripcion);
+      setPrecio(producto.precio);
+      setStock(producto.stock);
+      setTamano(producto.tamano);
+      setColor(producto.color);
+      setGenero(producto.genero);
+      setCategoria(producto.categoria);
+    } else {
+      // Si se está añadiendo un nuevo producto, resetear los campos
+      setProductoActual(null);
+      setNombre('');
+      setDescripcion('');
+      setPrecio(0);
+      setStock(0);
+      setTamano('');
+      setColor('');
+      setGenero('');
+      setCategoria(0);
+    }
+    setModalProductoAbierto(true);
   };
 
-  // Iniciar la edición de un producto
-  const iniciarEdicion = (producto) => {
-    setEditando(producto.id_producto);
-    setNombre(producto.nombre);
-    setDescripcion(producto.descripcion);
-    setPrecio(producto.precio);
-    setStock(producto.stock);
-    setTamano(producto.tamano);
-    setColor(producto.color);
-    setImg_url(producto.img_url);
-    setGenero(producto.genero);
-    setCategoria(producto.categoria);
-    setModalAbierto(true); // Abrir el modal
+  // Función para abrir el modal de imágenes
+  const abrirModalImagenes = (producto) => {
+    setProductoActual(producto); // Establecer el producto actual
+    setImagenesActuales(producto.img_url.split(',')); // Guardar las imágenes actuales
+    setModalImagenesAbierto(true); // Abrir el modal de imágenes
   };
 
   // Función para manejar la selección de archivos
-  const manejarSeleccionArchivo = (e) => {
-    const archivo = e.target.files[0]; // Obtener el archivo seleccionado
-    if (archivo) {
-      setImagenSeleccionada(archivo); // Guardar el archivo en el estado
-    }
+  // Función para manejar la selección de archivos
+const manejarSeleccionArchivo = (e) => {
+  const archivos = Array.from(e.target.files); // Convertir FileList a un array
+  setImagenesSeleccionadas(archivos); // Guardar los archivos en el estado
+};
+
+// Función para subir las imágenes al backend
+const subirImagenes = () => {
+  const formData = new FormData();
+  
+  // Solo añadir imágenes si el usuario seleccionó alguna
+  if (imagenesSeleccionadas.length > 0) {
+    imagenesSeleccionadas.forEach((imagen) => {
+      formData.append('imagen[]', imagen); // Agregar cada imagen al FormData
+    });
+  }
+
+  formData.append('id', productoActual.id); // Añadir el ID del producto
+  formData.append('imagenesActuales', imagenesActuales.join(',')); // Enviar las imágenes actuales
+  formData.append('action', 'subirImagenes'); // Especificar la acción
+
+  fetch('http://localhost/TFG/controlador/c-productos.php', {
+    method: 'POST',
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        alert("Imágenes actualizadas correctamente.");
+        cargarProductos(); // Recargar la lista de productos
+        cerrarModalImagenes(); // Cerrar el modal de imágenes
+      } else {
+        throw new Error("Error al subir las imágenes: " + data.message);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert(error.message);
+    });
+};
+
+  // Función para eliminar una imagen actual
+  const eliminarImagenActual = (index) => {
+    const nuevasImagenes = [...imagenesActuales];
+    nuevasImagenes.splice(index, 1); // Eliminar la imagen en el índice especificado
+    setImagenesActuales(nuevasImagenes); // Actualizar el estado
   };
 
-  // Función para subir la imagen al backend
-  const subirImagen = async () => {
-    if (!imagenSeleccionada) {
-      alert("Por favor, selecciona una imagen.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('imagen', imagenSeleccionada); // Agregar la imagen al FormData
 
 
-    fetch('http://localhost/TFG/controlador/c-productos.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ formData }),
-    }).then((response) => response.json())
-      .then((data) => {
-        setImg_url(data.url); 
-        alert("Imagen subida correctamente.");
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("Error al subir la imagen.");
-      });
-  };
-
-  // Guardar los cambios (editar o agregar)
-  const guardarCambios = () => {
+  // Función para guardar los cambios del producto (añadir o modificar)
+  const guardarProducto = () => {
     const datos = {
-      action: editando ? "modificar" : "agregar",
-      id: editando,
+      action: productoActual ? "modificar" : "agregar",
+      id: productoActual ? productoActual.id : null,
       nombre,
       descripcion,
       precio,
       stock,
       tamano,
       color,
-      img_url,
       genero,
       categoria,
+      img_url: productoActual ? productoActual.img_url : '', // Mantener las imágenes existentes
     };
 
     fetch('http://localhost/TFG/controlador/c-productos.php', {
@@ -132,27 +150,33 @@ const AdminProductos = () => {
       .then((data) => {
         console.log(data);
         cargarProductos(); // Recargar la lista de productos
-        cerrarModal(); // Cerrar el modal
+        cerrarModalProducto(); // Cerrar el modal de datos
       })
       .catch((error) => {
         console.error('Error:', error);
       });
   };
 
-  // Cerrar el modal y resetear los estados
-  const cerrarModal = () => {
-    setModalAbierto(false);
-    setEditando(null);
+  // Función para cerrar el modal de datos del producto
+  const cerrarModalProducto = () => {
+    setModalProductoAbierto(false);
+    setProductoActual(null);
     setNombre('');
     setDescripcion('');
     setPrecio(0);
     setStock(0);
     setTamano('');
     setColor('');
-    setImg_url('');
     setGenero('');
     setCategoria(0);
-    setImagenSeleccionada(null); // Limpiar la imagen seleccionada
+  };
+
+  // Función para cerrar el modal de imágenes
+  const cerrarModalImagenes = () => {
+    setModalImagenesAbierto(false);
+    setImagenesSeleccionadas([]);
+    setImagenesActuales([]);
+    setProductoActual(null);
   };
 
   return (
@@ -162,7 +186,7 @@ const AdminProductos = () => {
           <table className="min-w-full table-auto text-sm">
             <thead className="bg-gradient-to-r from-blue-500 to-blue-700 text-white">
               <tr>
-                {['ID', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Tamaño', 'Color', 'Imagen', 'Género', 'Acciones'].map((header) => (
+                {['ID', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Tamaño', 'Color','Género', 'Categoría', 'Acciones'].map((header) => (
                   <th key={header} className="px-6 py-4 text-left font-semibold">
                     {header}
                   </th>
@@ -170,27 +194,33 @@ const AdminProductos = () => {
               </tr>
             </thead>
             <tbody className="text-gray-700">
-              {listar.map((producto) => (
-                <tr key={producto.id_producto} className="border-b hover:bg-blue-50 transition duration-300">
-                  <td className="px-6 py-4 font-medium">{producto.id_producto}</td>
+              {listar.map((producto, index) => (
+                <tr key={index} className="border-b hover:bg-blue-50 transition duration-300">
+                  <td className="px-6 py-4 font-medium">{producto.id}</td>
                   <td className="px-6 py-4">{producto.nombre}</td>
                   <td className="px-6 py-4">{producto.descripcion}</td>
                   <td className="px-6 py-4">{producto.precio}</td>
                   <td className="px-6 py-4">{producto.stock}</td>
                   <td className="px-6 py-4">{producto.tamano}</td>
                   <td className="px-6 py-4">{producto.color}</td>
-                  <td className="px-6 py-4">{producto.img_url.split(',')[0]}</td>
                   <td className="px-6 py-4">{producto.genero}</td>
+                  <td className="px-6 py-4">{producto.categoria}</td>
                   <td className="px-6 py-4 flex gap-2 items-center">
                     <button
                       className="bg-green-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-green-600 transition"
-                      onClick={() => iniciarEdicion(producto)}
+                      onClick={() => abrirModalProducto(producto)}
                     >
                       Modificar
                     </button>
                     <button
+                      className="bg-yellow-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-yellow-600 transition"
+                      onClick={() => abrirModalImagenes(producto)}
+                    >
+                      Imágenes
+                    </button>
+                    <button
                       className="bg-red-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-red-600 transition"
-                      onClick={() => eliminar(producto.id_producto)}
+                      onClick={() => eliminarProducto(producto.id)}
                     >
                       Eliminar
                     </button>
@@ -202,111 +232,182 @@ const AdminProductos = () => {
         </div>
         <button
           className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
-          onClick={() => {
-            setEditando(null); 
-            setModalAbierto(true); 
-          }}
+          onClick={() => abrirModalProducto()}
         >
           Agregar Producto
         </button>
       </div>
 
-      {/* Modal */}
-      {modalAbierto && (
+      {/* Modal para datos del producto */}
+      {modalProductoAbierto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-1/2">
             <h2 className="text-xl font-bold mb-4">
-              {editando ? "Modificar Producto" : "Agregar Producto"}
+              {productoActual ? "Modificar Producto" : "Agregar Producto"}
             </h2>
             <form>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Nombre"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-                <textarea
-                  placeholder="Descripción"
-                  value={descripcion}
-                  onChange={(e) => setDescripcion(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="number"
-                  placeholder="Precio"
-                  value={precio}
-                  onChange={(e) => setPrecio(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="number"
-                  placeholder="Stock"
-                  value={stock}
-                  onChange={(e) => setStock(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  placeholder="Tamaño"
-                  value={tamano}
-                  onChange={(e) => setTamano(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="text"
-                  placeholder="Color"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-                {/* Input para subir imágenes */}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={manejarSeleccionArchivo}
-                  className="w-full p-2 border rounded"
-                />
-                <button
-                  type="button"
-                  onClick={subirImagen}
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
-                >
-                  Subir Imagen
-                </button>
-                {img_url && (
-                  <p className="text-sm text-gray-600">URL de la imagen: {img_url}</p>
-                )}
-                <input
-                  type="text"
-                  placeholder="Género"
-                  value={genero}
-                  onChange={(e) => setGenero(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-                <input
-                  type="number"
-                  placeholder="Categoría"
-                  value={categoria}
-                  onChange={(e) => setCategoria(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
+              <div className="space-y-2">
+                <label className="block">
+                  Nombre:
+                  <input
+                    type="text"
+                    placeholder="Nombre"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </label>
+                <label className="block">
+                  Descripción:
+                  <textarea
+                    placeholder="Descripción"
+                    value={descripcion}
+                    onChange={(e) => setDescripcion(e.target.value)}
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </label>
+                <label className="block">
+                  Precio:
+                  <input
+                    type="number"
+                    placeholder="Precio"
+                    value={precio}
+                    onChange={(e) => setPrecio(e.target.value)}
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </label>
+                <label className="block">
+                  Stock:
+                  <input
+                    type="number"
+                    placeholder="Stock"
+                    value={stock}
+                    onChange={(e) => setStock(e.target.value)}
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </label>
+                <label className="block">
+                  Tamaño:
+                  <input
+                    type="text"
+                    placeholder="Tamaño"
+                    value={tamano}
+                    onChange={(e) => setTamano(e.target.value)}
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </label>
+                <label className="block">
+                  Color:
+                  <input
+                    type="text"
+                    placeholder="Color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </label>
+                <label className="block">
+                  Género:
+                  <select
+                    value={genero}
+                    onChange={(e) => setGenero(e.target.value)}
+                    className="w-full p-2 border rounded mt-1"
+                  >
+                    <option value="">Selecciona un género</option>
+                    <option value="woman">Woman</option>
+                    <option value="men">Men</option>
+                    <option value="exclusive">Exclusive</option>
+                  </select>
+                </label>
+                <label className="block">
+                  Categoría:
+                  <input
+                    type="number"
+                    placeholder="Categoría"
+                    value={categoria}
+                    onChange={(e) => setCategoria(e.target.value)}
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </label>
               </div>
+
               <div className="mt-6 flex justify-end space-x-4">
                 <button
                   type="button"
                   className="bg-gray-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-gray-600 transition"
-                  onClick={cerrarModal}
+                  onClick={cerrarModalProducto}
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   className="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
-                  onClick={guardarCambios}
+                  onClick={guardarProducto}
                 >
-                  {editando ? "Guardar Cambios" : "Agregar"}
+                  {productoActual ? "Guardar Cambios" : "Agregar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para imágenes del producto */}
+      {modalImagenesAbierto && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg w-1/2">
+            <h2 className="text-xl font-bold mb-4">
+              Gestionar Imágenes del Producto
+            </h2>
+            <form>
+              <div className="space-y-2">
+                {/* Mostrar imágenes actuales con opción de eliminar */}
+                <div className="grid grid-cols-3 gap-4">
+                  {imagenesActuales.map((url, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={"../../public/img/prods/"+url}
+                        alt={`Imagen ${index}`}
+                        className="w-full h-[200px] object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                        onClick={() => eliminarImagenActual(index)}
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Seleccionar nuevas imágenes */}
+                <label className="block">
+                  Seleccionar nuevas imágenes (opcional):
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={manejarSeleccionArchivo}
+                    className="w-full p-2 border rounded mt-1"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-6 flex justify-end space-x-4">
+                <button
+                  type="button"
+                  className="bg-gray-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-gray-600 transition"
+                  onClick={cerrarModalImagenes}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
+                  onClick={subirImagenes}
+                >
+                  Guardar Cambios
                 </button>
               </div>
             </form>

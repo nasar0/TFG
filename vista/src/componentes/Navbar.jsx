@@ -1,26 +1,40 @@
-// src/componentes/Navbar.jsx
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // Importar el contexto
 
 function Navbar() {
-  const location = useLocation(); // Obtiene la ruta actual
+  const location = useLocation();
   const [isMenOpen, setIsMenOpen] = useState(false);
   const [isWomenOpen, setIsWomenOpen] = useState(false);
+  const { isAuthenticated, logout } = useContext(AuthContext); // Usar el contexto
 
   return (
-    <nav className="bg-white shadow-md uppercase text-[15px] font-[400] " >
-      <div className='flex justify-evenly  text-[11px] items-center'>
-         <div>
-          <Link to={"/contact"}>Contact us</Link>
-         </div>
-         <Link to={"/"}><h2 className='font-black text-7xl'>K<span className='mirror'>k</span>armx</h2> </Link>
-         <div className='flex items-center gap-5' >
-          <Link to={"/login"}>Login</Link>
-          <Link to={"/buscador"} className='w-5'><img src="../../public/img/icons8-search-50.png" alt=""/></Link>
-          <Link to={"/cart"} className='w-5' ><img src="../../public/img/icons8-cart-50.png" alt=""/></Link>
-         </div>
+    <nav className="bg-white shadow-md uppercase text-[15px] font-[400]">
+      <div className="flex justify-evenly text-[11px] items-center">
+        <div>
+          <Link to="/contact">Contact us</Link>
+        </div>
+        <Link to="/">
+          <h2 className="font-black text-7xl">
+            K<span className="mirror">k</span>armx
+          </h2>
+        </Link>
+        <div className="flex items-center gap-5">
+          {isAuthenticated ? ( // Si está autenticado, mostrar "Mi Perfil"
+            <Link to="/account">Mi Perfil</Link>
+          ) : ( // Si no está autenticado, mostrar "Login"
+            <Link to="/login">Login</Link>
+          )}
+          <Link to="/buscador" className="w-5">
+            <img src="../../public/img/icons8-search-50.png" alt="" />
+          </Link>
+          <Link to="/cart" className="w-5">
+            <img src="../../public/img/icons8-cart-50.png" alt="" />
+          </Link>
+        </div>
       </div>
-      <ul className="flex space-x-6 p-4">
+      {/* Resto del código del navbar */}
+      <ul className="flex justify-center space-x-6 p-4 ">
         <li
           onMouseEnter={() => setIsMenOpen(true)}
           onMouseLeave={() => setIsMenOpen(false)}
@@ -28,7 +42,7 @@ function Navbar() {
         >
           <Link
             to="/men"
-            className={`px-4 py-2 hover:bg-gray-100 rounded `}
+            className="px-4 py-2 hover:bg-gray-100 rounded"
           >
             Men
           </Link>
@@ -84,7 +98,7 @@ function Navbar() {
         >
           <Link
             to="/women"
-            className={`px-4 py-2 hover:bg-gray-100 rounded `}
+            className="px-4 py-2 hover:bg-gray-100 rounded"
           >
             Women
           </Link>
@@ -134,7 +148,6 @@ function Navbar() {
           )}
         </li>
       </ul>
-      
     </nav>
   );
 }

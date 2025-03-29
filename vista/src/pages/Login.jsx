@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // Importar el contexto
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); // Usar la función login del contexto
 
   const enviarFormulario = (e) => {
     e.preventDefault();
@@ -15,33 +17,33 @@ const Login = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ action: "verificar", email, password }),
-      credentials: 'include', // Asegura que las cookies se envíen en la solicitud
+      credentials: 'include',
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Redirigir según el rol después de una respuesta exitosa
-        if (data.rol === 0) {
-          navigate('/admin'); // Redirige a admin si rol es 0
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          login(email); // Guardar el correo en el contexto y en localStorage
+          if (data.rol === 0) {
+            navigate('/admin');
+          } else {
+            navigate('/');
+          }
         } else {
-          navigate('/'); // Redirige a home si el rol no es 0
+          let emailInput = document.querySelector("#email");
+          let passwordInput = document.querySelector("#password");
+          emailInput.style.border = "3px solid red";
+          passwordInput.style.border = "3px solid red";
+          emailInput.classList.add("animate__animated", "animate__shakeX");
+          passwordInput.classList.add("animate__animated", "animate__shakeX");
+          setTimeout(() => {
+            emailInput.classList.remove("animate__animated", "animate__shakeX");
+            passwordInput.classList.remove("animate__animated", "animate__shakeX");
+          }, 500);
         }
-      } else {
-        let email = document.querySelector("#email");
-        let password = document.querySelector("#password");
-        email.style.border = "3px solid red";
-        password.style.border = "3px solid red";
-        email.classList.add("animate__animated", "animate__shakeX");
-        password.classList.add("animate__animated", "animate__shakeX");
-        setTimeout(() => {
-          email.classList.remove("animate__animated", "animate__shakeX");
-          password.classList.remove("animate__animated", "animate__shakeX");
-        }, 500);
-      }
-    })
-    .catch((error) => {
-      console.error('Error al iniciar sesión:', error);
-    });
+      })
+      .catch((error) => {
+        console.error('Error al iniciar sesión:', error);
+      });
   };
 
   return (

@@ -28,14 +28,14 @@
         
             if ($rol !== false) {
                 setcookie("validacion", "true", [
-                    'expires' => time() + 10000000, // Expira en 1 hora
+                    'expires' => time() + 1, 
                     'path' => '/', // Accesible en todo el dominio
                     'secure' => true, 
                     'httponly' => false, // Permite acceso desde JavaScript
                 ]);
         
                 setcookie("rol", $rol, [
-                    'expires' => time() + 110000000,
+                    'expires' => time() + 1,
                     'path' => '/',
                     'secure' => true,
                     'httponly' => false,
@@ -84,7 +84,6 @@
                 $direccion = $data["direccion"];
                 $telefono = $data["telefono"];
                 $rol = $data["rol"];
-                error_log($nombre);
                 // Llamar a la función ActualizarUsuarios
                 try {
                     $resultado = $GLOBALUSER->ActualizarUsuarios($nombre, $correo , $direccion, $telefono,$rol, $id_usuario);

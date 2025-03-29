@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-// Importar los componentes de página
+import { AuthProvider } from './context/AuthContext'; // Importar el AuthProvider
 import Home from './pages/Home';
 import Men from './pages/Men';
 import Women from './pages/Women';
@@ -26,55 +25,59 @@ import Plantilla from './pages/Plantilla';
 import Buscador from './componentes/Buscador';
 import RutaProtegida from './componentes/RutaProtegida';
 import AdminPlantilla from './pages/AdminPlantilla';
+import MiPerfil from './pages/MiPerfil';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Plantilla como layout principal */}
-        <Route path="/" element={<Plantilla />}>
-          <Route index element={<Home />} /> {/* Ruta principal */}
-          <Route path="/men" element={<Men />}>
-            <Route path="clothing" element={<Clothing />} />
-            <Route path="shoes" element={<Shoes />} />
-            <Route path="bags" element={<Bags />} />
-            <Route path="accessories" element={<Accessories />} />
-            <Route path="jewelry" element={<Jewelry />} />
+    <AuthProvider> {/* Envolver la aplicación con AuthProvider */}
+      <Router>
+        <Routes>
+          {/* Plantilla como layout principal */}
+          <Route path="/" element={<Plantilla />}>
+            <Route index element={<Home />} />
+            <Route path="/men" element={<Men />}>
+              <Route path="clothing" element={<Clothing />} />
+              <Route path="shoes" element={<Shoes />} />
+              <Route path="bags" element={<Bags />} />
+              <Route path="accessories" element={<Accessories />} />
+              <Route path="jewelry" element={<Jewelry />} />
+            </Route>
+            <Route path="/women" element={<Women />}>
+              <Route path="clothing" element={<Clothing />} />
+              <Route path="shoes" element={<Shoes />} />
+              <Route path="bags" element={<Bags />} />
+              <Route path="accessories" element={<Accessories />} />
+              <Route path="jewelry" element={<Jewelry />} />
+            </Route>
+            <Route path="/product/:id" element={<ProductPage />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/buscador" element={<Buscador />} />
+            <Route path="*" element={<NotFound />} />
+            <Route path="/account" element={<MiPerfil/>} />
           </Route>
-          <Route path="/women" element={<Women />}>
-            <Route path="clothing" element={<Clothing />} />
-            <Route path="shoes" element={<Shoes />} />
-            <Route path="bags" element={<Bags />} />
-            <Route path="accessories" element={<Accessories />} />
-            <Route path="jewelry" element={<Jewelry />} />
+         
+          {/* Rutas de administrador */}
+          <Route
+            path="/admin"
+            element={
+              <RutaProtegida>
+                <AdminPlantilla />
+              </RutaProtegida>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="AdminCategorias" element={<AdminCategorias />} />
+            <Route path="AdminPromociones" element={<AdminPromociones />} />
+            <Route path="AdminProductos" element={<AdminProductos />} />
+            <Route path="AdminUsuarios" element={<AdminUsuarios />} />
           </Route>
-          <Route path="/product/:id" element={<ProductPage />} /> {/* Ruta dinámica para productos */}
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/buscador" element={<Buscador />} />
-          <Route path="*" element={<NotFound />} /> {/* Ruta para páginas no encontradas */}
-        </Route>
-
-        {/* Rutas de administrador */}
-        <Route
-          path="/admin"
-          element={
-            <RutaProtegida>
-              <AdminPlantilla />
-            </RutaProtegida>
-          }
-        >
-          <Route index element={<AdminDashboard />} /> {/* Ruta principal del admin */}
-          <Route path="AdminCategorias" element={<AdminCategorias />} />
-          <Route path="AdminPromociones" element={<AdminPromociones />} />
-          <Route path="AdminProductos" element={<AdminProductos />} />
-          <Route path="AdminUsuarios" element={<AdminUsuarios />} />
-        </Route>
-      </Routes>
-    </Router>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

@@ -15,7 +15,7 @@ const AdminUsuarios = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ action: "listar" }),
+      body: JSON.stringify({ action: "listar"  }),
     })
       .then((response) => response.json())
       .then((data) => setListar(data))
