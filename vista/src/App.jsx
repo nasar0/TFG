@@ -26,6 +26,7 @@ import Buscador from './componentes/Buscador';
 import RutaProtegida from './componentes/RutaProtegida';
 import AdminPlantilla from './pages/AdminPlantilla';
 import MiPerfil from './pages/MiPerfil';
+import Exclusivos from './pages/Exclusivos';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/exclusives" element={<Exclusivos/>} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

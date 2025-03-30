@@ -82,8 +82,25 @@
             $consulta->close();  
             return $usuarios;
         }
-        public function buscarUsuarios(){
+        public function listarUsuariosByEmail($correo){
+            $sent = "SELECT u.ID_Usuario,u.Nombre,u.Correo,u.Dirección,u.Teléfono FROM usuarios u WHERE Correo=?";
+            $consulta = $this->db->getCon()->prepare($sent);
+            $consulta->bind_param("s", $correo); 
+            $consulta->execute();
+            $consulta->bind_result($id, $nom, $cor,$dir, $tel);
 
+            $usuario = new stdClass();
+            if ($consulta->fetch()) { 
+                
+                $usuario->id_usuario = $id;
+                $usuario->nombre = $nom;
+                $usuario->correo = $cor;
+                $usuario->direccion = $dir;
+                $usuario->telefono = $tel;
+            }
+
+            $consulta->close();  
+            return $usuario;
         }
         public function ActualizarUsuarios($nombre, $correo, $direccion, $telefono, $rol, $id_usuario) {
             // Preparar la consulta SQL para actualizar el usuario

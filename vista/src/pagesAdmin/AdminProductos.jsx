@@ -15,7 +15,12 @@ const AdminProductos = () => {
   const [categoria, setCategoria] = useState(0);
   const [imagenesSeleccionadas, setImagenesSeleccionadas] = useState([]); // Imágenes seleccionadas
   const [imagenesActuales, setImagenesActuales] = useState([]); // Imágenes actuales del producto
+  const [busqueda, setBusqueda] = useState('');
 
+  // 2. Manejar el cambio en el input
+  const busquedaSave = (e) => {
+    setBusqueda(e.target.value);
+  };
   // Cargar la lista de productos al inicio
   useEffect(() => {
     cargarProductos();
@@ -178,9 +183,46 @@ const subirImagenes = () => {
     setImagenesActuales([]);
     setProductoActual(null);
   };
-
+  //Select de la categoria
+  const [listarCat, setListarCat] = useState([]); // Lista de productos
+  const cargarCategorias = () => {
+    fetch('http://localhost/TFG/controlador/c-categorias.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: "listar" }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data); // Verifica la estructura de los datos
+        setListarCat(Array.isArray(data) ? data : [data]); // Asegúrate de que siempre sea un array
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }; 
+  useEffect(() => {
+    cargarCategorias();
+  }, []);
+  console.log(listarCat)
   return (
     <>
+    <div className="flex justify-between">
+    <button
+          className="m-4 bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
+          onClick={() => abrirModalProducto()}
+        >
+          Agregar Producto
+        </button>
+        <input 
+            type="text" 
+            className='m-4' 
+            placeholder='Buscar producto.....' 
+            value={busqueda} // 3. Asignar el valor del estado al input
+            onChange={busquedaSave} // 4. Manejar los cambios
+          />
+    </div>
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-300">
           <table className="min-w-full table-auto text-sm">
@@ -194,7 +236,7 @@ const subirImagenes = () => {
               </tr>
             </thead>
             <tbody className="text-gray-700">
-              {listar.map((producto, index) => (
+              {listar.filter(producto => producto.nombre.toLowerCase().includes(busqueda.toLowerCase())).map((producto, index) => (
                 <tr key={index} className="border-b hover:bg-blue-50 transition duration-300">
                   <td className="px-6 py-4 font-medium">{producto.id}</td>
                   <td className="px-6 py-4">{producto.nombre}</td>
@@ -230,12 +272,7 @@ const subirImagenes = () => {
             </tbody>
           </table>
         </div>
-        <button
-          className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
-          onClick={() => abrirModalProducto()}
-        >
-          Agregar Producto
-        </button>
+        
       </div>
 
       {/* Modal para datos del producto */}
@@ -321,13 +358,18 @@ const subirImagenes = () => {
                 </label>
                 <label className="block">
                   Categoría:
-                  <input
-                    type="number"
-                    placeholder="Categoría"
+                  <select
                     value={categoria}
                     onChange={(e) => setCategoria(e.target.value)}
                     className="w-full p-2 border rounded mt-1"
-                  />
+                  >
+                    <option value="">Seleccione una categoría</option>
+                    {listarCat.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.nombre}
+                      </option>
+                    ))}
+                  </select>
                 </label>
               </div>
 
@@ -363,13 +405,14 @@ const subirImagenes = () => {
               <div className="space-y-2">
                 {/* Mostrar imágenes actuales con opción de eliminar */}
                 <div className="grid grid-cols-3 gap-4">
-                  {imagenesActuales.map((url, index) => (
+                  {imagenesActuales.filter(url => url.trim() !== '').map((url, index) => (
                     <div key={index} className="relative">
                       <img
                         src={"../../public/img/prods/"+url}
                         alt={`Imagen ${index}`}
                         className="w-full h-[200px] object-cover rounded-lg"
                       />
+                     {console.log(url)}
                       <button
                         type="button"
                         className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"

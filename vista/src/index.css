@@ -4,10 +4,17 @@
 *{
     font-family: "IBM Plex Mono", serif;
 }
+img{
+    width:100%;
+}
 .mirror {
     display: inline-block; 
     transform: scaleX(-1); 
 }
-a:hover{
-    text-decoration: underline;
+nav{
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 50;
 }
+

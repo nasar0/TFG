@@ -60,6 +60,11 @@
                 $lista = $GLOBALUSER->listarUsuarios();
                 echo json_encode($lista);
                 break;
+            case "listarEmail":
+                $email = $data["email"];
+                $lista = $GLOBALUSER->listarUsuariosByEmail($email);
+                echo json_encode($lista);
+                break;
             case "eliminar":
                 $id = $data["id"];
                 $resultado = $GLOBALUSER->EliminarUsuarios($id);

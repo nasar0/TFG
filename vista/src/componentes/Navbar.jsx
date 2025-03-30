@@ -2,14 +2,17 @@ import React, { useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext'; // Importar el contexto
 
-function Navbar() {
+function Navbar({hasScrolled}) {
   const location = useLocation();
   const [isMenOpen, setIsMenOpen] = useState(false);
   const [isWomenOpen, setIsWomenOpen] = useState(false);
   const { isAuthenticated, logout } = useContext(AuthContext); // Usar el contexto
 
   return (
-    <nav className="bg-white shadow-md uppercase text-[15px] font-[400]">
+    <nav className={`bg-white shadow-md uppercase text-[15px] font-[400] w-full transition-all duration-300
+      ${hasScrolled ? "h-12 text-sm shadow-lg" : "h-20 text-lg"}`}>
+      
+
       <div className="flex justify-evenly text-[11px] items-center">
         <div>
           <Link to="/contact">Contact us</Link>
