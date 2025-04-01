@@ -1,16 +1,32 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext'; // Importar el contexto
 
-function Navbar({hasScrolled}) {
+function Navbar({scrollCount}) {
   const location = useLocation();
   const [isMenOpen, setIsMenOpen] = useState(false);
   const [isWomenOpen, setIsWomenOpen] = useState(false);
   const { isAuthenticated, logout } = useContext(AuthContext); // Usar el contexto
+  const [hasScrolled, setHasScrolled] = useState(false);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      // Verifica si el usuario ha scrolleado más de 50px (ajusta este valor según necesites)
+      if (window.scrollY > 1) {
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
 
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   return (
-    <nav className={`bg-white shadow-md uppercase text-[15px] font-[400] w-full transition-all duration-300
-      ${hasScrolled ? "h-12 text-sm shadow-lg" : "h-20 text-lg"}`}>
+    <nav className="bg-white shadow-md uppercase text-[15px] font-[400] w-full transition-all duration-300">
       
 
       <div className="flex justify-evenly text-[11px] items-center">
@@ -18,7 +34,7 @@ function Navbar({hasScrolled}) {
           <Link to="/contact">Contact us</Link>
         </div>
         <Link to="/">
-          <h2 className="font-black text-7xl">
+          <h2 className={`font-black  ${!hasScrolled ? "text-7xl" : "text-3xl"}`} >
             K<span className="mirror">k</span>armx
           </h2>
         </Link>
