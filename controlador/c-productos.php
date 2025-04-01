@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
   
     // Combinar las imágenes actuales con las nuevas (si las hay)
     $todasLasImagenes = array_merge($imagenesActuales, $nombresArchivos);
+    if($todasLasImagenes[0] === '') $todasLasImagenes = array_slice($todasLasImagenes,1);
     $imagenesStr = implode(',', $todasLasImagenes);
   
     // Actualizar el producto en la base de datos con las nuevas imágenes
