@@ -1,0 +1,318 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 11-04-2025 a las 18:20:52
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `tfg`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `añade`
+--
+
+CREATE TABLE `añade` (
+  `ID_Carrito` bigint(100) NOT NULL,
+  `ID_Producto` bigint(100) NOT NULL,
+  `Cantidad` int(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `carrito`
+--
+
+CREATE TABLE `carrito` (
+  `ID_Carrito` bigint(100) NOT NULL,
+  `ID_Usuario` bigint(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categoria`
+--
+
+CREATE TABLE `categoria` (
+  `ID_Categoría` bigint(100) NOT NULL,
+  `Nombre_Categoría` varchar(100) NOT NULL,
+  `Descripcion` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+--
+-- Volcado de datos para la tabla `categoria`
+--
+
+INSERT INTO `categoria` (`ID_Categoría`, `Nombre_Categoría`, `Descripcion`) VALUES
+(1, 'Shoes', 'Explore Shoes to find the latest sneakers, boots, loafers and sliders including odsy, out of office and capsule collections from the Karmax™.'),
+(2, 'Clothing', 'Explore our Collection to discover t-shirts, shirts, sweatshirts, hoodies, pants and jackets featuring signature Karmax™ styles and detailing.');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pagos`
+--
+
+CREATE TABLE `pagos` (
+  `ID_Pago` bigint(100) NOT NULL,
+  `Fecha_Pago` date NOT NULL,
+  `Monto` decimal(10,2) NOT NULL,
+  `Metodo_Pago` varchar(50) NOT NULL,
+  `ID_Usuario` bigint(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+--
+-- Volcado de datos para la tabla `pagos`
+--
+
+INSERT INTO `pagos` (`ID_Pago`, `Fecha_Pago`, `Monto`, `Metodo_Pago`, `ID_Usuario`) VALUES
+(3, '2025-03-02', 20.00, 'Card', NULL),
+(4, '2025-03-01', 20.00, 'Card', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `posee`
+--
+
+CREATE TABLE `posee` (
+  `ID_Producto` bigint(100) NOT NULL,
+  `ID_Promocion` bigint(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `productos`
+--
+
+CREATE TABLE `productos` (
+  `ID_Productos` bigint(100) NOT NULL,
+  `Nombre_Producto` varchar(100) NOT NULL,
+  `Descripcion` text NOT NULL,
+  `Precio` decimal(10,0) NOT NULL,
+  `Stock` int(100) NOT NULL,
+  `Tamano` varchar(50) NOT NULL,
+  `Color` varchar(50) NOT NULL,
+  `Img_URL` varchar(500) NOT NULL,
+  `Genero` varchar(100) NOT NULL,
+  `categoria` bigint(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+--
+-- Volcado de datos para la tabla `productos`
+--
+
+INSERT INTO `productos` (`ID_Productos`, `Nombre_Producto`, `Descripcion`, `Precio`, `Stock`, `Tamano`, `Color`, `Img_URL`, `Genero`, `categoria`) VALUES
+(1, 'white/black low 3.0 off court', 'Influenced by iconic basketball styles, these low top 3.0 Off-Court sneakers are constructed with leather panels and a rubber sole. Complete with a \"ZIP TIE\" tag and signature labels', 548, 1, '40-41-42-43-44-45', 'white', '67f14c7139868_67ec1bc774563_67e7cbe1507c1_whiteblacklow3.0offcourt  (1).jpg,67f14c7eec5bc_67ec1bb2d8ea9_67e7cbe1508eb_whiteblacklow3.0offcourt  (2).jpg,67f14c7eec7f3_67ec1bc7742b4_67e7cbe150a0e_whiteblacklow3.0offcourt  (3).jpg,67f14c7eec996_67ec1bc77445a_67e7cbe150ca3_whiteblacklow3.0offcourt  (5).jpg', 'exclusive', 1),
+(4, 'dusty blue/ice out of office suede', 'A hybrid of street, basketball and running styles heavily influenced by 90s subculture, these Out Of Office sneakers are constructed with a suede leather and recycled polyester upper and a rubber sole.', 490, 1, '40-41-42-43-44-45', 'blue,white', '67e7d1bf42aa2_dusty-blue-ice-out-of-office-suede_25836783_57975052_1000.jpg,67e7d1bf42d4f_dusty-blue-ice-out-of-office-suede_25836783_57975053_1000.jpg,67e7d1bf43001_dusty-blue-ice-out-of-office-suede_25836783_57975058_1000.jpg,67e7d1bf43216_dusty-blue-ice-out-of-office-suede_25836783_57975059_1000.jpg,67e7d1bf43408_dusty-blue-ice-out-of-office-suede_25836783_57975060_1000.jpg', 'exclusive', 1),
+(5, 'white/blue star out of office', 'A hybrid of street, basketball and running styles heavily influenced by 90s subculture, these Out Of Office sneakers are constructed with a leather and recycled polyester upper and a rubber sole. This pair features star embellishments.', 590, 1, '40-41-42-43-44-45', 'white', '67e7d1d12bb23_white-blue-star-out-of-office_25478819_57974960_1000.jpg,67e7d1d12b7e4_white-blue-star-out-of-office_25478819_57974959_1000.jpg,67e7d1d12be1b_white-blue-star-out-of-office_25478819_57974961_1000.jpg,67e7d1d12c1b5_white-blue-star-out-of-office_25478819_57974962_1000.jpg,67e7d1d12c3ab_white-blue-star-out-of-office_25478819_57974969_1000.jpg', 'exclusive', 1),
+(6, 'silver/turquoise be right back', 'The Be Right Back sneakers channel performance running aesthetics into an everyday silhouette. Crafted from a combination of mesh and synthetic leather, they feature multiple signature brand design elements and dynamic arrow language.€', 465, 1, '40-41-42-43-44-45', 'green', '67e7d44cc4ebb_silver-turquoise-be-right-back_26417576_57975215_1000.jpg,67e7d44cc51df_silver-turquoise-be-right-back_26417576_57975216_1000.jpg,67e7d44cc54ea_silver-turquoise-be-right-back_26417576_57975218_1000.jpg,67e7d44cc577a_silver-turquoise-be-right-back_26417576_57975219_1000.jpg,67e7d44cc59e2_silver-turquoise-be-right-back_26417576_57975220_1000.jpg', 'exclusive', 1),
+(7, 'black vintage putti t-shirt', 'This 100% cotton t-shirt has a vintage-style fade and features a small stamp logo and large fresco graphic with cherubs. Skate fit.', 350, 1, 'xs-s-m-l-xl', 'black', '67e7def44d2b1_black-vintage-putti-t-shirt_26417588_57288399_2048.jpg,67e7df03d3411_black-vintage-putti-t-shirt_26417588_57288369_2048.jpg,67e7df03d36fe_black-vintage-putti-t-shirt_26417588_57288370_2048.jpg,67e7df03d3985_black-vintage-putti-t-shirt_26417588_57288373_2048.jpg,67e7df03d3b6e_black-vintage-putti-t-shirt_26417588_57288376_2048.jpg', 'men', 2),
+(8, 'green stamp crocodile mesh long-sleeved top', 'This long-sleeved mesh top features a small stamp logo and a crocodile print finish. Made in Italy.', 385, 5, 'xs', 'green', '67eae74655673_green-stamp-crocodile-mesh-long-sleeved-top_25838097_56899077_1000.jpg,67eae753aa0af_green-stamp-crocodile-mesh-long-sleeved-top_25838097_56899073_1000.jpg,67eae763e2c57_green-stamp-crocodile-mesh-long-sleeved-top_25838097_56899076_1000.jpg,67eae76e178c8_green-stamp-crocodile-mesh-long-sleeved-top_25838097_56899074_1000.jpg,67eae77599bc7_green-stamp-crocodile-mesh-long-sleeved-top_25838097_56899075_1000.jpg', 'woman', 2),
+(9, 'beige stitch cargo pants', 'These straight fit pants are crafted from 100% cotton and feature large cargo pockets with a bookish logo and a contrasting waistband. Made in Italy.', 550, 4, 'xs-s-m-l-xl', 'beige', '67eae92900b54_off-white-beige-stitch-cargo-pants_25477970_57882474_1000.jpg,67eae92fda0a7_off-white-beige-stitch-cargo-pants_25477970_57882448_1000.jpg,67eae938442fa_off-white-beige-stitch-cargo-pants_25477970_57882446_1000.jpg,67eae93e7abea_off-white-beige-stitch-cargo-pants_25477970_57882477_1000.jpg,67eae94647082_off-white-beige-stitch-cargo-pants_25477970_57882471_1000.jpg', 'men', 2),
+(10, 'nike af1 mid graffiti c/o', 'Air Force 1 Mid Graffiti featuring airbrush style Grim Reaper graphic, kkarmx™️logo script and embroidered Air branding on the tongue plus semi-translucent swooshes and visible orange air bag. Complete with dual lacing system, spiked rubber sole, additional rubber sole inserts and ‘gobstopper’ color reveal.', 1500, 10, '40-41-42-43-44-45', 'white', '67f14dd98fd4e_nike-x-nike-af1-mid-graffiti-c-o-off-white_18804066_45558605_1000.jpg,67f14deb595e9_nike-x-nike-af1-mid-graffiti-c-o-off-white_18804066_45557965_1000.jpg,67f14deb5985f_nike-x-nike-af1-mid-graffiti-c-o-off-white_18804066_45557967_1000.jpg,67f14deb59a83_nike-x-nike-af1-mid-graffiti-c-o-off-white_18804066_45558603_1000.jpg,67f14deb59c0e_nike-x-nike-af1-mid-graffiti-c-o-off-white_18804066_45558604_1000.jpg', 'exclusive', 1),
+(11, 'black fresco souvenir varsity jacket', '', 1295, 9, 'xs-s-m-l-xl', 'black', '67f2ad9f0848d_black-fresco-souvenir-varsity-jacket_25836959_56893587_1000.jpg,67f2ada8424d1_black-fresco-souvenir-varsity-jacket_25836959_56893568_1000.jpg,67f2ada842a7a_black-fresco-souvenir-varsity-jacket_25836959_56893569_1000.jpg,67f2ada843143_black-fresco-souvenir-varsity-jacket_25836959_56893571_1000.jpg,67f2ada8434b5_black-fresco-souvenir-varsity-jacket_25836959_56893573_1000.jpg', 'men', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `promociones`
+--
+
+CREATE TABLE `promociones` (
+  `ID_Promocion` bigint(100) NOT NULL,
+  `Nombre_Promocion` varchar(100) NOT NULL,
+  `Descripción` text NOT NULL,
+  `Descuento` decimal(5,2) NOT NULL,
+  `Fecha_Inicio` date NOT NULL,
+  `Fecha_Fin` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+--
+-- Volcado de datos para la tabla `promociones`
+--
+
+INSERT INTO `promociones` (`ID_Promocion`, `Nombre_Promocion`, `Descripción`, `Descuento`, `Fecha_Inicio`, `Fecha_Fin`) VALUES
+(1, 'free for all', 'todo gratis', 100.00, '2025-02-27', '2035-03-01');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `ID_Usuario` bigint(100) NOT NULL,
+  `Nombre` varchar(100) NOT NULL,
+  `Correo` varchar(100) NOT NULL,
+  `Contrasenna` varchar(255) NOT NULL,
+  `Dirección` varchar(255) NOT NULL,
+  `Teléfono` varchar(15) NOT NULL,
+  `Rol` int(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`ID_Usuario`, `Nombre`, `Correo`, `Contrasenna`, `Dirección`, `Teléfono`, `Rol`) VALUES
+(1, 'nasaro', 'nasaro@g', 'nasaro', 'null', '------', 0),
+(5, 'Victoria', 'vburgoaa@gmail.com', '1234', '', '+34 632 453 321', 1);
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `añade`
+--
+ALTER TABLE `añade`
+  ADD PRIMARY KEY (`ID_Carrito`,`ID_Producto`),
+  ADD KEY `ID_Producto` (`ID_Producto`);
+
+--
+-- Indices de la tabla `carrito`
+--
+ALTER TABLE `carrito`
+  ADD PRIMARY KEY (`ID_Carrito`),
+  ADD KEY `ID_Usuario` (`ID_Usuario`);
+
+--
+-- Indices de la tabla `categoria`
+--
+ALTER TABLE `categoria`
+  ADD PRIMARY KEY (`ID_Categoría`);
+
+--
+-- Indices de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD PRIMARY KEY (`ID_Pago`),
+  ADD KEY `ID_Usuario` (`ID_Usuario`);
+
+--
+-- Indices de la tabla `posee`
+--
+ALTER TABLE `posee`
+  ADD PRIMARY KEY (`ID_Producto`,`ID_Promocion`),
+  ADD KEY `ID_Promocion` (`ID_Promocion`);
+
+--
+-- Indices de la tabla `productos`
+--
+ALTER TABLE `productos`
+  ADD PRIMARY KEY (`ID_Productos`),
+  ADD KEY `fk_prod_cat` (`categoria`);
+
+--
+-- Indices de la tabla `promociones`
+--
+ALTER TABLE `promociones`
+  ADD PRIMARY KEY (`ID_Promocion`);
+
+--
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`ID_Usuario`),
+  ADD UNIQUE KEY `Correo` (`Correo`),
+  ADD UNIQUE KEY `Correo_2` (`Correo`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `carrito`
+--
+ALTER TABLE `carrito`
+  MODIFY `ID_Carrito` bigint(100) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `categoria`
+--
+ALTER TABLE `categoria`
+  MODIFY `ID_Categoría` bigint(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  MODIFY `ID_Pago` bigint(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `productos`
+--
+ALTER TABLE `productos`
+  MODIFY `ID_Productos` bigint(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT de la tabla `promociones`
+--
+ALTER TABLE `promociones`
+  MODIFY `ID_Promocion` bigint(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `ID_Usuario` bigint(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `añade`
+--
+ALTER TABLE `añade`
+  ADD CONSTRAINT `añade_ibfk_1` FOREIGN KEY (`ID_Carrito`) REFERENCES `carrito` (`ID_Carrito`),
+  ADD CONSTRAINT `añade_ibfk_2` FOREIGN KEY (`ID_Producto`) REFERENCES `productos` (`ID_Productos`);
+
+--
+-- Filtros para la tabla `carrito`
+--
+ALTER TABLE `carrito`
+  ADD CONSTRAINT `carrito_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuarios` (`ID_Usuario`);
+
+--
+-- Filtros para la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuarios` (`ID_Usuario`);
+
+--
+-- Filtros para la tabla `posee`
+--
+ALTER TABLE `posee`
+  ADD CONSTRAINT `posee_ibfk_1` FOREIGN KEY (`ID_Producto`) REFERENCES `productos` (`ID_Productos`),
+  ADD CONSTRAINT `posee_ibfk_2` FOREIGN KEY (`ID_Promocion`) REFERENCES `promociones` (`ID_Promocion`);
+
+--
+-- Filtros para la tabla `productos`
+--
+ALTER TABLE `productos`
+  ADD CONSTRAINT `fk_prod_cat` FOREIGN KEY (`categoria`) REFERENCES `categoria` (`ID_Categoría`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

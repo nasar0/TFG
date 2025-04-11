@@ -10,7 +10,7 @@ const Plantilla = () => {
       <header className="sticky top-0 z-50">
         <Navbar/>  {/* Pasar el estado al Navbar */}
       </header>
-      <main className="mt-[80px]">
+      <main>
         <Outlet />
       </main>
       <Footer />

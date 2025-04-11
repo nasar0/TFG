@@ -26,9 +26,7 @@ function Navbar({scrollCount}) {
     };
   }, []);
   return (
-    <nav className="bg-white shadow-md uppercase text-[15px] font-[400] w-full transition-all duration-300">
-      
-
+    <nav className="bg-white shadow-md uppercase text-[15px] font-[400] w-full transition-all duration-300 pb-0" id='navbar'>
       <div className="flex justify-evenly text-[11px] items-center">
         <div>
           <Link to="/contact">Contact us</Link>

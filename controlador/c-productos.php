@@ -144,6 +144,22 @@ switch ($data["action"]) {
             'message' => $resultado === true ? "Producto actualizado correctamente" : "Error al actualizar el producto"
         ]);
         break;
+    case "getProd":
+            $resultado = $GLOBALPRODUCT->getProd($data["id"]);
+            echo json_encode($resultado);
+        break;
+    case "getProdExclusive":
+            $resultado = $GLOBALPRODUCT->getProdExclusive();
+            echo json_encode($resultado);
+        break;
+    case "getProdHombre":
+            $resultado = $GLOBALPRODUCT->getProdHombre();
+            echo json_encode($resultado);
+        break;
+    case "getProdMujer":
+            $resultado = $GLOBALPRODUCT->getProdMujer();
+            echo json_encode($resultado);
+        break;
     default:
         echo json_encode(["success" => false, "message" => "Acción no válida"]);
         break;

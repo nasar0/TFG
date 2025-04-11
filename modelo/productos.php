@@ -55,7 +55,107 @@ class productos {
         $consulta->close();
         return $productos;
     }
+    public function getProd($id) {
+        $sent = "SELECT * FROM productos where ID_Productos=?";
+        $consulta = $this->db->getCon()->prepare($sent);
+        $consulta->bind_param("i", $id);
+        $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
+        $consulta->execute();
 
+        if ($consulta->fetch()) {
+            $producto = new stdClass();
+            $producto->id = $id;
+            $producto->nombre = $nombre;
+            $producto->descripcion = $descripcion;
+            $producto->precio = $precio;
+            $producto->stock = $stock;
+            $producto->tamano = $tamano;
+            $producto->color = $color;
+            $producto->img_url = $img_url;
+            $producto->genero = $genero;
+            $producto->categoria = $categoria;
+        }
+
+        $consulta->close();
+        return $producto;
+    }
+    public function getProdHombre() {
+        $sent = "SELECT * FROM productos where Genero='men'";
+        $consulta = $this->db->getCon()->prepare($sent);
+        $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
+        $consulta->execute();
+
+        $productos = [];
+        while ($consulta->fetch()) {
+            $producto = new stdClass();
+            $producto->id = $id;
+            $producto->nombre = $nombre;
+            $producto->descripcion = $descripcion;
+            $producto->precio = $precio;
+            $producto->stock = $stock;
+            $producto->tamano = $tamano;
+            $producto->color = $color;
+            $producto->img_url = $img_url;
+            $producto->genero = $genero;
+            $producto->categoria = $categoria;
+            $productos[] = $producto;
+
+        }
+
+        $consulta->close();
+        return $productos;
+    }
+    public function getProdMujer() {
+        $sent = "SELECT * FROM productos where Genero='woman'";
+        $consulta = $this->db->getCon()->prepare($sent);
+        $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
+        $consulta->execute();
+
+        $productos = [];
+        while ($consulta->fetch()) {
+            $producto = new stdClass();
+            $producto->id = $id;
+            $producto->nombre = $nombre;
+            $producto->descripcion = $descripcion;
+            $producto->precio = $precio;
+            $producto->stock = $stock;
+            $producto->tamano = $tamano;
+            $producto->color = $color;
+            $producto->img_url = $img_url;
+            $producto->genero = $genero;
+            $producto->categoria = $categoria;
+            $productos[] = $producto;
+
+        }
+
+        $consulta->close();
+        return $productos;
+    }
+    public function getProdExclusive() {
+        $sent = "SELECT * FROM productos where Genero='exclusive'";
+        $consulta = $this->db->getCon()->prepare($sent);
+        $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
+        $consulta->execute();
+
+        $productos = [];
+        while ($consulta->fetch()) {
+            $producto = new stdClass();
+            $producto->id = $id;
+            $producto->nombre = $nombre;
+            $producto->descripcion = $descripcion;
+            $producto->precio = $precio;
+            $producto->stock = $stock;
+            $producto->tamano = $tamano;
+            $producto->color = $color;
+            $producto->img_url = $img_url;
+            $producto->genero = $genero;
+            $producto->categoria = $categoria;
+            $productos[] = $producto;
+        }
+
+        $consulta->close();
+        return $productos;
+    }
     // Método para insertar un producto
     public function insertar($nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria) {
         try {

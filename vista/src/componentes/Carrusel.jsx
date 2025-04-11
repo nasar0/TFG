@@ -24,7 +24,7 @@ const Carrusel = ({listar}) => {
     const endDrag = () => {
         setIsDragging(false);
     };
-
+    console.log(listar)
     return (
         <div 
             ref={carruselRef}
@@ -56,15 +56,18 @@ const Carrusel = ({listar}) => {
                         marginRight: '0',
                         borderRight: 'none' // Elimina el borde derecho excepto en el último elemento
                     }}
+                    onClick={() => window.location.href = `/product/${art.id}`}
                 >
                     <img 
                         src={`/img/prods/${art.img_url.split(",")[0].trim()}`}
                         alt={art.nombre}
-                        className="w-full h-100 object-cover" // Aumenté a h-64 para imágenes más grandes
+                        className="w-full h-100 object-cover"
                         draggable="false"
+                        onMouseOver={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[1].trim()}`}
+                        onMouseOut={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[0].trim()}`}
                     />
                     <div className='pb-3'>
-                        <h3 className="product-name px-5">{art.nombre}</h3>
+                        <h3 className="product-name px-5 capitalize">{art.nombre}</h3>
                         <p className="product-price px-5">{art.precio}€</p>
                     </div>
                 </article>
