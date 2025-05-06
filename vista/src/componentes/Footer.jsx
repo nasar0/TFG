@@ -9,7 +9,6 @@ const Footer = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [activeAccordion, setActiveAccordion] = useState(null);
 
   // Manejar envío del formulario
   const handleSubmit = async (e) => {
@@ -25,17 +24,15 @@ const Footer = () => {
   
     try {
       const templateParams = {
-        email: email.trim(), // Cambiado de 'to_email' a 'email'
-        name: "Kꓘarmx Newsletter", // Añadido para coincidir con tu template
+        email: email.trim(),
+        name: "Kꓘarmx Newsletter",
         brand_name: 'KꓘarmX',
         discount_code: '3FMPVL',
         current_year: new Date().getFullYear(),
-        welcome_message: 'Thank you for joining our community!', // Añade esto
-        discount_percentage: '10', // Añade esto
-        shop_link: 'https://tutienda.com' // Añade esto
+        welcome_message: 'Thank you for joining our community!',
+        discount_percentage: '10',
+        shop_link: 'https://tutienda.com'
       };
-  
-      console.log('Params:', templateParams); // Para debug
   
       await emailjs.send(
         'service_d6spzlh',
@@ -48,25 +45,20 @@ const Footer = () => {
       setEmail('');
       
     } catch (error) {
-      console.error('Full error:', error);
+      console.error('Error:', error);
       setErrors({ form: 'Failed to send. Please try again later.' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Alternar acordeón
-  const toggleAccordion = (index) => {
-    setActiveAccordion(activeAccordion === index ? null : index);
-  };
-
   return (
     <footer className="bg-white text-black py-10 px-4 sm:px-6 lg:px-8">
-      <div className="">
-        {/* Primera fila - Formulario izquierda / Contenido derecho centrado */}
-        <div className="flex justify-between  lg:flex-row mb-10">
-          
-          <div className="lg:w-[35%]">
+      <div className="mx-auto">
+        {/* Primera fila - Formulario izquierda / Contenido derecho */}
+        <div className="flex flex-col lg:flex-row gap-10 mb-10 justify-between">
+          {/* Columna del formulario */}
+          <div className="lg:w-[40%]">
             <div className="mb-6">
               <h2 className="text-2xl font-bold uppercase">
                 <span className="font-extrabold">JOIN THE K<span className="mirror">K</span>armx COMMUNITY</span>
@@ -142,11 +134,6 @@ const Footer = () => {
                   <label htmlFor="privacy" className="text-sm text-gray-700">
                     *I have read the <a href="/en-es/privacy-policy" className="underline hover:text-black">Privacy Policy</a> and consent to the processing of my personal data for marketing purposes (Newsletters, News and Promotions)
                   </label>
-                  {errors.privacy && (
-                    <span className="text-red-500 text-xs mt-1 block">
-                      {errors.privacy}
-                    </span>
-                  )}
                 </div>
   
                 <div className="flex items-start">
@@ -167,8 +154,9 @@ const Footer = () => {
             </form>
           </div>
 
-          <div className="lg:w-[60%] lg:flex lg:justify-end">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-md">
+          {/* Columnas de enlaces */}
+          <div className="lg:w-[40%]">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Columna HELP */}
               <div>
                 <h3 className="font-bold uppercase mb-4">HELP</h3>
@@ -192,16 +180,16 @@ const Footer = () => {
                   <li><a href="/en-es/sitemap" className="hover:underline">Sitemap</a></li>
                 </ul>
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-md">
-              {/* Selectores de país e idioma */}
+
+              {/* Columna de país/idioma y redes */}
               <div>
-                <div className="mb-4">
-                  <span className="block text-sm font-medium">Country:</span>
-                  <span className="block">Spain</span>
-                  <span className="block text-sm font-medium">Language:</span>
-                  <span className="block">English</span>
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium mb-1">Country:</h4>
+                  <p>Spain</p>
+                  <h4 className="text-sm font-medium mt-3 mb-1">Language:</h4>
+                  <p>English</p>
                 </div>
+                
                 <p className="mb-4">Follow us on:</p>
                 <div className="flex space-x-4">
                   <a href="https://www.facebook.com/offwhitetrademarksymbol/" className="text-black hover:text-gray-600">
@@ -223,17 +211,11 @@ const Footer = () => {
               </div>
             </div>
           </div>
-
         </div>
   
-
-  
         {/* Copyright */}
-        <div className="pt-6 border-t border-gray-200 flex flex-col lg:flex-row">
-          <div className="lg:w-[40%]"></div>
-          <div className="lg:w-[60%] lg:flex lg:justify-center">
-            <p className="text-sm text-gray-500">© {new Date().getFullYear()} K<span className="mirror">K</span>armx™. All rights reserved.</p>
-          </div>
+        <div className="pt-6 border-t border-gray-200">
+          <p className="text-sm text-gray-500 text-center lg:text-left">© {new Date().getFullYear()} K<span className="mirror">K</span>armx™. All rights reserved.</p>
         </div>
       </div>
     </footer>

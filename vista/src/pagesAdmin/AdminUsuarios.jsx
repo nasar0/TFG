@@ -34,7 +34,6 @@ const AdminUsuarios = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setListar(listar.filter(usuario => usuario.id_usuario !== id));
       })
       .catch((error) => {
@@ -75,7 +74,6 @@ const AdminUsuarios = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setListar(listar.map(usuario => usuario.id_usuario === id ? { ...usuario, ...datosActualizados } : usuario));
         setEditando(null);
         // Resetear los estados

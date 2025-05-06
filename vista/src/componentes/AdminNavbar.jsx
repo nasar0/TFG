@@ -1,17 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'; // Importar el contexto de autenticación
-
 
 const AdminNavbar = () => {
-  const { logout } = useContext(AuthContext); // Usar la función logout del contexto
-  const navigate = useNavigate();
-  navigate
-  const handleLogout = () => {
-    logout(); // Cerrar sesión
-    navigate('/'); // Redirigir al inicio
-  };
+  
   return (
     <nav className="bg-black p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
@@ -55,12 +46,12 @@ const AdminNavbar = () => {
             </Link>
           </li>
           <li>
-          <button
-            onClick={handleLogout}
-            className="text-red-400 hover:text-red-700 transition duration-300"
-          >
-            Salir
-          </button>
+            <Link
+                to="/account"
+                className="text-red-400 hover:text-red-700 transition duration-300"
+            >
+              Salir
+            </Link>
           </li>
         </ul>
       </div>

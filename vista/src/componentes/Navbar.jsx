@@ -1,23 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'; // Importar el contexto
+import { AuthContext } from '../context/AuthContext';
 
-function Navbar({scrollCount}) {
-  const location = useLocation();
+function Navbar() {
   const [isMenOpen, setIsMenOpen] = useState(false);
   const [isWomenOpen, setIsWomenOpen] = useState(false);
-  const { isAuthenticated, logout } = useContext(AuthContext); // Usar el contexto
+  const [isExclusiveOpen, setIsExclusiveOpen] = useState(false);
+  const { isAuthenticated } = useContext(AuthContext);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   useEffect(() => {
     const handleScroll = () => {
-      // Verifica si el usuario ha scrolleado más de 50px (ajusta este valor según necesites)
-      if (window.scrollY > 1) {
+      if (window.scrollY > 0) {
         setHasScrolled(true);
       } else {
         setHasScrolled(false);
       }
-    };
+    }; 
 
     window.addEventListener('scroll', handleScroll);
     
@@ -25,147 +25,265 @@ function Navbar({scrollCount}) {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
   return (
-    <nav className="bg-white shadow-md uppercase text-[15px] font-[400] w-full transition-all duration-300 pb-0" id='navbar'>
-      <div className="flex justify-evenly text-[11px] items-center">
-        <div>
-          <Link to="/contact">Contact us</Link>
+    <>
+      <nav className="bg-white shadow-md uppercase text-[15px] font-[400] w-full transition-all duration-300 pb-0 fixed z-50">
+        {/* Top Section - Logo, Contact, Login */}
+        <div className="flex justify-between items-center px-4 py-2">
+          {/* Contact Link - hidden on mobile */}
+          <div className="hidden md:block">
+            <Link to="/contact" className={"text-[11px]"} >Contact us</Link>
+          </div>
+          
+          {/* Logo - Centered on mobile, left on desktop */}
+          <Link to="/" className="md:ml-0">
+            <h2 className={`font-black ${!hasScrolled ? "text-7xl md:text-7xl" : "text-3xl md:text-4xl"} transition-[font-size] duration-500 ease-in-out`}>
+              K<span className="mirror">k</span>armx
+            </h2>
+          </Link>
+          
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center gap-4">
+            <Link to="/buscador" className="w-5">
+              <img src="../../public/img/icons8-search-50.png" alt="Search" />
+            </Link>
+            <Link to="/cart" className="w-5">
+              <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
+            </Link>
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="text-gray-700 focus:outline-none"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
+          
+          {/* Desktop Right Section */}
+          <div className="hidden md:flex items-center gap-5">
+            {isAuthenticated ? (
+              <Link to="/account" className="text-[11px]">Account</Link>
+            ) : (
+              <Link to="/login" className="text-[11px]">Login</Link>
+            )}
+            <Link to="/buscador" className="w-5">
+              <img src="../../public/img/icons8-search-50.png" alt="Search" />
+            </Link>
+            <Link to="/cart" className="w-5">
+              <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
+            </Link>
+          </div>
         </div>
-        <Link to="/">
-          <h2 className={`font-black  ${!hasScrolled ? "text-7xl" : "text-3xl"}`} >
-            K<span className="mirror">k</span>armx
-          </h2>
-        </Link>
-        <div className="flex items-center gap-5">
-          {isAuthenticated ? ( // Si está autenticado, mostrar "Mi Perfil"
-            <Link to="/account">Mi Perfil</Link>
-          ) : ( // Si no está autenticado, mostrar "Login"
-            <Link to="/login">Login</Link>
-          )}
-          <Link to="/buscador" className="w-5">
-            <img src="../../public/img/icons8-search-50.png" alt="" />
-          </Link>
-          <Link to="/cart" className="w-5">
-            <img src="../../public/img/icons8-cart-50.png" alt="" />
-          </Link>
+        
+        {/* Category Navigation - Desktop */}
+        <div className="hidden md:block">
+          <ul className="flex justify-center space-x-6 p-4">
+            <li
+              onMouseEnter={() => setIsMenOpen(true)}
+              onMouseLeave={() => setIsMenOpen(false)}
+              className="relative"
+            >
+              <Link
+                to="/men"
+                className="px-4 py-2 hover:bg-gray-100 rounded"
+              >
+                Men
+              </Link>
+              {isMenOpen && (
+                <ul className="absolute top-full left-0 bg-white shadow-lg rounded mt-1 w-48 animate__animated animate__fadeIn">
+                  {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                    <li key={item}>
+                      <Link
+                        to={`/men/${item.toLowerCase()}`}
+                        className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                      >
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+            
+            <li
+              onMouseEnter={() => setIsWomenOpen(true)}
+              onMouseLeave={() => setIsWomenOpen(false)}
+              className="relative"
+            >
+              <Link
+                to="/women"
+                className="px-4 py-2 hover:bg-gray-100 rounded"
+              >
+                Women
+              </Link>
+              {isWomenOpen && (
+                <ul className="absolute top-full left-0 bg-white shadow-lg rounded mt-1 w-48 animate__animated animate__fadeIn">
+                  {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                    <li key={item}>
+                      <Link
+                        to={`/women/${item.toLowerCase()}`}
+                        className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                      >
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+            
+            <li
+              onMouseEnter={() => setIsExclusiveOpen(true)}
+              onMouseLeave={() => setIsExclusiveOpen(false)}
+              className="relative"
+            >
+              <Link
+                to="/exclusive"
+                className="px-4 py-2 hover:bg-gray-100 rounded"
+              >
+                Exclusive
+              </Link>
+              {isExclusiveOpen && (
+                <ul className="absolute top-full left-0 bg-white shadow-lg rounded mt-1 w-48 animate__animated animate__fadeIn">
+                  {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                    <li key={item}>
+                      <Link
+                        to={`/exclusive/${item.toLowerCase()}`}
+                        className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
+                      >
+                        {item}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-40 md:hidden" onClick={() => setMobileMenuOpen(false)}></div>
+      )}
+
+      {/* Mobile Menu Sidebar */}
+      <div className={`fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-50 transform ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}>
+        <div className="p-4">
+          <div className="flex justify-end mb-4">
+            <button onClick={() => setMobileMenuOpen(false)} className="text-gray-700">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <Link to="/contact" className="block py-2 text-[12px]" onClick={() => setMobileMenuOpen(false)}>
+              Contact us
+            </Link>
+
+            {isAuthenticated ? (
+              <Link to="/account" className="block py-2 text-[12px]" onClick={() => setMobileMenuOpen(false)}>
+                Account
+              </Link>
+            ) : (
+              <Link to="/login" className="block py-2 text-[12px]" onClick={() => setMobileMenuOpen(false)}>
+                Login
+              </Link>
+            )}
+
+            <div className="border-t border-gray-200 pt-4">
+              <div className="space-y-2">
+                <div>
+                  <button 
+                    onClick={() => setIsMenOpen(!isMenOpen)}
+                    className="w-full flex justify-between items-center py-2 uppercase"
+                  >
+                    <span>Men</span>
+                    <svg className={`w-4 h-4 transition-transform ${isMenOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isMenOpen && (
+                    <div className="pl-4 py-2 space-y-2 animate__animated animate__fadeIn">
+                      {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                        <Link
+                          key={item}
+                          to={`/men/${item.toLowerCase()}`}
+                          className="block py-1 text-gray-700"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {item}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <button 
+                    onClick={() => setIsWomenOpen(!isWomenOpen)}
+                    className="w-full flex justify-between items-center py-2 uppercase"
+                  >
+                    <span>Women</span>
+                    <svg className={`w-4 h-4 transition-transform ${isWomenOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isWomenOpen && (
+                    <div className="pl-4 py-2 space-y-2 animate__animated animate__fadeIn">
+                      {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                        <Link
+                          key={item}
+                          to={`/women/${item.toLowerCase()}`}
+                          className="block py-1 text-gray-700"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {item}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <button 
+                    onClick={() => setIsExclusiveOpen(!isExclusiveOpen)}
+                    className="w-full flex justify-between items-center py-2 uppercase"
+                  >
+                    <span>Exclusive</span>
+                    <svg className={`w-4 h-4 transition-transform ${isExclusiveOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isExclusiveOpen && (
+                    <div className="pl-4 py-2 space-y-2 animate__animated animate__fadeIn">
+                      {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                        <Link
+                          key={item}
+                          to={`/exclusive/${item.toLowerCase()}`}
+                          className="block py-1 text-gray-700"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {item}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      {/* Resto del código del navbar */}
-      <ul className="flex justify-center space-x-6 p-4 ">
-        <li
-          onMouseEnter={() => setIsMenOpen(true)}
-          onMouseLeave={() => setIsMenOpen(false)}
-          className="relative"
-        >
-          <Link
-            to="/men"
-            className="px-4 py-2 hover:bg-gray-100 rounded"
-          >
-            Men
-          </Link>
-          {isMenOpen && (
-            <ul className="absolute top-full left-0 bg-white shadow-lg rounded mt-1 w-48">
-              <li>
-                <Link
-                  to="/men/clothing"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Clothing
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/men/shoes"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Shoes
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/men/bags"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Bags
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/men/accessories"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Accessories
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/men/jewelry"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Jewelry
-                </Link>
-              </li>
-            </ul>
-          )}
-        </li>
-        <li
-          onMouseEnter={() => setIsWomenOpen(true)}
-          onMouseLeave={() => setIsWomenOpen(false)}
-          className="relative"
-        >
-          <Link
-            to="/women"
-            className="px-4 py-2 hover:bg-gray-100 rounded"
-          >
-            Women
-          </Link>
-          {isWomenOpen && (
-            <ul className="absolute top-full left-0 bg-white shadow-lg rounded mt-1 w-48">
-              <li>
-                <Link
-                  to="/women/clothing"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Clothing
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/women/shoes"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Shoes
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/women/bags"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Bags
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/women/accessories"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Accessories
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/women/jewelry"
-                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
-                >
-                  Jewelry
-                </Link>
-              </li>
-            </ul>
-          )}
-        </li>
-      </ul>
-    </nav>
+    </>
   );
 }
 

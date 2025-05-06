@@ -24,7 +24,6 @@ const Carrusel = ({listar}) => {
     const endDrag = () => {
         setIsDragging(false);
     };
-    console.log(listar)
     return (
         <div 
             ref={carruselRef}
@@ -54,7 +53,7 @@ const Carrusel = ({listar}) => {
                         userSelect: 'none',
                         marginLeft: '0',
                         marginRight: '0',
-                        borderRight: 'none' // Elimina el borde derecho excepto en el último elemento
+                        borderRight: 'none' 
                     }}
                     onClick={() => window.location.href = `/product/${art.id}`}
                 >
@@ -68,7 +67,7 @@ const Carrusel = ({listar}) => {
                     />
                     <div className='pb-3'>
                         <h3 className="product-name px-5 capitalize">{art.nombre}</h3>
-                        <p className="product-price px-5">{art.precio}€</p>
+                        <p className="product-price px-5">€{art.precio}</p>
                     </div>
                 </article>
             ))}

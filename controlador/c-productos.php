@@ -160,6 +160,10 @@ switch ($data["action"]) {
             $resultado = $GLOBALPRODUCT->getProdMujer();
             echo json_encode($resultado);
         break;
+    case "getCarrito":
+        $resultado = $GLOBALPRODUCT->getCarrito($data["id"]);
+        echo json_encode($resultado);
+        break;
     default:
         echo json_encode(["success" => false, "message" => "Acción no válida"]);
         break;

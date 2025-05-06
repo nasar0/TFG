@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import React, { useEffect, useState ,useContext} from 'react'
+import { Link, useParams } from 'react-router-dom'
 import SizeDetail from '../componentes/SizeDetail'
+import { AuthContext } from '../context/AuthContext'; 
 
 const ProductPage = () => {
   const { id } = useParams()
   const [listar, setListar] = useState({})
   const [imagenActual, setImagenActual] = useState(0)
+  const { isAuthenticated, userEmail, idUser ,login ,logout} = useContext(AuthContext);
   
+
   const imgList = listar?.img_url?.split(',')?.map(img => img.trim()).filter(Boolean) || []
   const tamano = listar?.tamano?.split('-')?.map(t => t.trim()).filter(Boolean) || []
   const colores = listar?.color?.split(',')?.map(c => c.trim()).filter(Boolean) || []
@@ -60,7 +63,7 @@ const ProductPage = () => {
         console.error('Error:', error)
       })
   }
-
+  // modal
   const siguienteImagen = () => {
     setImagenActual(prev => (prev + 1) % imgList.length)
   }
@@ -161,10 +164,43 @@ const ProductPage = () => {
       )
     }
   };
-
+  //funcion para agregar al carrito 
+  const agregar = () => {
+    fetch('http://localhost/TFG/controlador/c-usuarios.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        action: "agregar", 
+        idUsuario: idUser,
+        idProducto: id 
+      })
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Aquí puedes manejar la respuesta del servidor
+      if (data.success) {
+        alert('Producto agregado al carrito correctamente');
+        // O podrías usar un toast notification en lugar de alert
+      } else {
+        alert(data.message || 'Error al agregar el producto');
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      alert('Ocurrió un error al agregar al carrito');
+    });
+  }
 
   return (
     <>
+    {/* carrusel para movil  */}
       <div className="lg:flex relative">
         <div className="lg:hidden relative h-[60vh] w-full bg-gray-100 border border-[#EDEDED]">
           <img
@@ -250,12 +286,29 @@ const ProductPage = () => {
               </div>
             )}
             
-            <button
-              className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-full transition-colors duration-300 mt-4 cursor-pointer uppercase"
-            >
-              <i className="bx bx-cart text-lg"></i>
-              <span>Add to bag</span>
-            </button>
+            
+            {isAuthenticated ? ( // Si está autenticado, mostrar "Mi Perfil"
+              listar.stock === 0 ? (
+                <button
+                  className="w-full flex items-center justify-center gap-2 bg-black/80 text-white font-medium py-3 px-6 rounded-full mt-4 cursor-not-allowed uppercase"
+                  disabled
+                >
+                  <i className="bx bx-cart text-lg"></i>
+                  <span>Out of Stock</span>
+                </button>
+              ) : (
+                <button
+                  className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-full transition-colors duration-300 mt-4 cursor-pointer uppercase"
+                  onClick={agregar}
+                >
+                  <i className="bx bx-cart text-lg"></i>
+                  <span>Add to Bag</span>
+                </button>
+              )
+              ) : ( // Si no está autenticado, mostrar "Login"
+                <Link to="/login" className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-full transition-colors duration-300 mt-4 cursor-pointer" >Login or Register</Link>
+              )}
+            
             <div className='mt-6'>
               <ul className='text-[12px] uppercase'>
                 <li 

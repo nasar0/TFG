@@ -70,7 +70,6 @@ const AdminPromociones = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setListar(listar.map(promocion => promocion.id === id ? { ...promocion, ...datosActualizados } : promocion));
         setEditando(null);
         setNombre('');
@@ -94,7 +93,6 @@ const AdminPromociones = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setListar(listar.filter(promocion => promocion.id !== id));
       })
       .catch((error) => {
@@ -121,7 +119,6 @@ const AdminPromociones = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setListar([...listar, data]); // Agrega la nueva promoción a la lista
         setNombreNuevo('');
         setDescripcionNuevo('');

@@ -50,33 +50,42 @@ function App() {
               <Route path="accessories" element={<Accessories />} />
               <Route path="jewelry" element={<Jewelry />} />
             </Route>
+            <Route path="/exclusive" element={<Exclusivos />}>
+              <Route path="clothing" element={<Clothing />} />
+              <Route path="shoes" element={<Shoes />} />
+              <Route path="bags" element={<Bags />} />
+              <Route path="accessories" element={<Accessories />} />
+              <Route path="jewelry" element={<Jewelry />} />
+            </Route>
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/exclusives" element={<Exclusivos/>} />
+            <Route path="/exclusives" element={<Exclusivos />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/buscador" element={<Buscador />} />
             <Route path="*" element={<NotFound />} />
-            <Route path="/account" element={<MiPerfil/>} />
+            <Route path="/account" element={<MiPerfil />} />
           </Route>
-         
+
           {/* Rutas de administrador */}
-          <Route
-            path="/admin"
-            element={
-              <RutaProtegida>
-                <AdminPlantilla />
-              </RutaProtegida>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="AdminCategorias" element={<AdminCategorias />} />
-            <Route path="AdminPromociones" element={<AdminPromociones />} />
-            <Route path="AdminProductos" element={<AdminProductos />} />
-            <Route path="AdminUsuarios" element={<AdminUsuarios />} />
-          </Route>
+            <Route
+              path="/admin"
+              element={
+                <RutaProtegida>
+                  <AdminPlantilla />
+                </RutaProtegida>
+              }
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="AdminCategorias" element={<AdminCategorias />} />
+              <Route path="AdminPromociones" element={<AdminPromociones />} />
+              <Route path="AdminProductos" element={<AdminProductos />} />
+              <Route path="AdminUsuarios" element={<AdminUsuarios />} />
+            </Route>
+            
+
         </Routes>
       </Router>
     </AuthProvider>

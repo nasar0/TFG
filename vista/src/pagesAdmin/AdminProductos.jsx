@@ -153,7 +153,6 @@ const subirImagenes = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         cargarProductos(); // Recargar la lista de productos
         cerrarModalProducto(); // Cerrar el modal de datos
       })
@@ -195,7 +194,6 @@ const subirImagenes = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data); // Verifica la estructura de los datos
         setListarCat(Array.isArray(data) ? data : [data]); // Asegúrate de que siempre sea un array
       })
       .catch((error) => {
@@ -205,75 +203,89 @@ const subirImagenes = () => {
   useEffect(() => {
     cargarCategorias();
   }, []);
-  console.log(listarCat)
   return (
     <>
-    <div className="flex justify-between">
-    <button
-          className="m-4 bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
-          onClick={() => abrirModalProducto()}
-        >
-          Agregar Producto
-        </button>
-        <input 
-            type="text" 
-            className='m-4' 
-            placeholder='Buscar producto.....' 
-            value={busqueda} // 3. Asignar el valor del estado al input
-            onChange={busquedaSave} // 4. Manejar los cambios
-          />
+     <div className="flex justify-between items-center mb-6">
+      <button
+        className="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
+        onClick={() => abrirModalProducto()}
+      >
+        Agregar Producto
+      </button>
+      <input 
+        type="text" 
+        className="border border-gray-300 rounded-lg px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+        placeholder="Buscar producto..." 
+        value={busqueda}
+        onChange={busquedaSave}
+      />
     </div>
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-300">
-          <table className="min-w-full table-auto text-sm">
+    
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-200">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gradient-to-r from-blue-500 to-blue-700 text-white">
               <tr>
-                {['ID', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Tamaño', 'Color','Género', 'Categoría', 'Acciones'].map((header) => (
-                  <th key={header} className="px-6 py-4 text-left font-semibold">
+                {['ID', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Tamaño', 'Color', 'Género', 'Categoría', 'Acciones'].map((header) => (
+                  <th 
+                    key={header} 
+                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                  >
                     {header}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="text-gray-700">
+            <tbody className="bg-white divide-y divide-gray-200">
               {listar.filter(producto => producto.nombre.toLowerCase().includes(busqueda.toLowerCase())).map((producto, index) => (
-                <tr key={index} className="border-b hover:bg-blue-50 transition duration-300">
-                  <td className="px-6 py-4 font-medium">{producto.id}</td>
-                  <td className="px-6 py-4">{producto.nombre}</td>
-                  <td className="px-6 py-4">{producto.descripcion}</td>
-                  <td className="px-6 py-4">{producto.precio}</td>
-                  <td className="px-6 py-4">{producto.stock}</td>
-                  <td className="px-6 py-4">{producto.tamano}</td>
-                  <td className="px-6 py-4">{producto.color}</td>
-                  <td className="px-6 py-4">{producto.genero}</td>
-                  <td className="px-6 py-4">{producto.categoria}</td>
-                  <td className="px-6 py-4 flex gap-2 items-center">
-                    <button
-                      className="bg-green-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-green-600 transition"
-                      onClick={() => abrirModalProducto(producto)}
-                    >
-                      Modificar
-                    </button>
-                    <button
-                      className="bg-yellow-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-yellow-600 transition"
-                      onClick={() => abrirModalImagenes(producto)}
-                    >
-                      Imágenes
-                    </button>
-                    <button
-                      className="bg-red-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-red-600 transition"
-                      onClick={() => eliminarProducto(producto.id)}
-                    >
-                      Eliminar
-                    </button>
+                <tr 
+                  key={index} 
+                  className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors`}
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{producto.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.nombre}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{producto.descripcion}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.precio}€</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.stock}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.tamano}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <div className="flex items-center">
+                      <span className="w-3 h-3 rounded-full mr-2" style={{backgroundColor: producto.color}}></span>
+                      {producto.color}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{producto.genero}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.categoria}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
+                      <button
+                        className="bg-green-500 text-white py-1 px-3 rounded text-xs hover:bg-green-600 transition"
+                        onClick={() => abrirModalProducto(producto)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="bg-yellow-500 text-white py-1 px-3 rounded text-xs hover:bg-yellow-600 transition"
+                        onClick={() => abrirModalImagenes(producto)}
+                      >
+                        Imágenes
+                      </button>
+                      <button
+                        className="bg-red-500 text-white py-1 px-3 rounded text-xs hover:bg-red-600 transition"
+                        onClick={() => eliminarProducto(producto.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        
       </div>
+    </div>
 
       {/* Modal para datos del producto */}
       {modalProductoAbierto && (
@@ -412,7 +424,6 @@ const subirImagenes = () => {
                         alt={`Imagen ${index}`}
                         className="w-full h-[200px] object-cover rounded-lg"
                       />
-                     {console.log(url)}
                       <button
                         type="button"
                         className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"

@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Navbar from '../componentes/Navbar';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Footer from '../componentes/Footer';
+import AnimatedPage from '../componentes/Animatepage';
+import Totop from '../componentes/Totop';
 
 const Plantilla = () => {
-
+  const location = useLocation();
+  
   return (
     <>
+      <Totop/>
       <header className="sticky top-0 z-50">
-        <Navbar/>  {/* Pasar el estado al Navbar */}
+        <Navbar />
       </header>
       <main>
-        <Outlet />
+        <AnimatedPage key={location.pathname}>
+          <Outlet />
+        </AnimatedPage>
       </main>
       <Footer />
     </>

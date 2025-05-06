@@ -24,7 +24,6 @@ const AdminCategorias = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data); // Verifica la estructura de los datos
         setListar(Array.isArray(data) ? data : [data]); // Asegúrate de que siempre sea un array
       })
       .catch((error) => {
@@ -59,7 +58,6 @@ const AdminCategorias = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setListar(listar.map(categoria => categoria.id === id ? { ...categoria, ...datosActualizados } : categoria));
         setEditando(null);
         setNombre('');
@@ -80,7 +78,6 @@ const AdminCategorias = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setListar(listar.filter(categoria => categoria.id !== id));
       })
       .catch((error) => {
@@ -104,7 +101,6 @@ const AdminCategorias = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setListar([...listar, data]); // Agrega la nueva categoría a la lista
         setNombreNuevo(''); // Limpiar el campo nombreNuevo
         setDescripcionNuevo(''); // Limpiar el campo descripcionNuevo

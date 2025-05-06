@@ -55,9 +55,8 @@ const Home = () => {
         .then((data) => setWomen(data))
         .catch((error) => {
             console.error('Error:', error);
-        });
+        }); 
   };
-  console.log(men)
   return (
     <>
       <div className='px-5'>

@@ -1,7 +1,8 @@
 <?php
 require_once("conexion.php");
 
-class productos {
+class productos
+{
     private $db;
     private $id;
     private $nombre;
@@ -15,7 +16,8 @@ class productos {
     private $categoria;
 
     // Constructor
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = new con();
         $this->id = 0;
         $this->nombre = "";
@@ -30,7 +32,8 @@ class productos {
     }
 
     // Método para obtener todos los productos
-    public function getAll() {
+    public function getAll()
+    {
         $sent = "SELECT * FROM productos";
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
@@ -55,7 +58,8 @@ class productos {
         $consulta->close();
         return $productos;
     }
-    public function getProd($id) {
+    public function getProd($id)
+    {
         $sent = "SELECT * FROM productos where ID_Productos=?";
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_param("i", $id);
@@ -79,7 +83,8 @@ class productos {
         $consulta->close();
         return $producto;
     }
-    public function getProdHombre() {
+    public function getProdHombre()
+    {
         $sent = "SELECT * FROM productos where Genero='men'";
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
@@ -99,13 +104,13 @@ class productos {
             $producto->genero = $genero;
             $producto->categoria = $categoria;
             $productos[] = $producto;
-
         }
 
         $consulta->close();
         return $productos;
     }
-    public function getProdMujer() {
+    public function getProdMujer()
+    {
         $sent = "SELECT * FROM productos where Genero='woman'";
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
@@ -125,13 +130,13 @@ class productos {
             $producto->genero = $genero;
             $producto->categoria = $categoria;
             $productos[] = $producto;
-
         }
 
         $consulta->close();
         return $productos;
     }
-    public function getProdExclusive() {
+    public function getProdExclusive()
+    {
         $sent = "SELECT * FROM productos where Genero='exclusive'";
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
@@ -157,7 +162,8 @@ class productos {
         return $productos;
     }
     // Método para insertar un producto
-    public function insertar($nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria) {
+    public function insertar($nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria)
+    {
         try {
             $sent = "INSERT INTO productos (Nombre_Producto, Descripcion, Precio, Stock, Tamano, Color, Img_URL, Genero, categoria) 
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -175,7 +181,8 @@ class productos {
     }
 
     // Método para eliminar un producto
-    public function eliminar($id) {
+    public function eliminar($id)
+    {
         try {
             $sent = "DELETE FROM productos WHERE ID_Productos = ?";
             $consulta = $this->db->getCon()->prepare($sent);
@@ -190,9 +197,10 @@ class productos {
             return false;
         }
     }
-     // Método para actualizar un producto
-     public function actualizar($nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria,$ID_Productos) {
-            $sent = "UPDATE productos SET 
+    // Método para actualizar un producto
+    public function actualizar($nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria, $ID_Productos)
+    {
+        $sent = "UPDATE productos SET 
             Nombre_Producto = ?, 
             Descripcion = ?, 
             Precio = ?, 
@@ -203,24 +211,24 @@ class productos {
             Genero = ? ,
             categoria = ?
             WHERE ID_Productos = ?";
-            // Preparar la sentencia
-            $consulta = $this->db->getCon()->prepare($sent);
-        
-            // Vincular los parámetros
-            $consulta->bind_param("ssiissssii", $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria,$ID_Productos);
-        
-            // Ejecutar la consulta
-            if ($consulta->execute()) {
-                return true; // Actualización exitosa
-            } else {
-                // Cerrar la sentencia
-                $consulta->close();
-                return false; 
-            }
-    
+        // Preparar la sentencia
+        $consulta = $this->db->getCon()->prepare($sent);
+
+        // Vincular los parámetros
+        $consulta->bind_param("ssiissssii", $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria, $ID_Productos);
+
+        // Ejecutar la consulta
+        if ($consulta->execute()) {
+            return true; // Actualización exitosa
+        } else {
+            // Cerrar la sentencia
+            $consulta->close();
+            return false;
+        }
     }
     // Método para actualizar las imágenes de un producto
-    public function actualizarImagenes($id, $imagenes) {
+    public function actualizarImagenes($id, $imagenes)
+    {
         try {
             $sent = "UPDATE productos SET Img_URL = ? WHERE ID_Productos = ?";
             $consulta = $this->db->getCon()->prepare($sent);
@@ -235,5 +243,22 @@ class productos {
             return false;
         }
     }
+    public function getCarrito($id)
+    {
+        $sent = "SELECT p.* ,añade.Cantidad from productos p , carrito, añade , usuarios WHERE carrito.ID_Carrito = añade.ID_Carrito AND p.ID_Productos = añade.ID_Producto and carrito.ID_Usuario = usuarios.ID_Usuario and usuarios.ID_Usuario = ?";
+
+        $consulta = $this->db->getCon()->prepare($sent);
+        $consulta->bind_param("i", $id);
+        $consulta->execute();
+
+        $result = $consulta->get_result();
+
+        $productos = [];
+        while ($row = $result->fetch_object()) {
+            $productos[] = $row; 
+        }
+
+        $consulta->close();
+        return $productos;
+    }
 }
-?>
