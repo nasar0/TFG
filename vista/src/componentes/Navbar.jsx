@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import Buscador from './Buscador';
 
 function Navbar() {
   const [isMenOpen, setIsMenOpen] = useState(false);
@@ -9,6 +10,7 @@ function Navbar() {
   const { isAuthenticated } = useContext(AuthContext);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showBuscador, setShowBuscador] = useState(false);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -17,10 +19,10 @@ function Navbar() {
       } else {
         setHasScrolled(false);
       }
-    }; 
+    };
 
     window.addEventListener('scroll', handleScroll);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -32,26 +34,31 @@ function Navbar() {
         {/* Top Section - Logo, Contact, Login */}
         <div className="flex justify-between items-center px-4 py-2">
           {/* Contact Link - hidden on mobile */}
-          <div className="hidden md:block">
-            <Link to="/contact" className={"text-[11px]"} >Contact us</Link>
+          <div className="hidden md:block md:w-1/4">
+            <Link to="/contact" className="text-[11px]">Contact us</Link>
           </div>
-          
-          {/* Logo - Centered on mobile, left on desktop */}
-          <Link to="/" className="md:ml-0">
-            <h2 className={`font-black ${!hasScrolled ? "text-7xl md:text-7xl" : "text-3xl md:text-4xl"} transition-[font-size] duration-500 ease-in-out`}>
-              K<span className="mirror">k</span>armx
-            </h2>
-          </Link>
-          
+
+          {/* Logo - Centered */}
+          <div className="md:w-2/4 flex justify-center">
+            <Link to="/">
+              <h2 className={`font-black ${!hasScrolled ? "text-7xl md:text-7xl" : "text-3xl md:text-4xl"} transition-[font-size] duration-500 ease-in-out`}>
+                K<span className="mirror">k</span>armx
+              </h2>
+            </Link>
+          </div>
+
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-4">
-            <Link to="/buscador" className="w-5">
-              <img src="../../public/img/icons8-search-50.png" alt="Search" />
-            </Link>
+          <button 
+              onClick={() => setShowBuscador(true)} 
+              className="w-5"
+            >
+              <img src="/img/icons8-search-50.png" alt="Search" />
+            </button>
             <Link to="/cart" className="w-5">
               <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
             </Link>
-            <button 
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-gray-700 focus:outline-none"
             >
@@ -64,23 +71,26 @@ function Navbar() {
               </svg>
             </button>
           </div>
-          
+
           {/* Desktop Right Section */}
-          <div className="hidden md:flex items-center gap-5">
+          <div className="hidden md:flex md:w-1/4 items-center gap-5 justify-end">
             {isAuthenticated ? (
               <Link to="/account" className="text-[11px]">Account</Link>
             ) : (
               <Link to="/login" className="text-[11px]">Login</Link>
             )}
-            <Link to="/buscador" className="w-5">
-              <img src="../../public/img/icons8-search-50.png" alt="Search" />
-            </Link>
+            <button 
+              onClick={() => setShowBuscador(true)} 
+              className="w-5"
+            >
+              <img src="/img/icons8-search-50.png" alt="Search" />
+            </button>
             <Link to="/cart" className="w-5">
               <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
             </Link>
           </div>
         </div>
-        
+
         {/* Category Navigation - Desktop */}
         <div className="hidden md:block">
           <ul className="flex justify-center space-x-6 p-4">
@@ -90,7 +100,7 @@ function Navbar() {
               className="relative"
             >
               <Link
-                to="/men"
+                to="/catalog/men"
                 className="px-4 py-2 hover:bg-gray-100 rounded"
               >
                 Men
@@ -100,7 +110,7 @@ function Navbar() {
                   {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
                     <li key={item}>
                       <Link
-                        to={`/men/${item.toLowerCase()}`}
+                        to={`/catalog/men/${item.toLowerCase()}`}
                         className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
                       >
                         {item}
@@ -110,14 +120,14 @@ function Navbar() {
                 </ul>
               )}
             </li>
-            
+
             <li
               onMouseEnter={() => setIsWomenOpen(true)}
               onMouseLeave={() => setIsWomenOpen(false)}
               className="relative"
             >
               <Link
-                to="/women"
+                to="/catalog/women"
                 className="px-4 py-2 hover:bg-gray-100 rounded"
               >
                 Women
@@ -127,7 +137,7 @@ function Navbar() {
                   {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
                     <li key={item}>
                       <Link
-                        to={`/women/${item.toLowerCase()}`}
+                        to={`/catalog/women/${item.toLowerCase()}`}
                         className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
                       >
                         {item}
@@ -137,14 +147,14 @@ function Navbar() {
                 </ul>
               )}
             </li>
-            
+
             <li
               onMouseEnter={() => setIsExclusiveOpen(true)}
               onMouseLeave={() => setIsExclusiveOpen(false)}
               className="relative"
             >
               <Link
-                to="/exclusive"
+                to="/catalog/exclusive"
                 className="px-4 py-2 hover:bg-gray-100 rounded"
               >
                 Exclusive
@@ -154,7 +164,7 @@ function Navbar() {
                   {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
                     <li key={item}>
                       <Link
-                        to={`/exclusive/${item.toLowerCase()}`}
+                        to={`/catalog/exclusive/${item.toLowerCase()}`}
                         className="block px-4 py-2 hover:bg-gray-100 text-gray-700"
                       >
                         {item}
@@ -174,7 +184,7 @@ function Navbar() {
       )}
 
       {/* Mobile Menu Sidebar */}
-      <div className={`fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-50 transform ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}>
+      <div className={`fixed top-0 right-0 h-full w-64 bg-white shadow-xl z-48 transform ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:hidden`}>
         <div className="p-4">
           <div className="flex justify-end mb-4">
             <button onClick={() => setMobileMenuOpen(false)} className="text-gray-700">
@@ -202,7 +212,7 @@ function Navbar() {
             <div className="border-t border-gray-200 pt-4">
               <div className="space-y-2">
                 <div>
-                  <button 
+                  <button
                     onClick={() => setIsMenOpen(!isMenOpen)}
                     className="w-full flex justify-between items-center py-2 uppercase"
                   >
@@ -213,22 +223,33 @@ function Navbar() {
                   </button>
                   {isMenOpen && (
                     <div className="pl-4 py-2 space-y-2 animate__animated animate__fadeIn">
-                      {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
-                        <Link
-                          key={item}
-                          to={`/men/${item.toLowerCase()}`}
-                          className="block py-1 text-gray-700"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {item}
-                        </Link>
+                      {['All', 'Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                        (item == "All" ?
+                          <Link
+                            key={item}
+                            to={`/catalog/men`}
+                            className="block py-1 text-gray-700"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item}
+                          </Link>
+                          :
+                          <Link
+                            key={item}
+                            to={`/catalog/men/${item.toLowerCase()}`}
+                            className="block py-1 text-gray-700"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item}
+                          </Link>
+                        )
                       ))}
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <button 
+                  <button
                     onClick={() => setIsWomenOpen(!isWomenOpen)}
                     className="w-full flex justify-between items-center py-2 uppercase"
                   >
@@ -239,22 +260,32 @@ function Navbar() {
                   </button>
                   {isWomenOpen && (
                     <div className="pl-4 py-2 space-y-2 animate__animated animate__fadeIn">
-                      {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
-                        <Link
-                          key={item}
-                          to={`/women/${item.toLowerCase()}`}
-                          className="block py-1 text-gray-700"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {item}
-                        </Link>
+                      {['All', 'Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                        (item == "All" ?
+                          <Link
+                            key={item}
+                            to={`/catalog/women`}
+                            className="block py-1 text-gray-700"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item}
+                          </Link>
+                          :
+                          <Link
+                            key={item}
+                            to={`/catalog/women/${item.toLowerCase()}`}
+                            className="block py-1 text-gray-700"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item}
+                          </Link>
+                        )
                       ))}
                     </div>
                   )}
                 </div>
-
                 <div>
-                  <button 
+                  <button
                     onClick={() => setIsExclusiveOpen(!isExclusiveOpen)}
                     className="w-full flex justify-between items-center py-2 uppercase"
                   >
@@ -265,15 +296,26 @@ function Navbar() {
                   </button>
                   {isExclusiveOpen && (
                     <div className="pl-4 py-2 space-y-2 animate__animated animate__fadeIn">
-                      {['Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
-                        <Link
-                          key={item}
-                          to={`/exclusive/${item.toLowerCase()}`}
-                          className="block py-1 text-gray-700"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          {item}
-                        </Link>
+                      {['All', 'Clothing', 'Shoes', 'Bags', 'Accessories', 'Jewelry'].map((item) => (
+                        (item == "All" ?
+                          <Link
+                            key={item}
+                            to={`/catalog/exclusive`}
+                            className="block py-1 text-gray-700"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item}
+                          </Link>
+                          :
+                          <Link
+                            key={item}
+                            to={`/catalog/exclusive/${item.toLowerCase()}`}
+                            className="block py-1 text-gray-700"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item}
+                          </Link>
+                        )
                       ))}
                     </div>
                   )}
@@ -283,6 +325,9 @@ function Navbar() {
           </div>
         </div>
       </div>
+
+
+      {showBuscador && <Buscador onClose={() => setShowBuscador(false)} />}
     </>
   );
 }

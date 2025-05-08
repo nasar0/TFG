@@ -83,10 +83,17 @@ class productos
         $consulta->close();
         return $producto;
     }
-    public function getProdHombre()
+    public function getProdHombre($nomCat=null)
     {
-        $sent = "SELECT * FROM productos where Genero='men'";
+        $sent = "SELECT productos.* FROM productos,categoria where productos.categoria = categoria.ID_Categoría and Genero='men'";
+        if ($nomCat !== null) {
+            $sent.="and categoria.Nombre_Categoría = ? ";
+        }
         $consulta = $this->db->getCon()->prepare($sent);
+        
+        if ($nomCat !== null) {
+            $consulta->bind_param("s", $nomCat);
+        }
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
         $consulta->execute();
 
@@ -109,10 +116,17 @@ class productos
         $consulta->close();
         return $productos;
     }
-    public function getProdMujer()
+    public function getProdMujer($nomCat=null)
     {
-        $sent = "SELECT * FROM productos where Genero='woman'";
+        $sent = "SELECT productos.*  FROM productos,categoria where productos.categoria = categoria.ID_Categoría and Genero='woman' ";
+        if ($nomCat !== null) {
+            $sent.="and categoria.Nombre_Categoría = ? ";
+        }
         $consulta = $this->db->getCon()->prepare($sent);
+        
+        if ($nomCat !== null) {
+            $consulta->bind_param("s", $nomCat);
+        }
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
         $consulta->execute();
 
@@ -135,10 +149,17 @@ class productos
         $consulta->close();
         return $productos;
     }
-    public function getProdExclusive()
+    public function getProdExclusive($nomCat = null)
     {
-        $sent = "SELECT * FROM productos where Genero='exclusive'";
+        $sent = "SELECT productos.*  FROM productos,categoria where productos.categoria = categoria.ID_Categoría and Genero='exclusive'";
+        if ($nomCat !== null) {
+            $sent.="and categoria.Nombre_Categoría = ? ";
+        }
         $consulta = $this->db->getCon()->prepare($sent);
+        
+        if ($nomCat !== null) {
+            $consulta->bind_param("s", $nomCat);
+        }
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
         $consulta->execute();
 

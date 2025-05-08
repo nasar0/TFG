@@ -15,7 +15,8 @@ if (!is_dir($directorio)) {
 }
 
 // Función para manejar la subida de imágenes
-function handleImageUpload($directorio) {
+function handleImageUpload($directorio)
+{
     if (!isset($_FILES['imagen'])) {
         return false;
     }
@@ -48,41 +49,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $idProducto = $_POST['id'];
     $imagenesActuales = isset($_POST['imagenesActuales']) ? explode(',', $_POST['imagenesActuales']) : [];
     $nombresArchivos = [];
-  
+
     // Verificar si se subieron nuevas imágenes
     if (isset($_FILES['imagen'])) {
-      $nombresArchivos = handleImageUpload($directorio);
-      if ($nombresArchivos === false) {
-        echo json_encode([
-          'success' => false,
-          'message' => 'Error al subir las imágenes.',
-        ]);
-        exit;
-      }
+        $nombresArchivos = handleImageUpload($directorio);
+        if ($nombresArchivos === false) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error al subir las imágenes.',
+            ]);
+            exit;
+        }
     }
-  
+
     // Combinar las imágenes actuales con las nuevas (si las hay)
     $todasLasImagenes = array_merge($imagenesActuales, $nombresArchivos);
-    if($todasLasImagenes[0] === '') $todasLasImagenes = array_slice($todasLasImagenes,1);
+    if ($todasLasImagenes[0] === '') $todasLasImagenes = array_slice($todasLasImagenes, 1);
     $imagenesStr = implode(',', $todasLasImagenes);
-  
+
     // Actualizar el producto en la base de datos con las nuevas imágenes
     $resultado = $GLOBALPRODUCT->actualizarImagenes($idProducto, $imagenesStr);
-  
+
     if ($resultado) {
-      echo json_encode([
-        'success' => true,
-        'message' => 'Imágenes actualizadas correctamente.',
-        'url' => $imagenesStr, // Devolver las URLs de las imágenes separadas por comas
-      ]);
+        echo json_encode([
+            'success' => true,
+            'message' => 'Imágenes actualizadas correctamente.',
+            'url' => $imagenesStr, // Devolver las URLs de las imágenes separadas por comas
+        ]);
     } else {
-      echo json_encode([
-        'success' => false,
-        'message' => 'Error al actualizar las imágenes en la base de datos.',
-      ]);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error al actualizar las imágenes en la base de datos.',
+        ]);
     }
     exit;
-  }
+}
 
 // Leer los datos JSON enviados desde el frontend (para otras acciones)
 $data = json_decode(file_get_contents("php://input"), true);
@@ -145,20 +146,20 @@ switch ($data["action"]) {
         ]);
         break;
     case "getProd":
-            $resultado = $GLOBALPRODUCT->getProd($data["id"]);
-            echo json_encode($resultado);
+        $resultado = $GLOBALPRODUCT->getProd($data["id"]);
+        echo json_encode($resultado);
         break;
     case "getProdExclusive":
-            $resultado = $GLOBALPRODUCT->getProdExclusive();
-            echo json_encode($resultado);
+        $resultado = $GLOBALPRODUCT->getProdExclusive($data["category"] ?? null);
+        echo json_encode($resultado);
         break;
     case "getProdHombre":
-            $resultado = $GLOBALPRODUCT->getProdHombre();
-            echo json_encode($resultado);
+        $resultado = $GLOBALPRODUCT->getProdHombre($data["category"] ?? null);
+        echo json_encode($resultado);
         break;
     case "getProdMujer":
-            $resultado = $GLOBALPRODUCT->getProdMujer();
-            echo json_encode($resultado);
+        $resultado = $GLOBALPRODUCT->getProdMujer($data["category"] ?? null);
+        echo json_encode($resultado);
         break;
     case "getCarrito":
         $resultado = $GLOBALPRODUCT->getCarrito($data["id"]);
@@ -168,4 +169,3 @@ switch ($data["action"]) {
         echo json_encode(["success" => false, "message" => "Acción no válida"]);
         break;
 }
-?>

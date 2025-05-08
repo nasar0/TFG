@@ -4,6 +4,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Footer from '../componentes/Footer';
 import AnimatedPage from '../componentes/Animatepage';
 import Totop from '../componentes/Totop';
+import Buscador from '../componentes/Buscador';
 
 const Plantilla = () => {
   const location = useLocation();
@@ -19,6 +20,7 @@ const Plantilla = () => {
           <Outlet />
         </AnimatedPage>
       </main>
+      
       <Footer />
     </>
   );
