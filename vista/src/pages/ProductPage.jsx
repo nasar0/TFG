@@ -243,7 +243,7 @@ const ProductPage = () => {
           ))}
         </div>
         {/* Div Dos --------------------------------------------------------------------------------- */}
-        <div className="lg:w-[30%] lg:sticky lg:top-[45%] lg:transform lg:-translate-y-1/2 lg:self-start ml-[3%] h-[90vh] lg:h-auto">
+        <div className="lg:w-[30%] lg:sticky lg:top-[25%] lg:pb-[5%] lg:transform  lg:self-start ml-[3%] h-[90vh] lg:h-auto">
           <div className="bg-white p-5 rounded-lg border-gray-100">
             <div className="capitalize font-normal text-[22px] mb-3">
               <h2>{listar.nombre}</h2>
