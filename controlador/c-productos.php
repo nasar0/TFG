@@ -8,6 +8,7 @@ header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Credentials: true');
 
+
 // Directorio donde se guardarán las imágenes
 $directorio = "../vista/public/img/prods/";
 if (!is_dir($directorio)) {
@@ -163,6 +164,10 @@ switch ($data["action"]) {
         break;
     case "getCarrito":
         $resultado = $GLOBALPRODUCT->getCarrito($data["id"]);
+        echo json_encode($resultado);
+        break;
+    case "eliminarProdCarrito":
+        $resultado = $GLOBALPRODUCT->eliminarProdCarrito($data["idUser"],$data["productId"]);
         echo json_encode($resultado);
         break;
     default:

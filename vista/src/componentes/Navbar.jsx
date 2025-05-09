@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Buscador from './Buscador';
+import Cart from '../pages/Cart';
 
 function Navbar() {
   const [isMenOpen, setIsMenOpen] = useState(false);
@@ -11,7 +12,8 @@ function Navbar() {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showBuscador, setShowBuscador] = useState(false);
-  
+  const [showCart, setShowCart] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -27,6 +29,10 @@ function Navbar() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+  useEffect(() => {
+
+  }, [isAuthenticated]);
+
 
   return (
     <>
@@ -49,8 +55,8 @@ function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-4">
-          <button 
-              onClick={() => setShowBuscador(true)} 
+            <button
+              onClick={() => setShowBuscador(true)}
               className="w-5"
             >
               <img src="/img/icons8-search-50.png" alt="Search" />
@@ -58,6 +64,7 @@ function Navbar() {
             <Link to="/cart" className="w-5">
               <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
             </Link>
+            
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-gray-700 focus:outline-none"
@@ -79,15 +86,18 @@ function Navbar() {
             ) : (
               <Link to="/login" className="text-[11px]">Login</Link>
             )}
-            <button 
-              onClick={() => setShowBuscador(true)} 
+            <button
+              onClick={() => setShowBuscador(true)}
               className="w-5"
             >
               <img src="/img/icons8-search-50.png" alt="Search" />
             </button>
-            <Link to="/cart" className="w-5">
+            <button
+              onClick={() => setShowCart(true)}
+              className="w-5"
+            >
               <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -328,6 +338,7 @@ function Navbar() {
 
 
       {showBuscador && <Buscador onClose={() => setShowBuscador(false)} />}
+      {showCart && <Cart onClose={() => setShowCart(false)} />}
     </>
   );
 }

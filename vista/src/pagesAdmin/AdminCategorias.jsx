@@ -115,7 +115,7 @@ const AdminCategorias = () => {
     <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-300">
         <table className="min-w-full table-auto text-sm">
-          <thead className="bg-gradient-to-r from-blue-500 to-blue-700 text-white">
+          <thead className="bg-gradient-to-r from-gray-500 to-gray-700 text-white">
             <tr>
               {['ID', 'Nombre', 'Descripción', 'Acciones'].map((header) => (
                 <th key={header} className="px-6 py-4 text-left font-semibold">{header}</th>

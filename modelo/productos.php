@@ -83,14 +83,14 @@ class productos
         $consulta->close();
         return $producto;
     }
-    public function getProdHombre($nomCat=null)
+    public function getProdHombre($nomCat = null)
     {
         $sent = "SELECT productos.* FROM productos,categoria where productos.categoria = categoria.ID_Categoría and Genero='men'";
         if ($nomCat !== null) {
-            $sent.="and categoria.Nombre_Categoría = ? ";
+            $sent .= "and categoria.Nombre_Categoría = ? ";
         }
         $consulta = $this->db->getCon()->prepare($sent);
-        
+
         if ($nomCat !== null) {
             $consulta->bind_param("s", $nomCat);
         }
@@ -116,14 +116,14 @@ class productos
         $consulta->close();
         return $productos;
     }
-    public function getProdMujer($nomCat=null)
+    public function getProdMujer($nomCat = null)
     {
         $sent = "SELECT productos.*  FROM productos,categoria where productos.categoria = categoria.ID_Categoría and Genero='woman' ";
         if ($nomCat !== null) {
-            $sent.="and categoria.Nombre_Categoría = ? ";
+            $sent .= "and categoria.Nombre_Categoría = ? ";
         }
         $consulta = $this->db->getCon()->prepare($sent);
-        
+
         if ($nomCat !== null) {
             $consulta->bind_param("s", $nomCat);
         }
@@ -153,10 +153,10 @@ class productos
     {
         $sent = "SELECT productos.*  FROM productos,categoria where productos.categoria = categoria.ID_Categoría and Genero='exclusive'";
         if ($nomCat !== null) {
-            $sent.="and categoria.Nombre_Categoría = ? ";
+            $sent .= "and categoria.Nombre_Categoría = ? ";
         }
         $consulta = $this->db->getCon()->prepare($sent);
-        
+
         if ($nomCat !== null) {
             $consulta->bind_param("s", $nomCat);
         }
@@ -266,7 +266,7 @@ class productos
     }
     public function getCarrito($id)
     {
-        $sent = "SELECT p.* ,añade.Cantidad from productos p , carrito, añade , usuarios WHERE carrito.ID_Carrito = añade.ID_Carrito AND p.ID_Productos = añade.ID_Producto and carrito.ID_Usuario = usuarios.ID_Usuario and usuarios.ID_Usuario = ?";
+        $sent = "SELECT p.* ,añade.Cantidad from productos p , carrito, añade , usuarios WHERE carrito.ID_Carrito = añade.ID_Carrito AND p.ID_Productos = añade.ID_Producto and carrito.ID_Usuario = usuarios.ID_Usuario and carrito.pagado=0 and usuarios.ID_Usuario = ?";
 
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_param("i", $id);
@@ -276,10 +276,40 @@ class productos
 
         $productos = [];
         while ($row = $result->fetch_object()) {
-            $productos[] = $row; 
+            $productos[] = $row;
         }
 
         $consulta->close();
         return $productos;
+    }
+    public function eliminarProdCarrito($id, $idProd)
+    {
+        $sent = "DELETE FROM añade
+                WHERE 
+                ID_Carrito IN (
+                    SELECT ID_Carrito 
+                    FROM carrito
+                    WHERE pagado = 0 AND ID_Usuario = ?
+                )
+                AND ID_Producto = ?";
+
+        $consulta = $this->db->getCon()->prepare($sent);
+
+        if (!$consulta) {
+            error_log("Error en prepare: " . $this->db->getCon()->error);
+            return false;
+        }
+
+        $consulta->bind_param("ii", $id, $idProd);
+
+        if (!$consulta->execute()) {
+            error_log("Error en execute: " . $consulta->error);
+            return false;
+        }
+
+        $affected = $consulta->affected_rows;
+        $consulta->close();
+
+        return $affected > 0; // true si se eliminó algo, false si no
     }
 }

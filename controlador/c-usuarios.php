@@ -145,7 +145,6 @@ switch ($data["action"]) {
         }
         break;
     case "agregar":
-        error_log($data["idUsuario"], $data["idProducto"]);
         try {
             $resultado = $GLOBALUSER->agregarCarrito($data["idUsuario"], $data["idProducto"]);
             if ($resultado) {

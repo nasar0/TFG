@@ -2,13 +2,15 @@ import React, { useEffect, useState ,useContext} from 'react'
 import { Link, useParams } from 'react-router-dom'
 import SizeDetail from '../componentes/SizeDetail'
 import { AuthContext } from '../context/AuthContext'; 
+import Alert from '../componentes/Alert';
 
 const ProductPage = () => {
   const { id } = useParams()
   const [listar, setListar] = useState({})
   const [imagenActual, setImagenActual] = useState(0)
   const { isAuthenticated, userEmail, idUser ,login ,logout} = useContext(AuthContext);
-  
+  const [errorMsg, setErrorMsg] = useState('');
+  const [type, setType] = useState('');
 
   const imgList = listar?.img_url?.split(',')?.map(img => img.trim()).filter(Boolean) || []
   const tamano = listar?.tamano?.split('-')?.map(t => t.trim()).filter(Boolean) || []
@@ -186,20 +188,37 @@ const ProductPage = () => {
     .then((data) => {
       // Aquí puedes manejar la respuesta del servidor
       if (data.success) {
-        alert('Producto agregado al carrito correctamente');
-        // O podrías usar un toast notification en lugar de alert
+        setType("success")
+        setErrorMsg(
+          <div className='text-center'>
+            <span>ADDED TO CART</span>
+          </div>
+        );
+        
       } else {
-        alert(data.message || 'Error al agregar el producto');
+        setType("error")
+        setErrorMsg('ERROR ADDING TO BAG');
       }
     })
     .catch((error) => {
-      console.error('Error:', error);
-      alert('Ocurrió un error al agregar al carrito');
+        setType("error")
+        console.error('Error:', error);
+        setErrorMsg('AN ERROR OCCURRED');
     });
   }
+  const [activeImage, setActiveImage] = useState(null);
 
+  const closeModal = () => setActiveImage(null);
+  activeImage ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto'
   return (
     <>
+    {errorMsg && (
+        <Alert
+          type={type}
+          message={errorMsg}
+          onClose={() => setErrorMsg('')}
+        />
+      )}
     {/* carrusel para movil  */}
       <div className="lg:flex relative">
         <div className="lg:hidden relative h-[60vh] w-full bg-gray-100 border border-[#EDEDED]">
@@ -229,19 +248,36 @@ const ProductPage = () => {
         </div>
 
         <div className="hidden lg:grid w-[70%] grid-cols-2">
-          {imgList.map((img, index) => (
-            <div key={index} className="bg-gray-100 overflow-hidden border h-full border-[#EDEDED] relative  cursor-crosshair">
-              <img 
-                src={`/img/prods/${img}`} 
-                alt={`Imagen ${index + 1}`}
-                className="w-full object-cover"
-              />
-              <div className="absolute top-2 left-2 text-black text-[13px] px-2 py-1">
-                [{`${index + 1} / ${imgList.length}`}]
-              </div>
+        {imgList.map((img, index) => (
+          <div
+            key={index}
+            className="bg-gray-100 overflow-hidden border border-[#EDEDED] relative cursor-crosshair h-full"
+          >
+            <img
+              src={`/img/prods/${img}`}
+              alt={`Imagen ${index + 1}`}
+              className="w-full object-cover cursor-crosshair"
+              onClick={() => setActiveImage(img)}
+            />
+            <div className="absolute top-2 left-2 text-black text-[13px] px-2 py-1">
+              [{`${index + 1} / ${imgList.length}`}]
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Modal */}
+      {activeImage && (
+        
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm  " onClick={closeModal}>
+          <img
+            src={`/img/prods/${activeImage}`}
+            alt="Imagen ampliada"
+            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-lg"
+          />
         </div>
+      )}
+
         {/* Div Dos --------------------------------------------------------------------------------- */}
         <div className="lg:w-[30%] lg:sticky lg:top-[25%] lg:pb-[5%] lg:transform  lg:self-start ml-[3%] h-[90vh] lg:h-auto">
           <div className="bg-white p-5 rounded-lg border-gray-100">

@@ -8,7 +8,7 @@ const Catalogo = () => {
     const [title, setTitle] = useState('');
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(true); // Añadido estado de carga
-
+    console.log(category);
     useEffect(() => {
         let action = '';
         let newTitle = '';

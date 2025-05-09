@@ -62,17 +62,18 @@ const Register = () => {
           return response.json();
         })
         .then((data) => {
-          setErrorMsg(data.message)
           if (data.value) {
+            setErrorMsg("REGISTRATION SUCCESSFUL")
             setType("success")
           }else{
+            setErrorMsg('REGISTRATION ERROR');
             setType("error")
           }
         })
         .catch((error) => {
           console.error('Error:', error);
           setType("error")
-          setErrorMsg('Ocurrió un error al registrar');
+          setErrorMsg('AN ERROR OCCURRED');
         });
       setTimeout(() => {
         setIsSubmitting(false);

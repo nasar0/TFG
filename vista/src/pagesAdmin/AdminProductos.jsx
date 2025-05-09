@@ -225,7 +225,8 @@ const subirImagenes = () => {
       <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-blue-500 to-blue-700 text-white">
+            <thead className="bg-gradient-to-r from-gray-500 to-gray-700 text-white">
+
               <tr>
                 {['ID', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Tamaño', 'Color', 'Género', 'Categoría', 'Acciones'].map((header) => (
                   <th 
