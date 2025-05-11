@@ -21,6 +21,7 @@ import AdminPlantilla from './pages/AdminPlantilla';
 import MiPerfil from './pages/MiPerfil';
 import LegalPage from './pages/LegalPage';
 import Catalogo from './componentes/Catalogo';
+import Articulobuscado from './pages/Articulobuscado';
 
 function App() {
   return (
@@ -40,7 +41,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/account" element={<MiPerfil />} />
-            <Route path="/buscador" element={<Buscador />} />  
+            <Route path="/search" element={<Buscador />} />  
+            <Route path="/prod" element={<Articulobuscado />} />
           </Route>
 
           {/* Rutas de administrador */}

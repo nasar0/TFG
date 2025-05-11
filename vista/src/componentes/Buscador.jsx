@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import 'animate.css';
+import { useNavigate } from 'react-router-dom';
 
 const Buscador = ({ onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [recentSearches, setRecentSearches] = useState([]);
   const inputRef = useRef(null);
   const modalRef = useRef(null);
+  const navigate = useNavigate();
 
   // Cargar búsquedas recientes y enfocar el input
   useEffect(() => {
@@ -54,7 +56,25 @@ const Buscador = ({ onClose }) => {
 
       setRecentSearches(updatedSearches);
       localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
-      setSearchTerm('');
+      
+      // Realizar la búsqueda
+      fetch('http://localhost/TFG/controlador/c-productos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({action: "buscarProd", nombre: searchTerm.trim() }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // Redirigir a /prod con los datos de los productos
+          console.log(data);
+          navigate('/prod', { state: { productos: data } });
+          onClose(); // Cerrar el buscador
+        })
+        .catch((err) => {
+          console.error('Error:', err);
+        });
+      
+      setSearchTerm(''); // Limpiar el campo de búsqueda
     }
   };
 
@@ -75,7 +95,7 @@ const Buscador = ({ onClose }) => {
       {/* Contenedor principal del buscador */}
       <div
         ref={modalRef}
-        className="absolute top-0 left-0 right-0 bg-white z-[70] h-[30vh] animate__animated animate__slideInDown p-6 rounded-b-xl shadow-xl"
+        className="absolute top-0 left-0 right-0 bg-white z-[70] h-[50vh] animate__animated animate__slideInDown p-6 rounded-b-xl shadow-xl"
       >
         <div className="max-w-4xl mx-auto">
           {/* Barra de búsqueda */}

@@ -312,4 +312,38 @@ class productos
 
         return $affected > 0; // true si se eliminó algo, false si no
     }
+    public function buscarProd($nombre)
+    {
+        $sent = "SELECT * FROM productos WHERE productos.Nombre_Producto LIKE ?";
+
+        $consulta = $this->db->getCon()->prepare($sent);
+
+        // Agregar comodines al parámetro
+        $param = "%" . $nombre . "%";
+
+        $consulta->bind_param("s", $param);
+
+        $consulta->execute();
+
+        $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
+
+        $productos = [];
+        while ($consulta->fetch()) {
+            $producto = new stdClass();
+            $producto->id = $id;
+            $producto->nombre = $nombre;
+            $producto->descripcion = $descripcion;
+            $producto->precio = $precio;
+            $producto->stock = $stock;
+            $producto->tamano = $tamano;
+            $producto->color = $color;
+            $producto->img_url = $img_url;
+            $producto->genero = $genero;
+            $producto->categoria = $categoria;
+            $productos[] = $producto;
+        }
+
+        $consulta->close();
+        return $productos;
+    }
 }

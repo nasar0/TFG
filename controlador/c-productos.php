@@ -3,10 +3,7 @@ require_once("../modelo/productos.php");
 $GLOBALPRODUCT = new productos();
 
 // Configurar cabeceras para permitir CORS
-header('Access-Control-Allow-Origin: http://localhost:5173');
-header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
+require_once("./headers.php");
 
 
 // Directorio donde se guardarán las imágenes
@@ -167,7 +164,11 @@ switch ($data["action"]) {
         echo json_encode($resultado);
         break;
     case "eliminarProdCarrito":
-        $resultado = $GLOBALPRODUCT->eliminarProdCarrito($data["idUser"],$data["productId"]);
+        $resultado = $GLOBALPRODUCT->eliminarProdCarrito($data["idUser"], $data["productId"]);
+        echo json_encode($resultado);
+        break;
+    case "buscarProd":
+        $resultado = $GLOBALPRODUCT->buscarProd($data["nombre"]);
         echo json_encode($resultado);
         break;
     default:

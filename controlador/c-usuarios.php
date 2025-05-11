@@ -3,10 +3,8 @@ require_once("../modelo/usuarios.php");
 $GLOBALUSER = new usuarios();
 
 // Hacer que las cabeceras permitan cookies
-header('Access-Control-Allow-Origin: http://localhost:5173'); // Cambia esto al origen de tu frontend
-header('Access-Control-Allow-Methods: POST, GET');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true'); // Necesario para permitir el envío de cookies
+require_once("./headers.php");
+
 
 
 // Leer los datos JSON enviados desde el frontend
