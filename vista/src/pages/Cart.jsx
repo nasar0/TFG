@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Alert from '../componentes/Alert';
 
-const Cart = ({onClose}) => {
+const Cart = ({ onClose }) => {
   const [userEmail, setUserEmail] = useState('');
   const [idUser, setIdUser] = useState(0);
   const [listar, setListar] = useState([]);
@@ -24,7 +25,6 @@ const Cart = ({onClose}) => {
         const initialSizes = {};
         data.forEach(item => {
           initialQuantities[item.ID_Productos] = item.Cantidad;
-          // Seleccionar la primera talla disponible por defecto
           const sizes = item.Tamano.split('-');
           initialSizes[item.ID_Productos] = sizes[0];
         });
@@ -36,26 +36,26 @@ const Cart = ({onClose}) => {
       });
   };
   useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (modalRef.current && !modalRef.current.contains(event.target)) {
-          onClose();
-        }
-      };
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
 
-      const handleKeyDown = (event) => {
-        if (event.key === 'Escape') {
-          onClose();
-        }
-      };
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
 
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
 
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-    }, [onClose]);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
   const cargarUsuario = () => {
     const storedIsAuthenticated = localStorage.getItem('isAuthenticated');
 
@@ -131,11 +131,76 @@ const Cart = ({onClose}) => {
       });
 
   };
+  const checkout = () => {
+    const precio = calculateTotal()-discount;
+    const id_carrito = listar[0].ID_Carrito;
+    fetch('http://localhost/TFG/controlador/c-productos.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: "pagoProd", id_carrito, precio,id:idUser}),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+         console.log(data)
+      })
+  };
+  // Estados para manejar el descuento
+  const [discountCode, setDiscountCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [message, setMessage] = useState('');
+  const [type, setType] = useState('');
+  // Función para aplicar el descuento
+  const handleApplyDiscount = () => {
+    fetch('http://localhost/TFG/controlador/c-promociones.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: "encontrarPromocion", nombre: discountCode.trim() }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        
+        if (data && data.length > 0) {
+          const promocion = data[0]; // Accedemos al primer elemento del array
+          const total = calculateTotal();
+          const descuento = Number(promocion.Descuento); // Convertimos a número
+          
+          if (!isNaN(descuento)) {
+            setDiscount(total * (descuento / 100));
+          }else{
+            setType("error")
+            setMessage(
+              "Invalid Code"
+            );
+          setDiscount(0);
 
+          } 
+        }else{
+          setType("error")
+          setMessage(
+            "Invalid Code"
+          );
+          setDiscount(0);
+
+        } 
+      })
+      .catch((error) => {
+        setType("error")
+        setMessage(
+          "Invalid Code"
+        );
+        setDiscount(0);
+      });
+  };
+
+  // Tu función calculateTotal permanece igual
   const calculateTotal = () => {
     return listar.reduce((total, item) => {
       return total + (item.Precio * quantities[item.ID_Productos]);
-    }, 0).toFixed(2);
+    }, 0);
   };
 
   useEffect(() => {
@@ -159,128 +224,135 @@ const Cart = ({onClose}) => {
     return () => mediaQuery.removeEventListener('change', handleResize);
   }, []);
 
-    if (menorLg) {
-      return (
-        <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold text-black mb-8 text-center border-b-2 border-black pb-2">
-              SHOPPING CART
-            </h1>
+  if (menorLg) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-black mb-8 text-center border-b-2 border-black pb-2">
+            SHOPPING CART
+          </h1>
 
-            {listar.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-xl">YOUR CART IS EMPTY</p>
-                <p className="text-gray-500 mt-2">Continue browsing <a href="/" className="underline">here</a></p>
-              </div>
-            ) : (
-              <div className="bg-white shadow-md rounded-md overflow-hidden">
-                {/* Lista de productos */}
-                <div className="divide-y divide-gray-200">
-                  {listar.map((producto) => {
-                    const sizes = producto.Tamano.split('-');
-                    return (
-                      <div key={producto.ID_Productos} className="p-6 flex flex-col sm:flex-row">
-                        {/* Imagen del producto */}
-                        <div className="w-full sm:w-1/3 mb-4 sm:mb-0">
-                          <img
-                            src={`/img/prods/${producto.Img_URL.split(',')[0]}`}
-                            alt={producto.Nombre_Producto}
-                            className="w-full h-48 object-contain border border-gray-200"
-                          />
+          {listar.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-xl">YOUR CART IS EMPTY</p>
+              <p className="text-gray-500 mt-2">Continue browsing <a href="/" className="underline">here</a></p>
+            </div>
+          ) : (
+            <div className="bg-white shadow-md rounded-md overflow-hidden">
+              {/* Lista de productos */}
+              <div className="divide-y divide-gray-200">
+                {listar.map((producto) => {
+                  const sizes = producto.Tamano.split('-');
+                  return (
+                    <div key={producto.ID_Productos} className="p-6 flex flex-col sm:flex-row">
+                      {/* Imagen del producto */}
+                      <div className="w-full sm:w-1/3 mb-4 sm:mb-0">
+                        <img
+                          src={`/img/prods/${producto.Img_URL.split(',')[0]}`}
+                          alt={producto.Nombre_Producto}
+                          className="w-full h-48 object-contain border border-gray-200"
+                        />
+                      </div>
+
+                      {/* Detalles del producto */}
+                      <div className="w-full sm:w-2/3 sm:pl-6 flex flex-col">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h2 className="text-xl font-bold text-black">{producto.Nombre_Producto}</h2>
+                            <p className="text-gray-600 text-sm mt-1">{producto.Color}</p>
+                            <p className="text-black font-bold mt-2">{producto.Precio}€</p>
+                          </div>
+                          <button
+                            onClick={() => removeItem(producto.ID_Productos)}
+                            className="text-gray-500 hover:text-black"
+                          >
+                            ✕
+                          </button>
                         </div>
 
-                        {/* Detalles del producto */}
-                        <div className="w-full sm:w-2/3 sm:pl-6 flex flex-col">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h2 className="text-xl font-bold text-black">{producto.Nombre_Producto}</h2>
-                              <p className="text-gray-600 text-sm mt-1">{producto.Color}</p>
-                              <p className="text-black font-bold mt-2">${producto.Precio}</p>
-                            </div>
+                        {/* Selector de talla */}
+                        <div className="mt-3">
+                          <span className="text-sm text-gray-600 mr-2">SIZE:</span>
+                          <div className="inline-flex flex-wrap gap-2 mt-1">
+                            {sizes.map(size => (
+                              <button
+                                key={size}
+                                onClick={() => handleSizeChange(producto.ID_Productos, size)}
+                                className={`px-3 py-1 text-sm border ${selectedSizes[producto.ID_Productos] === size
+                                  ? 'bg-black text-white border-black'
+                                  : 'bg-white text-black border-gray-300 hover:border-black'
+                                  }`}
+                              >
+                                {size}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Selector de cantidad */}
+                        <div className="mt-4 flex items-center">
+                          <span className="mr-3 text-sm text-gray-600">QUANTITY:</span>
+                          <div className="flex items-center border border-black">
                             <button
-                              onClick={() => removeItem(producto.ID_Productos)}
-                              className="text-gray-500 hover:text-black"
+                              onClick={() => handleQuantityChange(producto.ID_Productos, quantities[producto.ID_Productos] - 1)}
+                              className="px-3 py-1 bg-white text-black hover:bg-gray-100"
+                              disabled={quantities[producto.ID_Productos] <= 1}
                             >
-                              ✕
+                              -
+                            </button>
+                            <span className="px-3 py-1 border-x border-black">
+                              {quantities[producto.ID_Productos]}
+                            </span>
+                            <button
+                              onClick={() => handleQuantityChange(producto.ID_Productos, quantities[producto.ID_Productos] + 1)}
+                              className="px-3 py-1 bg-white text-black hover:bg-gray-100"
+                              disabled={quantities[producto.ID_Productos] >= producto.Stock}
+                            >
+                              +
                             </button>
                           </div>
+                          <span className="ml-3 text-sm text-gray-500">
+                            {producto.Stock} available
+                          </span>
+                        </div>
 
-                          {/* Selector de talla */}
-                          <div className="mt-3">
-                            <span className="text-sm text-gray-600 mr-2">SIZE:</span>
-                            <div className="inline-flex flex-wrap gap-2 mt-1">
-                              {sizes.map(size => (
-                                <button
-                                  key={size}
-                                  onClick={() => handleSizeChange(producto.ID_Productos, size)}
-                                  className={`px-3 py-1 text-sm border ${selectedSizes[producto.ID_Productos] === size
-                                    ? 'bg-black text-white border-black'
-                                    : 'bg-white text-black border-gray-300 hover:border-black'
-                                    }`}
-                                >
-                                  {size}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Selector de cantidad */}
-                          <div className="mt-4 flex items-center">
-                            <span className="mr-3 text-sm text-gray-600">QUANTITY:</span>
-                            <div className="flex items-center border border-black">
-                              <button
-                                onClick={() => handleQuantityChange(producto.ID_Productos, quantities[producto.ID_Productos] - 1)}
-                                className="px-3 py-1 bg-white text-black hover:bg-gray-100"
-                                disabled={quantities[producto.ID_Productos] <= 1}
-                              >
-                                -
-                              </button>
-                              <span className="px-3 py-1 border-x border-black">
-                                {quantities[producto.ID_Productos]}
-                              </span>
-                              <button
-                                onClick={() => handleQuantityChange(producto.ID_Productos, quantities[producto.ID_Productos] + 1)}
-                                className="px-3 py-1 bg-white text-black hover:bg-gray-100"
-                                disabled={quantities[producto.ID_Productos] >= producto.Stock}
-                              >
-                                +
-                              </button>
-                            </div>
-                            <span className="ml-3 text-sm text-gray-500">
-                              {producto.Stock} available
-                            </span>
-                          </div>
-
-                          <div className="mt-4 pt-4 border-t border-gray-200">
-                            <p className="text-sm text-gray-600">{producto.Descripcion}</p>
-                          </div>
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <p className="text-sm text-gray-600">{producto.Descripcion}</p>
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-
-                {/* Resumen del pedido */}
-                <div className="p-6 bg-gray-50 border-t border-black">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm text-gray-600">SUBTOTAL</p>
-                      <p className="text-lg font-bold">${calculateTotal()}</p>
                     </div>
-                    <button className="bg-black text-white px-6 py-3 hover:bg-gray-800 transition-colors">
-                      PROCEED TO CHECKOUT
-                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Resumen del pedido */}
+              <div className="p-6 bg-gray-50 border-t border-black">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-sm text-gray-600">SUBTOTAL</p>
+                    <p className="text-lg font-bold">{calculateTotal()}€</p>
                   </div>
+                  <button onClick={checkout} className="bg-black text-white px-6 py-3 hover:bg-gray-800 transition-colors">
+                    PROCEED TO CHECKOUT
+                  </button>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-      );
-    } else {
-      return (
-        <>
-           <div className="fixed inset-0 z-50">
+      </div>
+    );
+  } else {
+    return (
+      <>
+      {message && (
+        <Alert
+          type={type}
+          message={message}
+          onClose={() => setMessage('')}
+        />
+      )}
+        <div className="fixed inset-0 z-50">
           {/* Overlay de fondo */}
           <div
             className="absolute inset-0 bg-gray-400/75 backdrop-blur-sm animate__animated animate__fadeIn"
@@ -305,7 +377,7 @@ const Cart = ({onClose}) => {
               ) : (
                 <div className="bg-white shadow-md rounded-md overflow-hidden">
                   {/* Lista de productos */}
-                  <div className="divide-y divide-gray-200 max-h-[70vh] overflow-y-auto"> 
+                  <div className="divide-y divide-gray-200 max-h-[67vh] overflow-y-auto">
                     {listar.map((producto) => {
                       const sizes = producto.Tamano.split('-');
                       return (
@@ -325,7 +397,7 @@ const Cart = ({onClose}) => {
                               <div>
                                 <h2 className="text-xl font-bold text-black">{producto.Nombre_Producto}</h2>
                                 <p className="text-gray-600 text-sm mt-1">{producto.Color}</p>
-                                <p className="text-black font-bold mt-2">${producto.Precio}</p>
+                                <p className="text-black font-bold mt-2">{producto.Precio}€</p>
                               </div>
                               <button
                                 onClick={() => removeItem(producto.ID_Productos)}
@@ -392,14 +464,48 @@ const Cart = ({onClose}) => {
 
                   {/* Resumen del pedido */}
                   <div className="p-6 bg-gray-50 border-t border-black sticky bottom-0 bg-white">
+                    {/* Nuevo bloque para el código de descuento */}
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="text-sm text-gray-600">SUBTOTAL</p>
-                        <p className="text-lg font-bold">${calculateTotal()}</p>
+                        <p className="text-lg font-bold">
+                          {(calculateTotal() - discount).toFixed(2)}€
+                          {discount > 0 && (
+                            <span className="text-sm text-gray-500 line-through ml-2">
+                              {calculateTotal()}€
+                            </span>
+                          )}
+                        </p>
+                        {discount > 0 && (
+                          <p className="text-sm text-green-600">
+                            Discount applied: -{discount.toFixed(2)}€
+                          </p>
+                        )}
                       </div>
-                      <button className="bg-black text-white px-6 py-3 hover:bg-gray-800 transition-colors">
+                      <button onClick={checkout} className="bg-black text-white px-6 py-3 hover:bg-gray-800 transition-colors">
                         PROCEED TO CHECKOUT
                       </button>
+                    </div>
+                    <div className="mt-5">
+                      <label htmlFor="discount-code" className="block text-sm font-medium text-gray-700 mb-1">
+                        DISCOUNT CODE
+                      </label>
+                      <div className="flex">
+                        <input
+                          type="text"
+                          id="discount-code"
+                          value={discountCode}
+                          onChange={(e) => setDiscountCode(e.target.value)}
+                          className="flex-1 border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
+                          placeholder="Enter discount code"
+                        />
+                        <button
+                          className="ml-2 bg-gray-200 text-black px-4 py-2 text-sm hover:bg-gray-300 transition-colors"
+                          onClick={handleApplyDiscount}
+                        >
+                          APPLY
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -407,9 +513,9 @@ const Cart = ({onClose}) => {
             </div>
           </div>
         </div>
-        </>
-      );
-    }
-  };
+      </>
+    );
+  }
+};
 
-  export default React.memo(Cart);
+export default Cart;

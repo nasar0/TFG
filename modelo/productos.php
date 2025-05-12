@@ -266,7 +266,7 @@ class productos
     }
     public function getCarrito($id)
     {
-        $sent = "SELECT p.* ,añade.Cantidad from productos p , carrito, añade , usuarios WHERE carrito.ID_Carrito = añade.ID_Carrito AND p.ID_Productos = añade.ID_Producto and carrito.ID_Usuario = usuarios.ID_Usuario and carrito.pagado=0 and usuarios.ID_Usuario = ?";
+        $sent = "SELECT carrito.ID_Carrito, p.* ,añade.Cantidad from productos p , carrito, añade , usuarios WHERE carrito.ID_Carrito = añade.ID_Carrito AND p.ID_Productos = añade.ID_Producto and carrito.ID_Usuario = usuarios.ID_Usuario and carrito.pagado=0 and usuarios.ID_Usuario = ?";
 
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_param("i", $id);
@@ -345,5 +345,31 @@ class productos
 
         $consulta->close();
         return $productos;
+    }
+    public function pagoProd($id_carrito, $preciopagado, $id_usuario)
+    {
+        try {
+            $sent = "UPDATE carrito SET pagado = 1 WHERE ID_Carrito = ?";
+            $consulta = $this->db->getCon()->prepare($sent);
+            $consulta->bind_param("i", $id_carrito);
+            $consulta->execute();
+        } catch (Exception $th) {
+            return false;
+        }
+
+        try {
+            $sent = "INSERT INTO pagos (ID_Pago, Fecha_Pago, Monto, Metodo_Pago, ID_Usuario, Id_carrito) 
+                 VALUES (NULL, CURRENT_TIMESTAMP, ?, 'Card', ?, ?)";
+            $consulta = $this->db->getCon()->prepare($sent);
+
+            // Corrección: orden de parámetros
+            $consulta->bind_param("dii", $preciopagado, $id_usuario, $id_carrito);
+
+            $consulta->execute();
+        } catch (Exception $th) {
+            return false;
+        }
+
+        return true;
     }
 }

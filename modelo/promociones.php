@@ -103,6 +103,26 @@
                 return false;
             }
         }
+        public function encontrarPromocion($nombre) {
+            try {
+                $sent = "SELECT * from promociones where Nombre_Promocion=?";
+                $consulta = $this->db->getCon()->prepare($sent);
+                $consulta->bind_param("s", $nombre);
+                $consulta->execute();
+                
+                $result = $consulta->get_result();
+
+                $promocion = [];
+                while ($row = $result->fetch_object()) {
+                    $promocion[] = $row;
+                }
+
+                $consulta->close();
+                return $promocion;
+            } catch (Exception $e) {
+                return false;
+            }
+        }
     }
 
 ?>

@@ -171,6 +171,13 @@ switch ($data["action"]) {
         $resultado = $GLOBALPRODUCT->buscarProd($data["nombre"]);
         echo json_encode($resultado);
         break;
+    case "pagoProd":        
+        $id_carrito = $data["id_carrito"];
+        $preciopagado = $data["precio"];
+        $id_usuario = $data["id"];
+        $resultado = $GLOBALPRODUCT->pagoProd($id_carrito, $preciopagado, $id_usuario);
+        echo json_encode($resultado);
+        break;
     default:
         echo json_encode(["success" => false, "message" => "Acción no válida"]);
         break;

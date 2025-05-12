@@ -58,9 +58,12 @@ switch ($data["action"]) {
             'message' => $resultado === true ? "Promoción actualizada correctamente" : "Error al actualizar la promoción"
         ]);
         break;
-
+    case "encontrarPromocion":
+        error_log($data["action"]);
+        $resultado = $GLOBALPROMOCIONES->encontrarPromocion($data["nombre"]);
+        echo json_encode($resultado);
+        break;
     default:
         echo json_encode(["success" => false, "message" => "Acción no válida"]);
         break;
 }
-?>

@@ -18,7 +18,6 @@ if (!isset($data["action"])) {
 switch ($data["action"]) {
     case "crearSesion":
         session_start();
-        error_log(json_encode($data));
         $_SESSION["email"] = $data["email"]; 
         $_SESSION["id"] = $data["id"];
         break;

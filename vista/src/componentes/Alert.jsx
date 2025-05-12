@@ -4,7 +4,7 @@ const Alert = ({ type = "info", message, onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, 2500);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [onClose]);
@@ -38,7 +38,7 @@ const Alert = ({ type = "info", message, onClose }) => {
   const { bg, text, icon } = variants[type] || variants.info;
 
   return (
-    <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-50 max-w-xs w-full shadow-lg rounded-lg ${bg} ${text} p-4 flex items-center justify-between space-x-3`}>
+    <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-90 max-w-xs w-full shadow-lg rounded-lg ${bg} ${text} p-4 flex items-center justify-between space-x-3`}>
       <div className="flex items-center m-auto space-x-3">
         {icon}
         <span className="text-sm text-center">{message}</span>
