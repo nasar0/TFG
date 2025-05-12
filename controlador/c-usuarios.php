@@ -108,11 +108,7 @@ switch ($data["action"]) {
             $data["direccion"],
             $data["telefono"]
         );
-        echo json_encode([
-            'success' => $resultado,
-            'message' => $resultado ? "Usuario insertado correctamente" : "Error al insertar el Usuario",
-            "value" => $resultado
-        ]);
+        echo json_encode($resultado);
         break;
     case "modificar":
         // Verificar que los datos necesarios estén presentes

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Alert from '../componentes/Alert';
 const Register = () => {
   const [errorMsg, setErrorMsg] = useState('');
@@ -16,7 +16,7 @@ const Register = () => {
   
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -48,7 +48,7 @@ const Register = () => {
         },
         body: JSON.stringify({
           action: "crearUser",
-          nombre: formData.firstName+formData.lastName,
+          nombre: formData.firstName+" "+formData.lastName,
           correo: formData.email,
           contrasenna: formData.password,
           direccion: formData.direccion,
@@ -62,11 +62,14 @@ const Register = () => {
           return response.json();
         })
         .then((data) => {
-          if (data.value) {
+          if (data) {
             setErrorMsg("REGISTRATION SUCCESSFUL")
             setType("success")
+            setTimeout(() => {
+              navigate(-1)
+            }, 2000);
           }else{
-            setErrorMsg('REGISTRATION ERROR');
+            setErrorMsg(data.message);
             setType("error")
           }
         })

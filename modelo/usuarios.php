@@ -43,8 +43,25 @@ class usuarios
     }
     public function registro($n, $correo, $con, $dir, $tel)
     {
+         // Verifica si el correo ya está en uso
+        $sent = "SELECT ID_Usuario FROM usuarios WHERE Correo = ?";
+        $consulta = $this->db->getCon()->prepare($sent);
+        $consulta->bind_param("s", $correo);
+        $consulta->execute();
+        $consulta->store_result();
+
+        if ($consulta->num_rows > 0) {
+            // Ya existe un usuario con ese correo
+            return [
+                "result" => false,
+                "message" => "Email already exists"
+            ];
+        }
+
+        // Si no existe, procede con el registro
         try {
-            $sent = "INSERT INTO `usuarios` (`ID_Usuario`, `Nombre`, `Correo`, `Contrasenna`, `Dirección`, `Teléfono`, `Rol`) VALUES (NULL, ?, ?, ?, ?, ?, 1);";
+            $sent = "INSERT INTO usuarios (ID_Usuario, Nombre, Correo, Contrasenna, Dirección, Teléfono, Rol)
+                    VALUES (NULL, ?, ?, ?, ?, ?, 1);";
             $consulta = $this->db->getCon()->prepare($sent);
             $consulta->bind_param("sssss", $n, $correo, $con, $dir, $tel);
             $consulta->execute();

@@ -143,7 +143,7 @@ const Cart = ({ onClose }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-         console.log(data)
+        setListar([]);
       })
   };
   // Estados para manejar el descuento
