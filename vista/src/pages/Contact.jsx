@@ -1,15 +1,20 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const Contact = () => {
   const [showModal, setShowModal] = useState(false);
-
+  const navigate = useNavigate();
   return (
     <>
       <div className="max-w-4xl mx-auto p-6 font-sans bg-white">
         <div className="mb-8 border-b border-dashed border-gray-300 pb-6">
           <h1 className="text-3xl font-bold tracking-tight uppercase">Contact Us</h1>
         </div>
-
+        <div>
+          <button onClick={()=>navigate("/chatBot")}>
+              <img src="../../public/img/icons8-chat-50.png" alt="" />
+          </button>
+        </div>
         <div className="mb-8 text-gray-700">
           <p className="mb-3">If you have questions about your order or need further assistance, our customer service team will be happy to help.</p>
           <p className="mb-3">Complete the form below by selecting a subject, then type your question or comment and we will get back to you as soon as possible.</p>
