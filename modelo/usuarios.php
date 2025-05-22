@@ -222,7 +222,7 @@ class usuarios
 
         try {
             // Verificar si ya tiene un carrito
-            $sent = "SELECT ID_Carrito FROM carrito WHERE ID_Usuario = ? LIMIT 1";
+            $sent = "SELECT ID_Carrito FROM carrito WHERE ID_Usuario = ? and pagado = 0";
             $consulta = $this->db->getCon()->prepare($sent);
             $consulta->bind_param("i", $idUsuario);
             $consulta->execute();

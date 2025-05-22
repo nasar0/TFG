@@ -175,7 +175,7 @@ switch ($data["action"]) {
         $id_carrito = $data["id_carrito"];
         $preciopagado = $data["precio"];
         $id_usuario = $data["id"];
-        $resultado = $GLOBALPRODUCT->pagoProd($id_carrito, $preciopagado, $id_usuario);
+        $resultado = $GLOBALPRODUCT->pagoProd($id_carrito, $preciopagado, $id_usuario,$data["productos"]);
         echo json_encode($resultado);
         break;
     default:

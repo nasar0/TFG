@@ -134,9 +134,15 @@ const AdminPromociones = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
+      <button
+        className=" text-white py-2 my-5 px-4 rounded-lg text-sm hover:bg-[#4A5465] hover:cursor-pointer bg-[#697282] transition"
+        onClick={() => setMostrarModal(true)}
+      >
+        Agregar Promoción
+      </button>
       <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-300">
         <table className="min-w-full table-auto text-sm">
-        <thead className="bg-gradient-to-r from-gray-500 to-gray-700 text-white">
+          <thead className="bg-gradient-to-r from-gray-500 to-gray-700 text-white">
 
             <tr>
               {['ID', 'Nombre', 'Descripción', 'Descuento', 'Fecha Inicio', 'Fecha Fin', 'Acciones'].map((header) => (
@@ -207,12 +213,7 @@ const AdminPromociones = () => {
       </div>
 
       {/* Botón para abrir el modal de agregar promoción */}
-      <button
-        className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-green-600 transition"
-        onClick={() => setMostrarModal(true)}
-      >
-        Agregar Promoción
-      </button>
+      
 
       {/* Modal para agregar una nueva promoción */}
       {mostrarModal && (

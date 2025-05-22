@@ -205,23 +205,24 @@ const subirImagenes = () => {
   }, []);
   return (
     <>
-     <div className="flex justify-between items-center mb-6">
-      <button
-        className="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
-        onClick={() => abrirModalProducto()}
-      >
-        Agregar Producto
-      </button>
-      <input 
-        type="text" 
-        className="border border-gray-300 rounded-lg px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-        placeholder="Buscar producto..." 
-        value={busqueda}
-        onChange={busquedaSave}
-      />
-    </div>
     
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div className="max-w-7xl mx-auto px-4 mt-6 sm:px-6 lg:px-8">
+      <div className="flex justify-between items-center mb-6">
+          <button
+            className=" text-white py-2 px-4 rounded-lg text-sm hover:bg-[#4A5465] hover:cursor-pointer bg-[#697282] transition"
+            onClick={() => abrirModalProducto()}
+          >
+            Agregar Producto
+          </button>
+          <input 
+            type="text" 
+            className="border border-gray-300 rounded-lg px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+            placeholder="Buscar producto..." 
+            value={busqueda}
+            onChange={busquedaSave}
+          />
+      </div>   
       <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -286,8 +287,9 @@ const subirImagenes = () => {
           </table>
         </div>
       </div>
+      
     </div>
-
+            
       {/* Modal para datos del producto */}
       {modalProductoAbierto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

@@ -346,30 +346,35 @@ class productos
         $consulta->close();
         return $productos;
     }
-    public function pagoProd($id_carrito, $preciopagado, $id_usuario)
+    public function pagoProd($id_carrito, $preciopagado, $id_usuario, $productos)
     {
         try {
+            // 1. Marcar el carrito como pagado
             $sent = "UPDATE carrito SET pagado = 1 WHERE ID_Carrito = ?";
             $consulta = $this->db->getCon()->prepare($sent);
             $consulta->bind_param("i", $id_carrito);
             $consulta->execute();
-        } catch (Exception $th) {
-            return false;
-        }
 
-        try {
+            // 2. Actualizar el stock para cada producto
+            foreach ($productos as $producto) {
+                $sent = "UPDATE productos SET Stock = Stock - ? WHERE ID_Productos = ?";
+                $consulta = $this->db->getCon()->prepare($sent);
+                $consulta->bind_param("ii", $producto['cantidad'], $producto['id']);
+                $consulta->execute();
+            }
+
+            // 3. Registrar el pago
             $sent = "INSERT INTO pagos (ID_Pago, Fecha_Pago, Monto, Metodo_Pago, ID_Usuario, Id_carrito) 
-                 VALUES (NULL, CURRENT_TIMESTAMP, ?, 'Card', ?, ?)";
+                    VALUES (NULL, CURRENT_TIMESTAMP, ?, 'Card', ?, ?)";
             $consulta = $this->db->getCon()->prepare($sent);
-
-            // Corrección: orden de parámetros
             $consulta->bind_param("dii", $preciopagado, $id_usuario, $id_carrito);
-
             $consulta->execute();
+
+            return true;
         } catch (Exception $th) {
+            // Log del error para debugging
+            error_log("Error en pagoProd: " . $th->getMessage());
             return false;
         }
-
-        return true;
     }
 }

@@ -114,14 +114,8 @@ const ProductPage = () => {
       titulo: "Help and Contact",
       contenido: (
         <>
-          <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+          <div className="bg-white p-5 border-b flex justify-between items-center">
               <h3 className="text-lg font-bold">Size Conversion</h3>
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-black text-xl"
-              >
-                &times;
-              </button>
             </div>
 
             {/* Contenido */}
