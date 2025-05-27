@@ -171,11 +171,32 @@ switch ($data["action"]) {
         $resultado = $GLOBALPRODUCT->buscarProd($data["nombre"]);
         echo json_encode($resultado);
         break;
-    case "pagoProd":        
+    case "addAFav":
+        session_start();
+        if (isset($_SESSION["id"])) {
+            $resultado = $GLOBALPRODUCT->addAFav($_SESSION["id"], $data["ids"]);
+            echo json_encode($resultado);
+        }
+        break;
+    case "getFavoritosByUsuario":
+        session_start();
+        if (isset($_SESSION["id"])) {
+            $resultado = $GLOBALPRODUCT->getFavoritosByUsuario($_SESSION["id"]);
+            echo json_encode($resultado);
+        }
+        break;
+    case "removeFromFavoritos":
+        session_start();
+        if (isset($_SESSION["id"])) {
+            $resultado = $GLOBALPRODUCT->removeFromFavoritos($_SESSION["id"], $data["id"]);
+            echo json_encode($resultado);
+        }
+        break;
+    case "pagoProd":
         $id_carrito = $data["id_carrito"];
         $preciopagado = $data["precio"];
         $id_usuario = $data["id"];
-        $resultado = $GLOBALPRODUCT->pagoProd($id_carrito, $preciopagado, $id_usuario,$data["productos"]);
+        $resultado = $GLOBALPRODUCT->pagoProd($id_carrito, $preciopagado, $id_usuario, $data["productos"]);
         echo json_encode($resultado);
         break;
     default:

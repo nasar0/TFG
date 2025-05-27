@@ -422,33 +422,24 @@ class productos
             return [];
         }
 
-
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
-
 
         $sent = "SELECT p.* FROM productos p WHERE ID_Productos IN ($placeholders)";
 
-
         $consulta = $this->db->getCon()->prepare($sent);
-
 
         $types = str_repeat('i', count($ids));
 
-
         $consulta->bind_param($types, ...$ids);
-
 
         $consulta->execute();
 
-
         $result = $consulta->get_result();
-
 
         $productos = [];
         while ($row = $result->fetch_object()) {
             $productos[] = $row;
         }
-
 
         $consulta->close();
         return $productos;
@@ -468,20 +459,16 @@ class productos
             }
         }
 
-
         // Si no hay productos nuevos, retornamos false
         if (empty($ids_a_insertar)) {
             return false;
         }
 
-
         // 2. Preparamos el INSERT solo para productos no existentes
         $values = implode(',', array_fill(0, count($ids_a_insertar), '(?, ?)'));
         $sent = "INSERT INTO favoritos (id_usuario, id_producto) VALUES $values";
 
-
         $consulta = $this->db->getCon()->prepare($sent);
-
 
         // 3. Generamos los parámetros dinámicos
         $types = str_repeat('ii', count($ids_a_insertar));
@@ -491,11 +478,9 @@ class productos
             $params[] = $id_producto;
         }
 
-
         $consulta->bind_param($types, ...$params);
         $success = $consulta->execute();
         $consulta->close();
-
 
         return $success;
     }
@@ -532,7 +517,7 @@ class productos
 
 
         $result = $consulta->get_result();
-
+ 
 
         $favoritos = [];
         while ($row = $result->fetch_object()) {
@@ -548,11 +533,9 @@ class productos
         $sent = "DELETE FROM favoritos
              WHERE id_usuario = ? AND id_producto = ?";
 
-
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_param("ii", $id_usuario, $id_producto);
         $success = $consulta->execute();
-
 
         $consulta->close();
         return $success;

@@ -73,6 +73,25 @@ const Listarprods = ({ listar }) => {
     )
   })
 
+  //guardar en base de datos si existe el id del usuario 
+   
+    useEffect(() => {
+      fetch('http://localhost/TFG/controlador/c-productos.php', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action: "addAFav" }),
+        })
+          .then((response) => response.json())
+          .then((data) => setExclusive(data))
+          .catch((error) => {
+              console.error('Error:', error);
+          });
+    }, [favoritos])
+    
+
+
   return (
     <>
       {/* Filter button */}
