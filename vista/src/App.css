@@ -1,8 +1,10 @@
 @import "tailwindcss";
+
 /* src/fix-sticky.css */
 .sticky-fixed {
-    position: -webkit-sticky !important;
-    position: sticky !important;
-    top: 0 !important;
-    background: red !important;
-  }
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  background: red !important;
+}
+

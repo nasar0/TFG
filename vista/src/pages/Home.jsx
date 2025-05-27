@@ -49,7 +49,7 @@ const Home = () => {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ action: "getProdMujer" }),
+        body: JSON.stringify({ action: "listar" }),
     })
         .then((response) => response.json())
         .then((data) => setWomen(data))

@@ -23,6 +23,7 @@ import LegalPage from './pages/LegalPage';
 import Catalogo from './componentes/Catalogo';
 import Articulobuscado from './pages/Articulobuscado';
 import ChatBot from './pages/ChatBot';
+import Favoritos from './pages/Favoritos';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="/account" element={<MiPerfil />} />
             <Route path="/search" element={<Buscador />} />  
             <Route path="/prod" element={<Articulobuscado />} />
+            <Route path="/fav" element={<Favoritos />} />
             <Route path="/chatBot" element={<ChatBot/>} />
           </Route>
 

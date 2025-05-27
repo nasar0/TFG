@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Buscador from './Buscador';
 import Cart from '../pages/Cart';
@@ -13,7 +13,7 @@ function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showBuscador, setShowBuscador] = useState(false);
   const [showCart, setShowCart] = useState(false);
-
+  const navigate = useNavigate()
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -98,6 +98,7 @@ function Navbar() {
             >
               <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
             </button>
+            <Link to={"/fav"}><i className='bx bx-heart text-gray-500 text-[20px]'></i></Link>
           </div>
         </div>
 
