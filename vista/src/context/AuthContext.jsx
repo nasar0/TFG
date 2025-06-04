@@ -70,28 +70,25 @@ export const AuthProvider = ({ children }) => {
   };
   
 
-  const logout = () => {
-    fetch('http://localhost/TFG/controlador/c-usuarios.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ action: "logout" }),
-      credentials: 'include',
-    })
-    .then(() => {
-      setIsAuthenticated(false);
-      setUserEmail('');
-      setIdUser(0);
+const logout = () => {
+  // 1. Limpiar el estado ANTES de hacer la petición
+  setIsAuthenticated(false);
+  setUserEmail('');
+  setIdUser(0);
+  localStorage.removeItem('isAuthenticated');
 
-      // Eliminar el estado de autenticación de localStorage
-      localStorage.removeItem('isAuthenticated');
-      localStorage.removeItem('fav');
-    })
-    .catch((error) => {
-      console.error('Error al cerrar sesión:', error);
-    });
-  };
+  // 2. Luego hacer la petición al servidor
+  fetch('http://localhost/TFG/controlador/c-usuarios.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ action: "logout" }),
+    credentials: 'include',
+  }).catch(error => {
+    console.error('Error al cerrar sesión:', error);
+  });
+};
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, userEmail, idUser, login, logout }}>

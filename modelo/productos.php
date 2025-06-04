@@ -314,7 +314,7 @@ class productos
                     FROM carrito
                     WHERE pagado = 0 AND ID_Usuario = ?
                 )
-                AND id_productos  = ?";
+                AND ID_Producto  = ?";
 
 
         $consulta = $this->db->getCon()->prepare($sent);

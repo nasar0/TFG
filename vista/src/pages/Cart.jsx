@@ -204,6 +204,8 @@ const Cart = ({ onClose }) => {
   const [discount, setDiscount] = useState(0);
   const [message, setMessage] = useState('');
   const [type, setType] = useState('');
+  const [promoId, setPromoId] = useState(0);
+  
   // Función para aplicar el descuento
   const handleApplyDiscount = () => {
     fetch('http://localhost/TFG/controlador/c-promociones.php', {
@@ -215,7 +217,9 @@ const Cart = ({ onClose }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-
+        console.log(data);
+        
+        setPromoId(data.ID_Promocion)
         if (data && data.length > 0) {
           const promocion = data[0]; // Accedemos al primer elemento del array
           const total = calculateTotal();
@@ -223,6 +227,7 @@ const Cart = ({ onClose }) => {
 
           if (!isNaN(descuento)) {
             setDiscount(total * (descuento / 100));
+
           } else {
             setType("error")
             setMessage(

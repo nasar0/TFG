@@ -19,74 +19,78 @@ const Listarprods = ({ listar }) => {
   const [favoritos, setFavoritos] = useState([])
   const [loadingFavoritos, setLoadingFavoritos] = useState(false)
 
-  // Cargar favoritos al montar el componente
   useEffect(() => {
     const cargarFavoritos = async () => {
-      setLoadingFavoritos(true)
+      setLoadingFavoritos(true);
 
-      if (idUser) {
-        // Usuario registrado: cargar de la base de datos
-        try {
-          const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ action: "getFavoritosByUsuario", id: idUser }),
-          })
-          const data = await response.json()
-          const favoriteIds = data.map(item => item.id_productos || item.id)
-          setFavoritos(favoriteIds)
-        } catch (error) {
-          console.error('Error al cargar favoritos:', error)
-        }
-      } else {
-        // Usuario no registrado: cargar de localStorage
-        const saved = localStorage.getItem('fav')
-        if (saved) {
-          setFavoritos(JSON.parse(saved))
-        }
+      // Limpiar favoritos si no hay usuario
+      if (!idUser) {
+        setFavoritos([]);
+        setFavoritos(localStorage.getItem("fav"))
+        setLoadingFavoritos(false);
+        return;
       }
 
-      setLoadingFavoritos(false)
-    }
+      // Cargar de BD solo si hay usuario
+      try {
+        const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action: "getFavoritosByUsuario", id: idUser }),
+        });
+        const data = await response.json();
+        const favoriteIds = data.map(item => item.id_productos || item.id);
+        setFavoritos(favoriteIds);
+      } catch (error) {
+        console.error('Error al cargar favoritos:', error);
+      }
+      setLoadingFavoritos(false);
+    };
 
-    cargarFavoritos()
-  }, [loadingFavoritos])
+    cargarFavoritos();
+  }, [idUser]); // Solo depende de idUser
 
-  // Guardar en localStorage cuando cambien los favoritos (solo para no registrados)
-  useEffect(() => {
-    if (!idUser) {
-      localStorage.setItem('fav', JSON.stringify(favoritos))
-    }
-  }, [favoritos, idUser])
 
   const toggleFavorito = async (id, e) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
 
-    if (loadingFavoritos) return
+    if (!idUser) {
+      // Para no logueados: usar localStorage directamente
+      const saved = JSON.parse(localStorage.getItem('fav') || "[]");
+      const isFavorite = saved.includes(id);
 
-    const isFavorite = favoritos.includes(id)
-    setLoadingFavoritos(true)
+      const newFavoritos = isFavorite
+        ? saved.filter(item => item !== id)
+        : [...saved, id];
+
+      localStorage.setItem('fav', JSON.stringify(newFavoritos));
+      setFavoritos(newFavoritos);
+      return;
+    }
+    if (loadingFavoritos) return;
+
+    const isFavorite = favoritos.includes(id);
+    setLoadingFavoritos(true);
 
     try {
       if (idUser) {
         // Usuario registrado: operación en base de datos
-        let success
+        let success;
         if (isFavorite) {
-          success = await eliminarFavorito(id)
+          success = await eliminarFavorito(id);
         } else {
-          success = await agregarFavorito(id)
+          success = await agregarFavorito(id);
         }
 
-        // Solo actualizar estado si la operación fue exitosa
         if (success) {
           setFavoritos(prev =>
             isFavorite
               ? prev.filter(item => item !== id)
               : [...prev, id]
-          )
+          );
         }
       } else {
         // Usuario no registrado: operación en localStorage
@@ -94,14 +98,14 @@ const Listarprods = ({ listar }) => {
           isFavorite
             ? prev.filter(item => item !== id)
             : [...prev, id]
-        )
+        );
       }
     } catch (error) {
-      console.error("Error al actualizar favoritos:", error)
+      console.error("Error al actualizar favoritos:", error);
     } finally {
-      setLoadingFavoritos(false)
+      setLoadingFavoritos(false);
     }
-  }
+  };
 
   const agregarFavorito = async (id) => {
     if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
@@ -345,7 +349,7 @@ const Listarprods = ({ listar }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 px-5 mt-6">
         {productosFiltrados.map((art, index) => {
           const productId = art.id_productos || art.id || index;
-          const esFavorito = favoritos.includes(productId);
+          const esFavorito = favoritos?.includes(productId);
 
           return (
             <article

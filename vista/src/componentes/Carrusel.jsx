@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react'
+import { AuthContext } from '../context/AuthContext';
+
 
 
 const Carrusel = ({ listar }) => {
@@ -6,26 +8,138 @@ const Carrusel = ({ listar }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
-    
-    const [favoritos, setFavoritos] = useState(() => {
-        // Cargar favoritos desde localStorage al inicializar
-        const saved = localStorage.getItem('fav');
-        return saved ? JSON.parse(saved) : [];
-    });
 
-    const toggleFavorito = (id) => {
-        setFavoritos(prev => {
-            const newFavoritos = prev.includes(id)
-                ? prev.filter(item => item !== id)
-                : [...prev, id];
-            return newFavoritos;
-        });
+    // Estado de favoritos
+    const [favoritos, setFavoritos] = useState([])
+    const [loadingFavoritos, setLoadingFavoritos] = useState(false)
+    const { idUser } = useContext(AuthContext)
+
+    // Cargar favoritos al montar el componente
+    useEffect(() => {
+        const cargarFavoritos = async () => {
+            setLoadingFavoritos(true);
+
+            // Limpiar favoritos si no hay usuario
+            if (!idUser) {
+                setFavoritos([]);
+                setLoadingFavoritos(false);
+                return;
+            }
+
+            // Cargar de BD solo si hay usuario
+            try {
+                const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ action: "getFavoritosByUsuario", id: idUser }),
+                });
+                const data = await response.json();
+                const favoriteIds = data.map(item => item.id_productos || item.id);
+                setFavoritos(favoriteIds);
+            } catch (error) {
+                console.error('Error al cargar favoritos:', error);
+            }
+            setLoadingFavoritos(false);
+        };
+
+        cargarFavoritos();
+    }, [idUser]); // Solo depende de idUser
+
+
+
+    const toggleFavorito = async (id, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!idUser) {
+            // Para no logueados: usar localStorage directamente
+            const saved = JSON.parse(localStorage.getItem('fav') || '[]');
+
+            const isFavorite = saved.includes(id);
+
+            const newFavoritos = isFavorite
+                ? saved.filter(item => item !== id)
+                : [...saved, id];
+
+            localStorage.setItem('fav', JSON.stringify(newFavoritos));
+            setFavoritos(newFavoritos);
+            return;
+        }
+        if (loadingFavoritos) return;
+
+        const isFavorite = favoritos.includes(id);
+        setLoadingFavoritos(true);
+
+        try {
+            if (idUser) {
+                // Usuario registrado: operación en base de datos
+                let success;
+                if (isFavorite) {
+                    success = await eliminarFavorito(id);
+                } else {
+                    success = await agregarFavorito(id);
+                }
+
+                if (success) {
+                    setFavoritos(prev =>
+                        isFavorite
+                            ? prev.filter(item => item !== id)
+                            : [...prev, id]
+                    );
+                }
+            } else {
+                // Usuario no registrado: operación en localStorage
+                setFavoritos(prev =>
+                    isFavorite
+                        ? prev.filter(item => item !== id)
+                        : [...prev, id]
+                );
+            }
+        } catch (error) {
+            console.error("Error al actualizar favoritos:", error);
+        } finally {
+            setLoadingFavoritos(false);
+        }
     };
 
-    // Guardar en localStorage cuando cambien los favoritos
-    useEffect(() => {
-        localStorage.setItem('fav', JSON.stringify(favoritos));
-    }, [favoritos]);
+    const agregarFavorito = async (id) => {
+        if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
+
+        try {
+            const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: "addAFav", id: idUser, ids: [id] }),
+            })
+            const data = await response.json()
+            return data.success
+        } catch (error) {
+            console.error('Error al agregar favorito:', error)
+            return false
+        }
+    }
+
+    const eliminarFavorito = async (id) => {
+        if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
+
+        try {
+            const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: "removeFromFavoritos", id: idUser, ids: id }),
+            })
+            const data = await response.json()
+            return data.success
+        } catch (error) {
+            console.error('Error al eliminar favorito:', error)
+            return false
+        }
+    }
 
 
     // Eventos para el arrastre del carrusel
@@ -64,52 +178,54 @@ const Carrusel = ({ listar }) => {
             onMouseUp={endDrag}
             onMouseLeave={endDrag}
         >
-            {listar.map((art) => (
-                <article
-                    key={art.id}
-                    className="flex-shrink-0 w-85 mx-0 border border-gray-200 overflow-hidden relative"
-                    style={{
-                        userSelect: 'none',
-                        marginLeft: '0',
-                        marginRight: '0',
-                        borderRight: 'none'
-                    }}
-                >
-                    <div className="product-container" >
-                        <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                toggleFavorito(art.id);
-                            }}
-                            className="favorite-button"
-                            aria-label="Añadir a favoritos"
-                        >
-                            <i className={
-                                favoritos.includes(art.id) 
-                                    ? 'bx bxs-heart text-red-500 text-[20px]' 
-                                    : 'bx bx-heart text-gray-500 text-[20px]'
-                            }></i>
-                        </button>
+            {listar.map((art, index) => {
+                const productId = art.id_productos || art.id || index;
+                const esFavorito = favoritos.includes(productId);
+                return (
+                    <article
+                        key={productId}
+                        className="flex-shrink-0 w-85 mx-0 border border-gray-200 overflow-hidden relative"
+                        style={{
+                            userSelect: 'none',
+                            marginLeft: '0',
+                            marginRight: '0',
+                            borderRight: 'none'
+                        }}
+                    >
+                        <div className="product-container">
+                            <button
+                                onClick={(e) => toggleFavorito(productId, e)}
+                                className="absolute top-2 right-2 z-10 p-2 rounded-full transition-colors duration-200"
+                                aria-label={esFavorito ? "Quitar de favoritos" : "Añadir a favoritos"}
+                                disabled={loadingFavoritos}
+                            >
+                                <i className={
+                                    `text-[20px] transition-colors duration-200 ${esFavorito
+                                        ? 'bx bxs-heart text-red-500 animate__animated animate__bounceIn'
+                                        : 'bx bx-heart text-gray-500'
+                                    }`
+                                }></i>
+                            </button>
 
-
-                        <div onClick={() => window.location.href = `/product/${art.id}`}>
-                            <img
-                                src={`/img/prods/${art.img_url.split(",")[0].trim()}`}
-                                alt={art.nombre}
-                                className="w-full h-100 object-cover"
-                                draggable="false"
-                                onMouseOver={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[1].trim()}`}
-                                onMouseOut={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[0].trim()}`}
-                            />
-                            <div className='py-3'>
-                                <h3 className="product-name px-5 capitalize">{art.nombre}</h3>
-                                <p className="product-price px-5">€{art.precio}</p>
+                            <div onClick={() => window.location.href = `/product/${art.id}`}>
+                                <img
+                                    src={`/img/prods/${art.img_url.split(",")[0].trim()}`}
+                                    alt={art.nombre}
+                                    className="w-full h-100 object-cover"
+                                    draggable="false"
+                                    onMouseOver={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[1].trim()}`}
+                                    onMouseOut={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[0].trim()}`}
+                                />
+                                <div className='py-3'>
+                                    <h3 className="product-name px-5 capitalize">{art.nombre}</h3>
+                                    <p className="product-price px-5">€{art.precio}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </article>
-            ))}
+                    </article>
+                );
+            })}
+
         </div>
     );
 };
