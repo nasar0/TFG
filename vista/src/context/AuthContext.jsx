@@ -86,6 +86,7 @@ export const AuthProvider = ({ children }) => {
 
       // Eliminar el estado de autenticación de localStorage
       localStorage.removeItem('isAuthenticated');
+      localStorage.removeItem('fav');
     })
     .catch((error) => {
       console.error('Error al cerrar sesión:', error);

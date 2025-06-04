@@ -46,8 +46,10 @@ function App() {
             <Route path="/search" element={<Buscador />} />  
             <Route path="/prod" element={<Articulobuscado />} />
             <Route path="/fav" element={<Favoritos />} />
-            <Route path="/chatBot" element={<ChatBot/>} />
+
           </Route>
+          <Route path="/chatBot" element={<ChatBot/>} />
+
 
           {/* Rutas de administrador */}
             <Route

@@ -6,15 +6,13 @@ const Contact = () => {
   const navigate = useNavigate();
   return (
     <>
-      <div className="max-w-4xl mx-auto p-6 font-sans bg-white">
+      <div className="max-w-4xl mx-auto p-6 font-sans bg-white relative min-h-screen">
+        
         <div className="mb-8 border-b border-dashed border-gray-300 pb-6">
           <h1 className="text-3xl font-bold tracking-tight uppercase">Contact Us</h1>
         </div>
-        <div>
-          <button onClick={()=>navigate("/chatBot")}>
-              <img src="../../public/img/icons8-chat-50.png" alt="" />
-          </button>
-        </div>
+
+
         <div className="mb-8 text-gray-700">
           <p className="mb-3">If you have questions about your order or need further assistance, our customer service team will be happy to help.</p>
           <p className="mb-3">Complete the form below by selecting a subject, then type your question or comment and we will get back to you as soon as possible.</p>
@@ -139,7 +137,7 @@ const Contact = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={() => setShowModal(true)}
-              className={`flex items-center border border-black ${showModal ? "bg-gray-50" : "bg-black text-white" } py-3 px-4 text-center uppercase tracking-wider font-medium hover:bg-gray-50 hover:text-black transition-colors duration-200 group`}
+              className={`flex items-center border border-black ${showModal ? "bg-gray-50" : "bg-black text-white"} py-3 px-4 text-center uppercase tracking-wider font-medium hover:bg-gray-50 hover:text-black transition-colors duration-200 group`}
             >
               <img
                 src="../../public/img/icons8-telefono-50.png"
@@ -150,7 +148,20 @@ const Contact = () => {
             </button>
           </div>
         </div>
-
+         <div className="sticky bottom-6 left-0 w-full h-0">
+          <button
+            onClick={() => navigate("/chatBot")}
+            className="absolute left-[-50%] bottom-0 border-2 border-gray-500 text-white p-3 rounded-full shadow-lg hover:cursor-pointer hover:scale-[1.1] transition-transform z-10"
+            title="Abrir chat"
+          >
+            <img
+              src="../../public/img/icons8-chat-50.png"
+              alt="Ícono de chat"
+              width="30"
+              height="30"
+            />
+          </button>
+        </div>       
         {/* Modal */}
         {showModal && (
           <div className="fixed inset-0 bg-black/5 bg-opacity-50 flex items-center justify-center">

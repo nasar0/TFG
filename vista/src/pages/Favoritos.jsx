@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Listarprods from '../componentes/Listarprods';
+import { AuthContext } from '../context/AuthContext';
 
 const Favoritos = () => {
   const navigate = useNavigate();
   const [favoritos, setFavoritos] = useState([]);
-  const [productosFavoritos, setProductosFavoritos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { idUser } = useContext(AuthContext)
 
   // Estilo de comillas OFF-WHITE
   const QuoteMark = ({ position = 'left' }) => (
@@ -14,52 +14,44 @@ const Favoritos = () => {
       {position === 'left' ? '«' : '»'}
     </span>
   );
+  if (idUser) {
+    useEffect(() => {
+      fetch('http://localhost/TFG/controlador/c-productos.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: "getFavoritosByUsuario",id: idUser }),
+      })
+        .then((response) => response.json())
+        .then((data) => setFavoritos(data))
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }, [])
+  }else{
+    useEffect(() => {
+      const favprods = localStorage.getItem("fav");
 
-  // Obtener productos favoritos del backend
-  const fetchFavoritos = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/favoritos');
-      if (!response.ok) throw new Error('Error al obtener favoritos');
-      const data = await response.json();
-      setProductosFavoritos(data);
-      setFavoritos(data.map(item => item.id));
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Eliminar favorito
-  const eliminarFavorito = async (id) => {
-    try {
-      const response = await fetch(`/api/favoritos/${id}`, {
-        method: 'DELETE'
+      fetch('http://localhost/TFG/controlador/c-productos.php', {
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: "getprodsFav" ,id: favprods}),
+    })
+      .then((response) => response.json())
+      .then((data) => setFavoritos(data))
+      .catch((error) => {
+        console.error('Error al cargar favoritos:', error);
       });
-      
-      if (!response.ok) throw new Error('Error al eliminar favorito');
-      
-      // Actualizar estado local
-      setProductosFavoritos(prev => prev.filter(item => item.id !== id));
-      setFavoritos(prev => prev.filter(itemId => itemId !== id));
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
 
-  // Cargar favoritos al montar el componente
-  useEffect(() => {
-    fetchFavoritos();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="bg-white min-h-screen flex items-center justify-center">
-        <p className="text-xl">Cargando tus favoritos...</p>
-      </div>
-    );
+  }, [])
   }
+
+
+
+
 
   return (
     <div className="bg-white min-h-screen">
@@ -89,22 +81,9 @@ const Favoritos = () => {
       </header>
 
       {/* Contenido principal */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main>
         {favoritos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {productosFavoritos.map((art) => (
-              <div key={art.id} className="relative group">
-                <button
-                  onClick={() => eliminarFavorito(art.id)}
-                  className="absolute top-4 right-4 z-20 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-all"
-                  aria-label="Remove from favorites"
-                >
-                  <i className="bx bxs-heart text-red-500 text-xl"></i>
-                </button>
-                <Listarprods listar={[art]} />
-              </div>
-            ))}
-          </div>
+          <Listarprods listar={favoritos} />
         ) : (
           <div className="text-center py-24">
             <p className="text-2xl font-light mb-4">YOUR FAVORITES ARE EMPTY</p>

@@ -138,7 +138,7 @@ class usuarios
         $consulta->close();
         return $usuario;
     }
-    public function ActualizarUsuarios($nombre, $correo, $direccion, $telefono, $rol = null, $id_usuario)
+    public function ActualizarUsuarios($nombre, $correo, $direccion, $telefono, $id_usuario, $rol = null)
     {
         // Base de la consulta y tipos
         $sql = "UPDATE usuarios SET 

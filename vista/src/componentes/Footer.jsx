@@ -28,11 +28,11 @@ const Footer = () => {
         email: email.trim(),
         name: "Kꓘarmx Newsletter",
         brand_name: 'KꓘarmX',
-        discount_code: '3FMPVL',
+        discount_code: 'qwerty',
         current_year: new Date().getFullYear(),
         welcome_message: 'Thank you for joining our community!',
         discount_percentage: '10',
-        shop_link: 'https://tutienda.com'
+        shop_link: 'https://KKARMAX.com'
       };
   
       await emailjs.send(
@@ -54,7 +54,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-white text-black py-10 px-4 sm:px-6 lg:px-8">
+    <footer className="bg-white text-black py-10 px-4 sm:px-6 lg:px-8 z-10">
       <div className="mx-auto">
         {/* Primera fila - Formulario izquierda / Contenido derecho */}
         <div className="flex flex-col lg:flex-row gap-10 mb-10 justify-between">

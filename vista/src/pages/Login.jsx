@@ -24,6 +24,7 @@ const Login = () => {
       .then((data) => {
         if (data.success) {
           login(email); 
+          localStorage.removeItem("fav");
           if (data.rol === 0) {
             navigate('/admin');
           } else {
@@ -32,7 +33,6 @@ const Login = () => {
         } else {
           let emailInput = document.querySelector("#email");
           let passwordInput = document.querySelector("#password");
-
           emailInput.classList.add("animate__animated", "animate__shakeX");
           passwordInput.classList.add("animate__animated", "animate__shakeX");
           setTimeout(() => {

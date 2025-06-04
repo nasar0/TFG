@@ -9,53 +9,53 @@ const Home = () => {
 
   useEffect(() => {
     cargarProductosExclusive(),
-    cargarProductosHombre(),
-    cargarProductosMujer()
-  }, []); 
+      cargarProductosHombre(),
+      cargarProductosMujer()
+  }, []);
 
   const cargarProductosExclusive = () => {
-      fetch('http://localhost/TFG/controlador/c-productos.php', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ action: "getProdExclusive" }),
-        })
-          .then((response) => response.json())
-          .then((data) => setExclusive(data))
-          .catch((error) => {
-              console.error('Error:', error);
-          });
+    fetch('http://localhost/TFG/controlador/c-productos.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: "getProdExclusive" }),
+    })
+      .then((response) => response.json())
+      .then((data) => setExclusive(data))
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
 
   const cargarProductosHombre = () => {
     fetch('http://localhost/TFG/controlador/c-productos.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: "getProdHombre" }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: "getProdHombre" }),
     })
-        .then((response) => response.json())
-        .then((data) => setMen(data))
-        .catch((error) => {
-            console.error('Error:', error);
-        });
+      .then((response) => response.json())
+      .then((data) => setMen(data))
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
- 
+
   const cargarProductosMujer = () => {
     fetch('http://localhost/TFG/controlador/c-productos.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: "listar" }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: "listar" }),
     })
-        .then((response) => response.json())
-        .then((data) => setWomen(data))
-        .catch((error) => {
-            console.error('Error:', error);
-        }); 
+      .then((response) => response.json())
+      .then((data) => setWomen(data))
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   };
   return (
     <>
@@ -63,24 +63,24 @@ const Home = () => {
         <div ><a href="/"><img src="/img/baners/banerinicio.jpg" className='w-full h-[90vh] object-top object-cover' alt="" /></a></div>
         <a href=""><p className="text-[23px] pt-2">"BRB CITY EXCLUSIVES"</p></a>
         <Link to="/tu-ruta" className="relative inline-block pb-1 transition-all duration-300 hover:text-[#afafaf] text-[13px] uppercase underline hover:underline-offset-4">Explore the new collection
-          
+
         </Link>
       </div>
-      <Carrusel listar={exclusive}/>
+      <Carrusel listar={exclusive} />
       <div className='p-5'>
         <div ><a href="/"><img src="/img/baners/men.jpg" className='w-full h-[90vh] object-top object-cover' alt="" /></a></div>
         <a href=""><p className="text-[23px] pt-2">SS25 Menswear</p></a>
         <Link to="/tu-ruta" className="relative inline-block pb-1  underline hover:underline-offset-4 transition-all duration-300 hover:text-[#afafaf] text-[13px]">SHOP NOW
         </Link>
       </div>
-      <Carrusel listar={men}/>
+      <Carrusel listar={men} />
       <div className='p-5'>
         <div ><a href="/"><img src="/img/baners/woman.jpg" className='w-full h-[90vh] object-top object-cover' alt="" /></a></div>
         <a href=""><p className="text-[23px] pt-2">SS25 Womenswear</p></a>
         <Link to="/tu-ruta" className="relative inline-block pb-1  underline hover:underline-offset-4 transition-all duration-300 hover:text-[#afafaf] text-[13px]">SHOP NOW
         </Link>
       </div>
-      <Carrusel listar={women}/>
+      <Carrusel listar={women} />
     </>
   )
 }

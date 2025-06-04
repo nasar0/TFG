@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import 'animate.css';
+import { AuthContext } from '../context/AuthContext';
 
 const Listarprods = ({ listar }) => {
   // Estados para los filtros
@@ -12,29 +13,133 @@ const Listarprods = ({ listar }) => {
     precioMin: '',
     precioMax: ''
   })
-  
-  // Estado de favoritos inicializado desde localStorage
-  const [favoritos, setFavoritos] = useState(() => {
-    const saved = localStorage.getItem('fav');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const { idUser } = useContext(AuthContext)
 
-  const toggleFavorito = (id, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setFavoritos(prev => {
-      const newFavoritos = prev.includes(id)
-        ? prev.filter(item => item !== id)
-        : [...prev, id];
-      return newFavoritos;
-    });
-  };
+  // Estado de favoritos
+  const [favoritos, setFavoritos] = useState([])
+  const [loadingFavoritos, setLoadingFavoritos] = useState(false)
 
-  // Guardar en localStorage cuando cambien los favoritos
+  // Cargar favoritos al montar el componente
   useEffect(() => {
-    localStorage.setItem('fav', JSON.stringify(favoritos));
-  }, [favoritos]);
+    const cargarFavoritos = async () => {
+      setLoadingFavoritos(true)
 
+      if (idUser) {
+        // Usuario registrado: cargar de la base de datos
+        try {
+          const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: "getFavoritosByUsuario", id: idUser }),
+          })
+          const data = await response.json()
+          const favoriteIds = data.map(item => item.id_productos || item.id)
+          setFavoritos(favoriteIds)
+        } catch (error) {
+          console.error('Error al cargar favoritos:', error)
+        }
+      } else {
+        // Usuario no registrado: cargar de localStorage
+        const saved = localStorage.getItem('fav')
+        if (saved) {
+          setFavoritos(JSON.parse(saved))
+        }
+      }
+
+      setLoadingFavoritos(false)
+    }
+
+    cargarFavoritos()
+  }, [loadingFavoritos])
+
+  // Guardar en localStorage cuando cambien los favoritos (solo para no registrados)
+  useEffect(() => {
+    if (!idUser) {
+      localStorage.setItem('fav', JSON.stringify(favoritos))
+    }
+  }, [favoritos, idUser])
+
+  const toggleFavorito = async (id, e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (loadingFavoritos) return
+
+    const isFavorite = favoritos.includes(id)
+    setLoadingFavoritos(true)
+
+    try {
+      if (idUser) {
+        // Usuario registrado: operación en base de datos
+        let success
+        if (isFavorite) {
+          success = await eliminarFavorito(id)
+        } else {
+          success = await agregarFavorito(id)
+        }
+
+        // Solo actualizar estado si la operación fue exitosa
+        if (success) {
+          setFavoritos(prev =>
+            isFavorite
+              ? prev.filter(item => item !== id)
+              : [...prev, id]
+          )
+        }
+      } else {
+        // Usuario no registrado: operación en localStorage
+        setFavoritos(prev =>
+          isFavorite
+            ? prev.filter(item => item !== id)
+            : [...prev, id]
+        )
+      }
+    } catch (error) {
+      console.error("Error al actualizar favoritos:", error)
+    } finally {
+      setLoadingFavoritos(false)
+    }
+  }
+
+  const agregarFavorito = async (id) => {
+    if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
+
+    try {
+      const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: "addAFav", id: idUser, ids: [id] }),
+      })
+      const data = await response.json()
+      return data.success
+    } catch (error) {
+      console.error('Error al agregar favorito:', error)
+      return false
+    }
+  }
+
+  const eliminarFavorito = async (id) => {
+    if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
+
+    try {
+      const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: "removeFromFavoritos", id: idUser, ids: id }),
+      })
+      const data = await response.json()
+      return data.success
+    } catch (error) {
+      console.error('Error al eliminar favorito:', error)
+      return false
+    }
+  }
   // Obtener valores únicos para los filtros
   const coloresUnicos = [...new Set(listar.map(art => art.color))]
   const generosUnicos = [...new Set(listar.map(art => art.genero))]
@@ -72,25 +177,6 @@ const Listarprods = ({ listar }) => {
       (filtros.precioMax === '' || parseFloat(art.precio) <= parseFloat(filtros.precioMax))
     )
   })
-
-  //guardar en base de datos si existe el id del usuario 
-   
-    useEffect(() => {
-      fetch('http://localhost/TFG/controlador/c-productos.php', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ action: "addAFav" }),
-        })
-          .then((response) => response.json())
-          .then((data) => setExclusive(data))
-          .catch((error) => {
-              console.error('Error:', error);
-          });
-    }, [favoritos])
-    
-
 
   return (
     <>
@@ -257,41 +343,53 @@ const Listarprods = ({ listar }) => {
 
       {/* Product list */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 px-5 mt-6">
-        {productosFiltrados.map((art) => (
-          <article
-            key={art.id}
-            className="border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow relative"
-          >
-            <button
-              onClick={(e) => toggleFavorito(art.id, e)}
-              className="absolute top-2 right-2 z-10 p-2 bg-white/80 rounded-full"
-              aria-label="Añadir a favoritos"
+        {productosFiltrados.map((art, index) => {
+          const productId = art.id_productos || art.id || index;
+          const esFavorito = favoritos.includes(productId);
+
+          return (
+            <article
+              key={`product-${productId}`}
+              className="border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow relative"
             >
-              <i className={
-                favoritos.includes(art.id) 
-                  ? 'bx bxs-heart text-red-500 text-[20px]' 
-                  : 'bx bx-heart text-gray-500 text-[20px]'
-              }></i>
-            </button>
-            <Link to={`/product/${art.id}`} className="block">
-              <img
-                src={`/img/prods/${art.img_url.split(",")[0].trim()}`}
-                alt={art.nombre}
-                className="w-full object-cover"
-                draggable="false"
-                onMouseOver={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[1].trim()}`}
-                onMouseOut={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[0].trim()}`}
-              />
-              <div className="pb-3">
-                <h3 className="product-name px-5 capitalize">{art.nombre}</h3>
-                <p className="product-price px-5">€{art.precio}</p>
-              </div>
-            </Link>
-          </article>
-        ))}
+              <button
+                onClick={(e) => toggleFavorito(productId, e)}
+                className="absolute top-2 right-2 z-10 p-2 rounded-full transition-colors duration-200"
+                aria-label={esFavorito ? "Quitar de favoritos" : "Añadir a favoritos"}
+                disabled={loadingFavoritos}
+              >
+                <i className={
+                  `text-[20px] transition-colors duration-200 ${esFavorito
+                    ? 'bx bxs-heart text-red-500 animate__animated animate__bounceIn'
+                    : 'bx bx-heart text-gray-500'
+                  }`
+                }></i>
+              </button>
+
+
+              <Link
+                to={`/product/${productId}`}
+                className="block"
+              >
+                <img
+                  src={`/img/prods/${art.img_url.split(",")[0].trim()}`}
+                  alt={art.nombre}
+                  className="w-full object-cover"
+                  draggable="false"
+                  onMouseOver={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[1].trim()}`}
+                  onMouseOut={(e) => e.currentTarget.src = `/img/prods/${art.img_url.split(",")[0].trim()}`}
+                />
+                <div className="pb-3">
+                  <h3 className="product-name px-5 capitalize">{art.nombre}</h3>
+                  <p className="product-price px-5">€{art.precio}</p>
+                </div>
+              </Link>
+            </article>
+          );
+        })}
       </div>
     </>
-  );
-};
-
+  )
+}
 export default Listarprods;
+

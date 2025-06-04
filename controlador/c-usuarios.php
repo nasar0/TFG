@@ -127,7 +127,7 @@ switch ($data["action"]) {
 
 
         try {
-            $resultado = $GLOBALUSER->ActualizarUsuarios($nombre, $correo, $direccion, $telefono, $rol, $id_usuario);
+            $resultado = $GLOBALUSER->ActualizarUsuarios($nombre, $correo, $direccion, $telefono, $id_usuario, $rol);
             if ($resultado) {
                 echo json_encode(["success" => true, "message" => "Usuario actualizado correctamente"]);
             } else {

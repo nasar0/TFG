@@ -25,9 +25,9 @@ const Cart = ({ onClose }) => {
         const initialQuantities = {};
         const initialSizes = {};
         data.forEach(item => {
-          initialQuantities[item.ID_Productos] = item.Cantidad;
-          const sizes = item.Tamano.split('-');
-          initialSizes[item.ID_Productos] = sizes[0];
+          initialQuantities[item.id_productos] = item.cantidad;
+          const sizes = item.tamano.split('-');
+          initialSizes[item.id_productos] = sizes[0];
         });
         setQuantities(initialQuantities);
         setSelectedSizes(initialSizes);
@@ -83,8 +83,8 @@ const Cart = ({ onClose }) => {
   };
 
   const handleQuantityChange = (productId, newQuantity) => {
-    const product = listar.find(item => item.ID_Productos === productId);
-    const maxQuantity = product.Stock;
+    const product = listar.find(item => item.id_productos === productId);
+    const maxQuantity = product.stock;
     if (newQuantity > maxQuantity) {
       newQuantity = maxQuantity;
     } else if (newQuantity < 1) {
@@ -106,11 +106,11 @@ const Cart = ({ onClose }) => {
 
   const removeItem = (productId) => {
     setListar(prev => {
-      const newList = prev.filter(item => item.ID_Productos !== productId);
+      const newList = prev.filter(item => item.id_productos !== productId);
 
       // Recalcular el total y descuento aquí
       const newTotal = newList.reduce((total, item) => {
-        return total + (item.Precio * quantities[item.ID_Productos]);
+        return total + (item.precio * quantities[item.id_productos]);
       }, 0);
 
       // Asumiendo que tienes el porcentaje de descuento guardado en algún estado o variable:
@@ -168,12 +168,12 @@ const Cart = ({ onClose }) => {
 
   const checkout = () => {
     const precio = calculateTotal() - discount;
-    const id_carrito = listar[0].ID_Carrito;
+    const id_carrito = listar[0].id_carrito;
 
     // Crear un array con los productos y sus cantidades
     const productos = listar.map(producto => ({
-      id: producto.ID_Productos,
-      cantidad: quantities[producto.ID_Productos]
+      id: producto.id_productos,
+      cantidad: quantities[producto.id_productos]
     }));
 
     fetch('http://localhost/TFG/controlador/c-productos.php', {
@@ -252,7 +252,7 @@ const Cart = ({ onClose }) => {
   // Tu función calculateTotal permanece igual
   const calculateTotal = () => {
     return listar.reduce((total, item) => {
-      return total + (item.Precio * quantities[item.ID_Productos]);
+      return total + (item.precio * quantities[item.id_productos]);
     }, 0);
   };
 
@@ -324,15 +324,15 @@ return (
               {/* Lista de productos */}
               <div className="divide-y divide-gray-200 max-h-[60vh] overflow-y-auto">
                 {listar.map((producto) => {
-                  const sizes = producto.Tamano.split('-');
-                  if (producto.Stock != 0) {
+                  const sizes = producto.tamano.split('-');
+                  if (producto.stock != 0) {
                     return (
-                    <div key={producto.ID_Productos} className="py-4 sm:py-6 flex flex-col sm:flex-row">
+                    <div key={producto.id_productos} className="py-4 sm:py-6 flex flex-col sm:flex-row">
                       {/* Imagen del producto */}
                       <div className="w-full sm:w-1/3 mb-3 sm:mb-0">
                         <img
-                          src={`/img/prods/${producto.Img_URL.split(',')[0]}`}
-                          alt={producto.Nombre_Producto}
+                          src={`/img/prods/${producto.img_url.split(',')[0]}`}
+                          alt={producto.nombre}
                           className="w-full h-32 sm:h-40 object-contain border border-gray-200"
                         />
                       </div>
@@ -341,12 +341,12 @@ return (
                       <div className="w-full sm:w-2/3 sm:pl-4 flex flex-col">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h2 className="text-lg sm:text-xl font-bold text-black">{producto.Nombre_Producto}</h2>
-                            <p className="text-gray-600 text-xs sm:text-sm mt-1">{producto.Color}</p>
-                            <p className="text-black font-bold mt-2">{producto.Precio}€</p>
+                            <h2 className="text-lg sm:text-xl font-bold text-black">{producto.nombre}</h2>
+                            <p className="text-gray-600 text-xs sm:text-sm mt-1">{producto.color}</p>
+                            <p className="text-black font-bold mt-2">{producto.precio}€</p>
                           </div>
                           <button
-                            onClick={() => removeItem(producto.ID_Productos)}
+                            onClick={() => removeItem(producto.id_productos)}
                             className="text-gray-500 hover:text-black ml-2"
                           >
                             ✕
@@ -360,9 +360,9 @@ return (
                             {sizes.map(size => (
                               <button
                                 key={size}
-                                onClick={() => handleSizeChange(producto.ID_Productos, size)}
+                                onClick={() => handleSizeChange(producto.id_productos, size)}
                                 className={`px-2 sm:px-3 py-1 text-xs sm:text-sm border ${
-                                  selectedSizes[producto.ID_Productos] === size
+                                  selectedSizes[producto.id_productos] === size
                                     ? 'bg-black text-white border-black'
                                     : 'bg-white text-black border-gray-300 hover:border-black'
                                 }`}
@@ -378,38 +378,38 @@ return (
                           <span className="mr-2 sm:mr-3 text-xs sm:text-sm text-gray-600">QUANTITY:</span>
                           <div className="flex items-center border border-black">
                             <button
-                              onClick={() => handleQuantityChange(producto.ID_Productos, quantities[producto.ID_Productos] - 1)}
+                              onClick={() => handleQuantityChange(producto.id_productos, quantities[producto.id_productos] - 1)}
                               className="px-2 sm:px-3 py-1 bg-white text-black hover:bg-gray-100 text-sm"
-                              disabled={quantities[producto.ID_Productos] <= 1}
+                              disabled={quantities[producto.id_productos] <= 1}
                             >
                               -
                             </button>
                             <span className="px-2 sm:px-3 py-1 border-x border-black text-sm">
-                              {quantities[producto.ID_Productos]}
+                              {quantities[producto.id_productos]}
                             </span>
                             <button
-                              onClick={() => handleQuantityChange(producto.ID_Productos, quantities[producto.ID_Productos] + 1)}
+                              onClick={() => handleQuantityChange(producto.id_productos, quantities[producto.id_productos] + 1)}
                               className="px-2 sm:px-3 py-1 bg-white text-black hover:bg-gray-100 text-sm"
-                              disabled={quantities[producto.ID_Productos] >= producto.Stock}
+                              disabled={quantities[producto.id_productos] >= producto.stock}
                             >
                               +
                             </button>
                           </div>
                           <span className="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-500">
-                            {producto.Stock} available
+                            {producto.stock} available
                           </span>
                         </div>
 
                         <div className="mt-3 sm:mt-4 pt-2 sm:pt-4 border-t border-gray-200">
                           <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
-                            {producto.Descripcion}
+                            {producto.descripcion}
                           </p>
                         </div>
                       </div>
                     </div>
                   );
                   }else{
-                    removeItem(producto.ID_Productos)
+                    removeItem(producto.id_productos)
                   }
                   
                 })}

@@ -65,7 +65,7 @@ class productos
     }
     public function getProd($id)
     {
-        $sent = "SELECT * FROM productos where ID_Productos=?";
+        $sent = "SELECT * FROM productos where id_productos=?";
         $consulta = $this->db->getCon()->prepare($sent);
         $consulta->bind_param("i", $id);
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
@@ -202,7 +202,7 @@ class productos
     public function insertar($nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria)
     {
         try {
-            $sent = "INSERT INTO productos (Nombre_Producto, Descripcion, Precio, Stock, Tamano, Color, Img_URL, Genero, categoria)
+            $sent = "INSERT INTO productos (nombre, descripcion, precio, stock, tamano, color, img_URL, genero, categoria)
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $consulta = $this->db->getCon()->prepare($sent);
             $consulta->bind_param("ssdiisssi", $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
@@ -222,7 +222,7 @@ class productos
     public function eliminar($id)
     {
         try {
-            $sent = "DELETE FROM productos WHERE ID_Productos = ?";
+            $sent = "DELETE FROM productos WHERE id_productos  = ?";
             $consulta = $this->db->getCon()->prepare($sent);
             $consulta->bind_param("i", $id);
             if ($consulta->execute()) {
@@ -239,16 +239,16 @@ class productos
     public function actualizar($nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria, $ID_Productos)
     {
         $sent = "UPDATE productos SET
-            Nombre_Producto = ?,
-            Descripcion = ?,
-            Precio = ?,
+            nombre = ?,
+            descripcion = ?,
+            precio = ?,
             stock = ?,
-            Tamano = ?,
-            Color = ?,
+            tamano = ?,
+            color = ?,
             img_url=?,
-            Genero = ? ,
+            genero = ? ,
             categoria = ?
-            WHERE ID_Productos = ?";
+            WHERE id_productos = ?";
         // Preparar la sentencia
         $consulta = $this->db->getCon()->prepare($sent);
 
@@ -270,7 +270,7 @@ class productos
     public function actualizarImagenes($id, $imagenes)
     {
         try {
-            $sent = "UPDATE productos SET Img_URL = ? WHERE ID_Productos = ?";
+            $sent = "UPDATE productos SET img_url = ? WHERE id_productos   = ?";
             $consulta = $this->db->getCon()->prepare($sent);
             $consulta->bind_param("si", $imagenes, $id);
             if ($consulta->execute()) {
@@ -285,7 +285,7 @@ class productos
     }
     public function getCarrito($id)
     {
-        $sent = "SELECT carrito.ID_Carrito, p.* ,añade.Cantidad from productos p , carrito, añade , usuarios WHERE carrito.ID_Carrito = añade.ID_Carrito AND p.ID_Productos = añade.ID_Producto and carrito.ID_Usuario = usuarios.ID_Usuario and carrito.pagado=0 and usuarios.ID_Usuario = ?";
+        $sent = "SELECT carrito.ID_Carrito, p.* ,añade.Cantidad from productos p , carrito, añade , usuarios WHERE carrito.ID_Carrito = añade.ID_Carrito AND p.id_productos = añade.ID_Producto and carrito.ID_Usuario = usuarios.ID_Usuario and carrito.pagado=0 and usuarios.ID_Usuario = ?";
 
 
         $consulta = $this->db->getCon()->prepare($sent);
@@ -314,7 +314,7 @@ class productos
                     FROM carrito
                     WHERE pagado = 0 AND ID_Usuario = ?
                 )
-                AND ID_Producto = ?";
+                AND id_productos  = ?";
 
 
         $consulta = $this->db->getCon()->prepare($sent);
@@ -343,7 +343,7 @@ class productos
     }
     public function buscarProd($nombre)
     {
-        $sent = "SELECT * FROM productos WHERE productos.Nombre_Producto LIKE ?";
+        $sent = "SELECT * FROM productos WHERE productos.nombre LIKE ?";
 
 
         $consulta = $this->db->getCon()->prepare($sent);
@@ -394,7 +394,7 @@ class productos
 
             // 2. Actualizar el stock para cada producto
             foreach ($productos as $producto) {
-                $sent = "UPDATE productos SET Stock = Stock - ? WHERE ID_Productos = ?";
+                $sent = "UPDATE productos SET stock = stock - ? WHERE id_productos  = ?";
                 $consulta = $this->db->getCon()->prepare($sent);
                 $consulta->bind_param("ii", $producto['cantidad'], $producto['id']);
                 $consulta->execute();
@@ -418,18 +418,25 @@ class productos
     }
     public function getprodsFav($ids)
     {
-        if (empty($ids)) {
+        if (is_string($ids)) {
+            $ids = json_decode($ids, true);
+        }
+
+        // Verificar que sea un array y no esté vacío
+        if (!is_array($ids) || empty($ids)) {
             return [];
         }
 
+        // Generar los placeholders para la consulta
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
-        $sent = "SELECT p.* FROM productos p WHERE ID_Productos IN ($placeholders)";
+        $sent = "SELECT p.* FROM productos p WHERE id_productos IN ($placeholders)";
 
         $consulta = $this->db->getCon()->prepare($sent);
 
         $types = str_repeat('i', count($ids));
 
+        // Utilizar el operador splat para pasar los parámetros
         $consulta->bind_param($types, ...$ids);
 
         $consulta->execute();
@@ -444,6 +451,7 @@ class productos
         $consulta->close();
         return $productos;
     }
+
     public function addAFav($id_usuario, $ids_productos)
     {
         if (empty($ids_productos)) {
@@ -507,7 +515,7 @@ class productos
     {
         $sent = "SELECT p.*
              FROM favoritos f
-             JOIN productos p ON f.id_producto = p.ID_Productos
+             JOIN productos p ON f.id_producto = p.id_productos 
              WHERE f.id_usuario = ?";
 
 
@@ -517,7 +525,7 @@ class productos
 
 
         $result = $consulta->get_result();
- 
+
 
         $favoritos = [];
         while ($row = $result->fetch_object()) {
@@ -541,4 +549,3 @@ class productos
         return $success;
     }
 }
-?>
