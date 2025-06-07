@@ -26,7 +26,7 @@ const Listarprods = ({ listar }) => {
       // Limpiar favoritos si no hay usuario
       if (!idUser) {
         setFavoritos([]);
-        setFavoritos(localStorage.getItem("fav"))
+        setFavoritos(JSON.parse(localStorage.getItem("fav") || "[]"))
         setLoadingFavoritos(false);
         return;
       }
@@ -53,59 +53,46 @@ const Listarprods = ({ listar }) => {
   }, [idUser]); // Solo depende de idUser
 
 
-  const toggleFavorito = async (id, e) => {
-    e.preventDefault();
-    e.stopPropagation();
+const toggleFavorito = async (id, e) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-    if (!idUser) {
-      // Para no logueados: usar localStorage directamente
-      const saved = JSON.parse(localStorage.getItem('fav') || "[]");
-      const isFavorite = saved.includes(id);
+  const isFavorite = favoritos.includes(id);
 
-      const newFavoritos = isFavorite
-        ? saved.filter(item => item !== id)
-        : [...saved, id];
+  // Actualización optimista SIEMPRE
+  setFavoritos(prev =>
+    isFavorite
+      ? prev.filter(item => item !== id)
+      : [...prev, id]
+  );
 
-      localStorage.setItem('fav', JSON.stringify(newFavoritos));
-      setFavoritos(newFavoritos);
-      return;
+  if (!idUser) {
+    // Para no logueados: usar localStorage directamente
+    const saved = JSON.parse(localStorage.getItem('fav') || "[]");
+    const newFavoritos = isFavorite
+      ? saved.filter(item => item !== id)
+      : [...saved, id];
+    localStorage.setItem('fav', JSON.stringify(newFavoritos));
+    return;
+  }
+
+  if (loadingFavoritos) return;
+  setLoadingFavoritos(true);
+
+  try {
+    if (isFavorite) {
+      await eliminarFavorito(id);
+    } else {
+      await agregarFavorito(id);
     }
-    if (loadingFavoritos) return;
-
-    const isFavorite = favoritos.includes(id);
-    setLoadingFavoritos(true);
-
-    try {
-      if (idUser) {
-        // Usuario registrado: operación en base de datos
-        let success;
-        if (isFavorite) {
-          success = await eliminarFavorito(id);
-        } else {
-          success = await agregarFavorito(id);
-        }
-
-        if (success) {
-          setFavoritos(prev =>
-            isFavorite
-              ? prev.filter(item => item !== id)
-              : [...prev, id]
-          );
-        }
-      } else {
-        // Usuario no registrado: operación en localStorage
-        setFavoritos(prev =>
-          isFavorite
-            ? prev.filter(item => item !== id)
-            : [...prev, id]
-        );
-      }
-    } catch (error) {
-      console.error("Error al actualizar favoritos:", error);
-    } finally {
-      setLoadingFavoritos(false);
-    }
-  };
+    // NO revertimos el cambio nunca, porque confiamos en el backend
+  } catch (error) {
+    // Solo logueamos el error, pero no revertimos el cambio visual
+    console.error("Error al actualizar favoritos:", error);
+  } finally {
+    setLoadingFavoritos(false);
+  }
+};
 
   const agregarFavorito = async (id) => {
     if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente

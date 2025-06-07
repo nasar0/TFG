@@ -28,48 +28,69 @@ class usuarios
     }
     public function iniciar_sesion($ema, $cont)
     {
-        $sent = "SELECT rol FROM usuarios WHERE Correo = ? and Contrasenna = ?";
+        $sent = "SELECT rol, Contrasenna FROM usuarios WHERE Correo = ?";
         $consulta = $this->db->getCon()->prepare($sent);
-        $consulta->bind_param("ss", $ema, $cont);
+        $consulta->bind_param("s", $ema);
         $consulta->execute();
-        $consulta->bind_result($rol);
-
+        $consulta->bind_result($rol, $hash_guardado);
         if ($consulta->fetch()) {
             $consulta->close();
-            return $rol;
-        }
-        $consulta->close();
-        return false;
-    }
-    public function registro($n, $correo, $con, $dir, $tel)
-    {
-         // Verifica si el correo ya está en uso
-        $sent = "SELECT ID_Usuario FROM usuarios WHERE Correo = ?";
-        $consulta = $this->db->getCon()->prepare($sent);
-        $consulta->bind_param("s", $correo);
-        $consulta->execute();
-        $consulta->store_result();
-
-        if ($consulta->num_rows > 0) {
-            // Ya existe un usuario con ese correo
-            return [
-                "result" => false,
-                "message" => "Email already exists"
-            ];
-        }
-
-        // Si no existe, procede con el registro
-        try {
-            $sent = "INSERT INTO usuarios (ID_Usuario, Nombre, Correo, Contrasenna, Dirección, Teléfono, Rol)
-                    VALUES (NULL, ?, ?, ?, ?, ?, 1);";
-            $consulta = $this->db->getCon()->prepare($sent);
-            $consulta->bind_param("sssss", $n, $correo, $con, $dir, $tel);
-            $consulta->execute();
-            return true;
-        } catch (Exception $e) {
+            if (password_verify($cont, $hash_guardado)) {
+                return $rol;
+            } else {
+                return false;
+            }
+        } else {
+            $consulta->close();
             return false;
         }
     }
+ public function registro($n, $correo, $con, $dir, $tel)
+ {
+     $pass = password_hash($con, PASSWORD_DEFAULT);
+ 
+     // Verifica si el correo ya está en uso
+     $sent = "SELECT ID_Usuario FROM usuarios WHERE Correo = ?";
+     $consulta = $this->db->getCon()->prepare($sent);
+     $consulta->bind_param("s", $correo);
+     $consulta->execute();
+     $consulta->store_result();
+ 
+     if ($consulta->num_rows > 0) {
+         $consulta->close();
+         return [
+             "result" => false,
+             "message" => "Email already exists"
+         ];
+     }
+     $consulta->close();
+ 
+     // Si no existe, procede con el registro
+     try {
+        $sent = "INSERT INTO usuarios (`ID_Usuario`, `Nombre`, `Correo`, `Contrasenna`, `Dirección`, `Teléfono`, `Rol`)
+                VALUES (NULL, ?, ?, ?, ?, ?, 1);";
+        $consulta = $this->db->getCon()->prepare($sent);
+        if (!$consulta) {
+            throw new Exception("Prepare failed: " . $this->db->getCon()->error);
+        }
+        $consulta->bind_param("sssss", $n, $correo, $pass, $dir, $tel);
+        if (!$consulta->execute()) {
+            throw new Exception("Execute failed: " . $consulta->error);
+        }
+        $consulta->close();
+        return [
+            "id"=> $this->db->getCon()->insert_id,
+            "result" => true,
+            "message" => "User registered successfully"
+        ];
+    } catch (Exception $e) {
+        error_log("Error en registro: " . $e->getMessage());
+        return [
+            "result" => false,
+            "message" => "Error: " . $e->getMessage()
+        ];
+    }
+ }
 
 
     public function estadisticas()
@@ -272,6 +293,16 @@ class usuarios
             error_log("Error en agregarCarrito: " . $e->getMessage());
             return false;
         }
+    }
+    function cambiarContrasena($id, $contrasena) {
+        
+        $pass = password_hash($contrasena, PASSWORD_DEFAULT);
+        $sent = "UPDATE usuarios SET Contrasenna = ? WHERE ID_Usuario = ?";
+        $consulta = $this->db->getCon()->prepare($sent);
+        $consulta->bind_param("si", $pass, $id);
+        $consulta->execute();
+        $consulta->close();
+        return true;
     }
 }
 ?>

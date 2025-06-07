@@ -42,3 +42,13 @@ nav{
   border: none;
   cursor: pointer;
 }
+
+button:hover{
+  cursor: pointer;
+}
+#back{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 50;
+}

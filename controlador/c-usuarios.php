@@ -149,6 +149,18 @@ switch ($data["action"]) {
             echo json_encode(["success" => false, "message" => $e->getMessage()]);
         }
         break;
+    case "cambiarContrasena":
+        try {
+            $resultado = $GLOBALUSER->cambiarContrasena($data["id"], $data["contrasenna"]);
+            if ($resultado) {
+                echo json_encode(["success" => true, "message" => "Contrasenna cambiada correctamente"]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Error al cambiar la contrasenna"]);
+            }
+        } catch (Exception $e) {
+            echo json_encode(["success" => false, "message" => $e->getMessage()]);
+        }
+        break;
     default:
         echo json_encode(["success" => false, "message" => "Acción no válida"]);
         break;

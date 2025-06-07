@@ -4,14 +4,15 @@ import { Outlet } from 'react-router-dom';
 
 const AdminPlantilla = () => {
   return (
-    <>
-      <header>
-        <AdminNavbar />
-      </header>
-      <main>
-        <Outlet /> 
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <AdminNavbar />
+
+      {/* Contenido principal */}
+      <main className="flex-1">
+        <Outlet />
       </main>
-    </>
+    </div>
   );
 };
 

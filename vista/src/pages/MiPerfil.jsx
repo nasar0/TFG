@@ -4,9 +4,31 @@ import { AuthContext } from '../context/AuthContext';
 
 const MiPerfil = () => {
   const { logout, isAuthenticated } = useContext(AuthContext);
-
-
   const [userEmail, setUserEmail] = useState('');
+  const navigate = useNavigate();
+
+  // Estados para los datos del usuario
+  const [nombre, setNombre] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [direccion, setDireccion] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [id, setId] = useState(-1);
+  const [rol, setRol] = useState('');
+
+  // Estados para la UI
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Estados para el cambio de contraseña
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  // Cargar datos de sesión
   useEffect(() => {
     fetch('http://localhost/TFG/controlador/c-usuarios.php', {
       method: 'POST',
@@ -19,18 +41,21 @@ const MiPerfil = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.email) {
-          setUserEmail(data.email); // Aquí seteas el email cuando se recupera la sesión
+          setUserEmail(data.email);
         }
       });
   }, []);
+
+  // Redirigir si no está autenticado
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login'); // Redirige a la página de login si no está autenticado
+      navigate('/login');
     }
-  }, [isAuthenticated]);
-  // Cuando el email cambia, cargamos los datos del usuario
+  }, [isAuthenticated, navigate]);
+
+  // Cargar datos del usuario cuando cambia el email
   useEffect(() => {
-    if (userEmail) { // Solo cargar datos si el email está disponible
+    if (userEmail) {
       const cargarDatosUsuario = () => {
         fetch('http://localhost/TFG/controlador/c-usuarios.php', {
           method: 'POST',
@@ -48,6 +73,7 @@ const MiPerfil = () => {
             setTelefono(data.telefono);
             setId(data.id_usuario);
             setRol(data.rol);
+            setErrorMessage('');
           })
           .catch((error) => {
             console.error("Error al cargar los datos del usuario:", error);
@@ -57,62 +83,12 @@ const MiPerfil = () => {
       cargarDatosUsuario();
     }
   }, [userEmail]);
-  const navigate = useNavigate();
-
-  // Estados para los datos del usuario
-  const [nombre, setNombre] = useState('');
-  const [correo, setCorreo] = useState('');
-  const [direccion, setDireccion] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [id, setId] = useState(-1);
-  const [rol, setRol] = useState('');
-
-
-  // Estados para la UI
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-
 
   // Manejar cierre de sesión
   const handleLogout = () => {
-    logout(); 
+    logout();
     navigate('/');
   };
-
-  // Cargar datos del usuario
-  useEffect(() => {
-    const cargarDatosUsuario = () => {
-      setIsLoading(true);
-      fetch('http://localhost/TFG/controlador/c-usuarios.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ action: "listarEmail", email: userEmail }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setNombre(data.nombre);
-          setCorreo(data.correo);
-          setDireccion(data.direccion);
-          setTelefono(data.telefono);
-          setId(data.id_usuario);
-          setRol(data.rol);
-          setErrorMessage('');
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-          setErrorMessage('Error al cargar los datos del perfil');
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    };
-
-    cargarDatosUsuario();
-  }, [userEmail]);
 
   // Función para modificar los datos
   const modificarDatos = () => {
@@ -158,6 +134,57 @@ const MiPerfil = () => {
       });
   };
 
+  // Función para cambiar la contraseña
+  const handleChangePassword = () => {
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPasswordError('The password must be at least 8 characters long.');
+      return;
+    }
+
+    setIsLoading(true);
+    setPasswordError('');
+
+    fetch('http://localhost/TFG/controlador/c-usuarios.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: "cambiarContrasena",
+        id: id,
+        contrasenna: newPassword
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          setSuccessMessage('Password changed successfully');
+          setTimeout(() => {
+            setSuccessMessage('');
+            setShowChangePassword(false);
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+          }, 3000);
+        } else {
+          throw new Error(data.message || 'Error changing password');
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setPasswordError(error.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setShowChangePassword(false)
+      });
+  };
+
   // Alternar modo edición
   const toggleEdicion = () => {
     setIsEditing(!isEditing);
@@ -167,7 +194,6 @@ const MiPerfil = () => {
 
   return (
     <div className="min-h-screen bg-white relative overflow-hidden flex justify-center items-center">
-      {/* Líneas de construcción (estilo Virgil Abloh) */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="h-full w-px bg-black/5 left-1/4 absolute"></div>
         <div className="h-full w-px bg-black/5 left-1/2 absolute"></div>
@@ -192,22 +218,18 @@ const MiPerfil = () => {
             </div>
           </div>
 
-
           {/* Cuerpo con grid de museo */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
             {/* Sección izquierda - Avatar como obra de arte */}
             <div className="lg:border-r-2 border-black p-8 flex flex-col items-center justify-center">
               <div className="relative group">
                 <div className="w-40 h-40 rounded-full border-2 border-black overflow-hidden relative z-10">
-                  {isLoading ? (
-                    <div className="h-full w-full bg-gray-200 animate-pulse"></div>
-                  ) : (
-                    <img
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=000000&color=fff&bold=true&length=2`}
-                      alt="User Avatar"
-                      className="h-full w-full object-cover"
-                    />
-                  )}
+
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=000000&color=fff&bold=true&length=2`}
+                    alt="User Avatar"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <div className="absolute -inset-2 border-2 border-black rounded-full transform rotate-6 scale-105 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
@@ -216,6 +238,14 @@ const MiPerfil = () => {
                 <h2 className="text-xl font-black uppercase tracking-tightest">{nombre || 'USER NAME'}</h2>
                 <p className="text-xs mt-1 opacity-70">REGISTERED</p>
               </div>
+
+              {/* Botón para cambiar contraseña */}
+              <button
+                onClick={() => setShowChangePassword(!showChangePassword)}
+                className="mt-6 px-4 py-2 border border-black text-black text-xs font-bold uppercase tracking-wider hover:bg-gray-100 transition-colors"
+              >
+                {showChangePassword ? 'Cancel' : 'Change Password'}
+              </button>
             </div>
 
             {/* Sección central - Datos del usuario */}
@@ -225,27 +255,63 @@ const MiPerfil = () => {
                 PERSONAL INFORMATION
               </h3>
 
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-xs uppercase font-medium tracking-wider mb-2 opacity-70">Full Name</label>
-                  {isEditing ? (
+              {showChangePassword ? (
+                <div className="space-y-4">
+                  <h4 className="text-sm font-bold uppercase">CHANGE PASSWORD</h4>
+                  {passwordError && <p className="text-red-500 text-xs">{passwordError}</p>}
+
+                  <div>
+                    <label className="block text-xs uppercase font-medium tracking-wider mb-1 opacity-70">New Password</label>
                     <input
-                      type="text"
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
-                      className="w-full p-3 border-b border-black focus:outline-none text-sm uppercase tracking-wider bg-transparent"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="w-full p-2 border-b border-black focus:outline-none text-sm tracking-wider bg-transparent"
                       required
                     />
-                  ) : (
-                    <p className="text-lg font-medium uppercase tracking-tight">{nombre}</p>
-                  )}
-                </div>
+                  </div>
 
-                <div>
-                  <label className="block text-xs uppercase font-medium tracking-wider mb-2 opacity-70">Email</label>
-                  <p className="text-sm uppercase tracking-wider text-gray-700">{correo}</p>
+                  <div>
+                    <label className="block text-xs uppercase font-medium tracking-wider mb-1 opacity-70">Confirm Password</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full p-2 border-b border-black focus:outline-none text-sm tracking-wider bg-transparent"
+                      required
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleChangePassword}
+                    className="mt-4 px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-900 disabled:opacity-50 transition-colors flex items-center justify-center"
+                  >
+                    <span>Save New Password</span>
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-xs uppercase font-medium tracking-wider mb-2 opacity-70">Full Name</label>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        className="w-full p-3 border-b border-black focus:outline-none text-sm uppercase tracking-wider bg-transparent"
+                        required
+                      />
+                    ) : (
+                      <p className="text-lg font-medium uppercase tracking-tight">{nombre}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase font-medium tracking-wider mb-2 opacity-70">Email</label>
+                    <p className="text-sm uppercase tracking-wider text-gray-700">{correo}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Sección derecha - Datos adicionales */}
@@ -299,20 +365,11 @@ const MiPerfil = () => {
                 </button>
                 <button
                   onClick={modificarDatos}
-                  disabled={isLoading}
                   className="px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-900 disabled:opacity-50 transition-colors flex items-center"
                 >
-                  {isLoading ? (
-                    <span className="flex items-center">
-                      <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" className="opacity-25" />
-                        <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75" fill="currentColor" />
-                      </svg>
-                      Processing...
-                    </span>
-                  ) : (
+                  
                     <span>Save Changes →</span>
-                  )}
+                
                 </button>
               </div>
             ) : (

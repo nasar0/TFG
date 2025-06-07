@@ -22,6 +22,7 @@ const Login = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log(data);
         if (data.success) {
           login(email); 
           localStorage.removeItem("fav");

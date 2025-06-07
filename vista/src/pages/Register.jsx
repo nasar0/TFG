@@ -65,6 +65,7 @@ const Register = () => {
           if (data) {
             setErrorMsg("REGISTRATION SUCCESSFUL")
             setType("success")
+            agregarFavorito(data.id)
             setTimeout(() => {
               navigate(-1)
             }, 2000);
@@ -83,7 +84,24 @@ const Register = () => {
       }, 200);
     }
   };
+  const agregarFavorito = async (id) => {
 
+    try {
+      const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: "addAFav", id: id, ids: Array.from(JSON.parse(localStorage.getItem("fav") || "[]")) }),
+      })
+      const data = await response.json()
+      return data.success
+    } catch (error) {
+      console.error('Error al agregar favorito:', error)
+      return false
+    }
+  }
+  
 
 
   return (

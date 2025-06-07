@@ -47,7 +47,7 @@ function Navbar() {
           {/* Logo - Centered */}
           <div className="md:w-2/4 flex justify-center">
             <Link to="/">
-              <h2 className={`font-black ${!hasScrolled ? "text-7xl md:text-7xl" : "text-3xl md:text-4xl"} transition-[font-size] duration-500 ease-in-out`}>
+              <h2 className={`font-black ${!hasScrolled ? "text-5xl md:text-7xl" : "text-3xl md:text-4xl"} transition-[font-size] duration-500 ease-in-out`}>
                 K<span className="mirror">k</span>armx
               </h2>
             </Link>
@@ -64,7 +64,7 @@ function Navbar() {
             <Link to="/cart" className="w-5">
               <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
             </Link>
-            
+            <Link to={"/fav"}><i className='bx bx-heart text-gray-500 text-[20px]'></i></Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-gray-700 focus:outline-none"

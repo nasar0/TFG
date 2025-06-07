@@ -112,52 +112,71 @@ const AdminCategorias = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
       <button
-        className=" text-white py-2 my-5 px-4 rounded-lg text-sm hover:bg-[#4A5465] hover:cursor-pointer bg-[#697282] transition"
+        className="text-white py-2 my-5 px-4 rounded-lg text-sm hover:bg-[#4A5465] hover:cursor-pointer bg-[#697282] transition w-full sm:w-auto"
         onClick={() => setMostrarModal(true)}
       >
         Agregar Categoría
       </button>
-      <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-300">
+      
+      <div className="overflow-x-auto bg-white shadow-xl rounded-2xl border border-gray-300">
         <table className="min-w-full table-auto text-sm">
           <thead className="bg-gradient-to-r from-gray-500 to-gray-700 text-white">
             <tr>
               {['ID', 'Nombre', 'Descripción', 'Acciones'].map((header) => (
-                <th key={header} className="px-6 py-4 text-left font-semibold">{header}</th>
+                <th key={header} className="px-4 sm:px-6 py-3 text-left font-semibold">{header}</th>
               ))}
             </tr>
           </thead>
           <tbody className="text-gray-700">
             {listar.map((categoria, index) => (
               <tr key={index} className="border-b hover:bg-blue-50 transition duration-300">
-                <td className="px-6 py-4 font-medium">{categoria.id}</td>
-                <td className="px-6 py-4">
+                <td className="px-4 sm:px-6 py-4 font-medium">{categoria.id}</td>
+                <td className="px-4 sm:px-6 py-4">
                   {editando === categoria.id ? (
-                    <input type="text" value={nombre} onChange={formularioCambios(setNombre)} className="border rounded px-3 py-1 w-full" />
+                    <input 
+                      type="text" 
+                      value={nombre} 
+                      onChange={formularioCambios(setNombre)} 
+                      className="border rounded px-3 py-1 w-full max-w-xs" 
+                    />
                   ) : (
                     categoria.nombre
                   )}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-4 sm:px-6 py-4">
                   {editando === categoria.id ? (
-                    <input type="text" value={descripcion} onChange={formularioCambios(setDescripcion)} className="border rounded px-3 py-1 w-full" />
+                    <input 
+                      type="text" 
+                      value={descripcion} 
+                      onChange={formularioCambios(setDescripcion)} 
+                      className="border rounded px-3 py-1 w-full max-w-xs" 
+                    />
                   ) : (
-                    categoria.descripcion
+                    <span className="truncate max-w-xs inline-block">
+                      {categoria.descripcion}
+                    </span>
                   )}
                 </td>
-                <td className="px-6 py-4 flex gap-2">
+                <td className="px-4 sm:px-6 py-4 flex flex-wrap gap-2">
                   {editando === categoria.id ? (
-                    <button className="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition" onClick={() => guardarEdicion(categoria.id)}>
+                    <button 
+                      className="bg-blue-500 text-white py-1 sm:py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm hover:bg-blue-600 transition"
+                      onClick={() => guardarEdicion(categoria.id)}
+                    >
                       Guardar
                     </button>
                   ) : (
-                    <button className="bg-green-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-green-600 transition" onClick={() => iniciarEdicion(categoria)}>
+                    <button 
+                      className="bg-green-500 text-white py-1 sm:py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm hover:bg-green-600 transition"
+                      onClick={() => iniciarEdicion(categoria)}
+                    >
                       Modificar
                     </button>
                   )}
                   <button
-                    className="bg-red-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-red-600 transition"
+                    className="bg-red-500 text-white py-1 sm:py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm hover:bg-red-600 transition"
                     onClick={() => eliminar(categoria.id)}
                   >
                     Eliminar
@@ -168,22 +187,19 @@ const AdminCategorias = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Botón para abrir el modal de agregar categoría */}
-      
-
+  
       {/* Modal para agregar una nueva categoría */}
       {mostrarModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-1/2">
-            <h2 className="text-xl font-bold mb-4">Agregar Nueva Categoría</h2>
-            <div className="space-y-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+          <div className="bg-white p-4 sm:p-6 rounded-lg w-full max-w-md sm:max-w-lg lg:max-w-xl">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">Agregar Nueva Categoría</h2>
+            <div className="space-y-3 sm:space-y-4">
               <input
                 type="text"
                 placeholder="Nombre"
                 value={nombreNuevo}
                 onChange={formularioCambios(setNombreNuevo)}
-                className="border rounded px-3 py-2 w-full"
+                className="border rounded px-3 py-1 sm:py-2 w-full"
                 required
               />
               <input
@@ -191,18 +207,18 @@ const AdminCategorias = () => {
                 placeholder="Descripción"
                 value={descripcionNuevo}
                 onChange={formularioCambios(setDescripcionNuevo)}
-                className="border rounded px-3 py-2 w-full"
+                className="border rounded px-3 py-1 sm:py-2 w-full"
                 required
               />
-              <div className="flex justify-end space-x-4">
+              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
                 <button
-                  className="bg-gray-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-gray-600 transition"
+                  className="bg-gray-500 text-white py-1 sm:py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm hover:bg-gray-600 transition order-2 sm:order-1"
                   onClick={() => setMostrarModal(false)}
                 >
                   Cancelar
                 </button>
                 <button
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg text-sm hover:bg-blue-600 transition"
+                  className="bg-blue-500 text-white py-1 sm:py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm hover:bg-blue-600 transition order-1 sm:order-2"
                   onClick={agregarCategoria}
                 >
                   Guardar

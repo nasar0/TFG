@@ -31,7 +31,7 @@ const palabrasClave = {
   "oferta": ["oferta", "ofertas", "descuento", "promoción", "código descuento"],
   "seguimiento": ["seguimiento", "pedido", "dónde está mi pedido", "tracking"],
   "agradecimiento": ["agradecimiento", "gracias", "thanks", "ok"],
-  "despedida": ["adiós", "chao", "hasta luego", "despedida" ,"salir"],
+  "despedida": ["adiós", "chao", "hasta luego", "despedida", "salir"],
 };
 
 // Sugerencias para cuando no se entiende la pregunta
@@ -49,7 +49,7 @@ const ChatBot = () => {
   const [cargando, setCargando] = useState(true);
   const mensajesEndRef = useRef(null);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const cargarModelo = async () => {
       try {
@@ -60,10 +60,10 @@ const ChatBot = () => {
         const modeloCargado = await use.load();
         setUseModel(use); // Guardamos el módulo para luego
         setModelo(modeloCargado);
-        
-        setMensajes([{ 
-          texto: "¡Hola! Soy el asistente de KarmaX. ¿En qué puedo ayudarte hoy?", 
-          esUsuario: false 
+
+        setMensajes([{
+          texto: "¡Hola! Soy el asistente de KarmaX. ¿En qué puedo ayudarte hoy?",
+          esUsuario: false
         }]);
       } catch (error) {
         console.error("Error al cargar el modelo:", error);
@@ -103,16 +103,16 @@ const ChatBot = () => {
 
     try {
       const preguntaNorm = normalizarTexto(pregunta);
-        if (preguntaNorm === "salir") {
-          setTimeout(() => {
-            return window.location.href = "/";
-          }, 2000);
-        }
+      if (preguntaNorm === "salir") {
+        setTimeout(() => {
+          return window.location.href = "/";
+        }, 2000);
+      }
 
       for (const [categoria, palabras] of Object.entries(palabrasClave)) {
         for (const palabra of palabras) {
           if (preguntaNorm.includes(palabra)) {
-            
+
             return respuestas[categoria];
           }
         }
@@ -137,10 +137,10 @@ const ChatBot = () => {
         }
       }
 
-      return mejorSimilitud > umbral 
-        ? respuestas[mejorCategoria] 
+      return mejorSimilitud > umbral
+        ? respuestas[mejorCategoria]
         : obtenerSugerencias(preguntaNorm);
-      
+
     } catch (error) {
       console.error("Error al procesar la pregunta:", error);
       return "Lo siento, hubo un error al procesar tu pregunta. Por favor, inténtalo de nuevo.";
@@ -163,7 +163,7 @@ const ChatBot = () => {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-black">
       <div className='m-5'>
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="
             bg-white text-gray-700 
@@ -172,27 +172,28 @@ const ChatBot = () => {
             hover:bg-gray-50 
             transition-colors
             text-sm
+            z-50
           "
+          id='back'
         >
-          ← 
+          ←
         </button>
       </div>
       {/* Sección del Spline (1/3 del ancho en desktop) */}
-       <div className="w-1/3 bg-black flex items-center justify-center">
-          
-        <div className="w-full h-96"> {/* Tamaño reducido */}
-          <Spline 
-            scene="https://prod.spline.design/eGGULNkNTtOWHzkD/scene.splinecode" 
-            style={{ width: '100%', height: '100%' }}
+      <div className="w-full md:w-1/3 h-1/3 bg-black flex items-center justify-center mx-auto"> {/* mx-auto para centrar en móvil */}
+        <div className="w-full max-w-md flex items-center justify-center "> {/* max-w-md limita el ancho en móvil */}
+          <Spline
+            className="w-full h-full "
+            scene="https://prod.spline.design/eGGULNkNTtOWHzkD/scene.splinecode"
           />
         </div>
       </div>
       {/* Sección del Chat (2/3 del ancho en desktop) */}
-      <div className="md:w-2/3 flex flex-col h-full bg-neutral-900 text-white rounded-l-lg shadow-xl">
+      <div className="md:w-2/3 flex flex-col md:h-full h-2/3 bg-neutral-900 text-white rounded-l-lg shadow-xl">
         <div className="p-4 bg-neutral-800 border-b border-neutral-700">
           <h2 className="text-xl font-bold text-white">Asistente KarmaX</h2>
         </div>
-        
+
         <div className="flex-1 p-4 overflow-y-auto">
           {mensajes.map((mensaje, index) => (
             <div
@@ -200,11 +201,10 @@ const ChatBot = () => {
               className={`mb-4 ${mensaje.esUsuario ? 'text-right' : 'text-left'}`}
             >
               <div
-                className={`inline-block px-4 py-2 rounded-lg max-w-xs md:max-w-md ${
-                  mensaje.esUsuario
+                className={`inline-block px-4 py-2 rounded-lg max-w-xs md:max-w-md ${mensaje.esUsuario
                     ? 'bg-gray-700 text-white rounded-br-none'
                     : 'bg-gray-300 text-black rounded-bl-none'
-                }`}
+                  }`}
               >
                 {mensaje.texto.split('\n').map((linea, i) => (
                   <p key={i}>{linea}</p>
@@ -217,7 +217,7 @@ const ChatBot = () => {
           )}
           <div ref={mensajesEndRef} />
         </div>
-        
+
         <form onSubmit={manejarEnviarMensaje} className="p-4 border-t border-neutral-700">
           <div className="flex">
             <input
@@ -242,7 +242,7 @@ const ChatBot = () => {
         </form>
       </div>
 
-      
+
     </div>
   );
 };
