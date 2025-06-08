@@ -358,7 +358,7 @@ const Cart = ({ onClose }) => {
                 SHOPPING CART
               </h1>
               <button
-                onClick={() => navigate(-1)} // Asegúrate de llamar a onClose así
+                onClick={() => onClose()} // Asegúrate de llamar a onClose así
                 className="text-gray-500 hover:text-black text-2xl"
               >
                 &times;

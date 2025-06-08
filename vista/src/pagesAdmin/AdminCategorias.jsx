@@ -109,6 +109,7 @@ const AdminCategorias = () => {
       .catch((error) => {
         console.error('Error:', error);
       });
+      cargarCategorias();
   };
 
   return (

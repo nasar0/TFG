@@ -79,45 +79,45 @@ const AdminProductos = () => {
 
   // Función para manejar la selección de archivos
   // Función para manejar la selección de archivos
-const manejarSeleccionArchivo = (e) => {
-  const archivos = Array.from(e.target.files); // Convertir FileList a un array
-  setImagenesSeleccionadas(archivos); // Guardar los archivos en el estado
-};
+  const manejarSeleccionArchivo = (e) => {
+    const archivos = Array.from(e.target.files); // Convertir FileList a un array
+    setImagenesSeleccionadas(archivos); // Guardar los archivos en el estado
+  };
 
-// Función para subir las imágenes al backend
-const subirImagenes = () => {
-  const formData = new FormData();
-  
-  // Solo añadir imágenes si el usuario seleccionó alguna
-  if (imagenesSeleccionadas.length > 0) {
-    imagenesSeleccionadas.forEach((imagen) => {
-      formData.append('imagen[]', imagen); // Agregar cada imagen al FormData
-    });
-  }
+  // Función para subir las imágenes al backend
+  const subirImagenes = () => {
+    const formData = new FormData();
 
-  formData.append('id', productoActual.id); // Añadir el ID del producto
-  formData.append('imagenesActuales', imagenesActuales.join(',')); // Enviar las imágenes actuales
-  formData.append('action', 'subirImagenes'); // Especificar la acción
+    // Solo añadir imágenes si el usuario seleccionó alguna
+    if (imagenesSeleccionadas.length > 0) {
+      imagenesSeleccionadas.forEach((imagen) => {
+        formData.append('imagen[]', imagen); // Agregar cada imagen al FormData
+      });
+    }
 
-  fetch('http://localhost/TFG/controlador/c-productos.php', {
-    method: 'POST',
-    body: formData,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        alert("Imágenes actualizadas correctamente.");
-        cargarProductos(); // Recargar la lista de productos
-        cerrarModalImagenes(); // Cerrar el modal de imágenes
-      } else {
-        throw new Error("Error al subir las imágenes: " + data.message);
-      }
+    formData.append('id', productoActual.id); // Añadir el ID del producto
+    formData.append('imagenesActuales', imagenesActuales.join(',')); // Enviar las imágenes actuales
+    formData.append('action', 'subirImagenes'); // Especificar la acción
+
+    fetch('http://localhost/TFG/controlador/c-productos.php', {
+      method: 'POST',
+      body: formData,
     })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert(error.message);
-    });
-};
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Imágenes actualizadas correctamente.");
+          cargarProductos(); // Recargar la lista de productos
+          cerrarModalImagenes(); // Cerrar el modal de imágenes
+        } else {
+          throw new Error("Error al subir las imágenes: " + data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert(error.message);
+      });
+  };
 
   // Función para eliminar una imagen actual
   const eliminarImagenActual = (index) => {
@@ -199,97 +199,103 @@ const subirImagenes = () => {
       .catch((error) => {
         console.error('Error:', error);
       });
-  }; 
+  };
   useEffect(() => {
     cargarCategorias();
   }, []);
   return (
     <>
-    
-    
-    <div className="max-w-7xl mx-auto px-4 mt-6 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center mb-6">
+
+
+      <div className="max-w-7xl mx-auto px-4 mt-6 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center mb-6">
           <button
             className=" text-white py-2 px-4 rounded-lg text-sm hover:bg-[#4A5465] hover:cursor-pointer bg-[#697282] transition"
             onClick={() => abrirModalProducto()}
           >
             Agregar Producto
           </button>
-          <input 
-            type="text" 
-            className="border border-gray-300 rounded-lg px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-            placeholder="Buscar producto..." 
+          <input
+            type="search"
+            className="border border-gray-300 rounded-lg px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Buscar producto..."
             value={busqueda}
             onChange={busquedaSave}
           />
-      </div>   
-      <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-200">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-gray-500 to-gray-700 text-white">
-
-              <tr>
-                {['ID', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Tamaño', 'Color', 'Género', 'Categoría', 'Acciones'].map((header) => (
-                  <th 
-                    key={header} 
-                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {listar.filter(producto => producto.nombre.toLowerCase().includes(busqueda.toLowerCase())).map((producto, index) => (
-                <tr 
-                  key={index} 
-                  className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors`}
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{producto.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.nombre}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{producto.descripcion}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.precio}€</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.stock}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.tamano}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex items-center">
-                      <span className="w-3 h-3 rounded-full mr-2" style={{backgroundColor: producto.color}}></span>
-                      {producto.color}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{producto.genero}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.categoria}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button
-                        className="bg-green-500 text-white py-1 px-3 rounded text-xs hover:bg-green-600 transition"
-                        onClick={() => abrirModalProducto(producto)}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        className="bg-yellow-500 text-white py-1 px-3 rounded text-xs hover:bg-yellow-600 transition"
-                        onClick={() => abrirModalImagenes(producto)}
-                      >
-                        Imágenes
-                      </button>
-                      <button
-                        className="bg-red-500 text-white py-1 px-3 rounded text-xs hover:bg-red-600 transition"
-                        onClick={() => eliminarProducto(producto.id)}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
+        <div className="overflow-hidden bg-white shadow-xl rounded-2xl border border-gray-200">
+          <div
+            className="overflow-auto"
+            style={{
+              maxHeight: 'calc(100vh - 200px)', // Altura máxima para scroll vertical
+              overflowX: 'auto' // Scroll horizontal
+            }}
+          >
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gradient-to-r from-gray-500 to-gray-700 text-white">
+
+                <tr>
+                  {['ID', 'Nombre', 'Descripción', 'Precio', 'Stock', 'Tamaño', 'Color', 'Género', 'Categoría', 'Acciones'].map((header) => (
+                    <th
+                      key={header}
+                      className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {listar.filter(producto => producto.nombre.toLowerCase().includes(busqueda.toLowerCase())).map((producto, index) => (
+                  <tr
+                    key={index}
+                    className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors`}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{producto.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.nombre}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{producto.descripcion}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.precio}€</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.stock}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.tamano}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex items-center">
+                        <span className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: producto.color }}></span>
+                        {producto.color}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{producto.genero}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{producto.categoria}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex space-x-2">
+                        <button
+                          className="bg-green-500 text-white py-1 px-3 rounded text-xs hover:bg-green-600 transition"
+                          onClick={() => abrirModalProducto(producto)}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          className="bg-yellow-500 text-white py-1 px-3 rounded text-xs hover:bg-yellow-600 transition"
+                          onClick={() => abrirModalImagenes(producto)}
+                        >
+                          Imágenes
+                        </button>
+                        <button
+                          className="bg-red-500 text-white py-1 px-3 rounded text-xs hover:bg-red-600 transition"
+                          onClick={() => eliminarProducto(producto.id)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
-      
-    </div>
-            
+
       {/* Modal para datos del producto */}
       {modalProductoAbierto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -423,7 +429,7 @@ const subirImagenes = () => {
                   {imagenesActuales.filter(url => url.trim() !== '').map((url, index) => (
                     <div key={index} className="relative">
                       <img
-                        src={"../../public/img/prods/"+url}
+                        src={"../../public/img/prods/" + url}
                         alt={`Imagen ${index}`}
                         className="w-full h-[200px] object-cover rounded-lg"
                       />

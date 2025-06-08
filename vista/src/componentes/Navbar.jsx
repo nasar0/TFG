@@ -205,7 +205,7 @@ function Navbar() {
             </button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 py-6">
             <Link to="/contact" className="block py-2 text-[12px]" onClick={() => setMobileMenuOpen(false)}>
               Contact us
             </Link>

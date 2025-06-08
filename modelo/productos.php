@@ -96,6 +96,7 @@ class productos
         if ($nomCat !== null) {
             $sent .= "and categoria.Nombre_Categoría = ? ";
         }
+        $sent .= "ORDER BY id_productos ";
         $consulta = $this->db->getCon()->prepare($sent);
 
 
@@ -132,6 +133,7 @@ class productos
         if ($nomCat !== null) {
             $sent .= "and categoria.Nombre_Categoría = ? ";
         }
+        $sent .= "ORDER BY color ";
         $consulta = $this->db->getCon()->prepare($sent);
 
 
@@ -168,6 +170,7 @@ class productos
         if ($nomCat !== null) {
             $sent .= "and categoria.Nombre_Categoría = ? ";
         }
+        $sent .= "ORDER BY nombre ";
         $consulta = $this->db->getCon()->prepare($sent);
 
 
@@ -205,7 +208,7 @@ class productos
             $sent = "INSERT INTO productos (nombre, descripcion, precio, stock, tamano, color, img_URL, genero, categoria)
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $consulta = $this->db->getCon()->prepare($sent);
-            $consulta->bind_param("ssdiisssi", $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
+            $consulta->bind_param("ssdissssi", $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
             if ($consulta->execute()) {
                 return true;
             } else {

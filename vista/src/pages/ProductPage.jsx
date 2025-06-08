@@ -291,9 +291,11 @@ const ProductPage = () => {
                   {colores.map((color, index) => (
                     <span 
                       key={index}
-                      className={`block w-8 h-8 rounded-full ${color === "black" ? "bg-black" : `bg-${color}-500`} border border-gray-300 cursor-pointer hover:ring-2 hover:ring-gray-400 transition-all`}
+                      className={`block w-8 h-8 rounded-full border border-gray-300 cursor-pointer hover:ring-2 hover:ring-gray-400 transition-all`}
+                      style={{ backgroundColor: color }}
                       title={color}
                     />
+                    
                   ))}
                 </div>
               </div>

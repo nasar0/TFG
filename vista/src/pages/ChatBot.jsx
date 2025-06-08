@@ -13,7 +13,7 @@ const respuestas = {
   "talla": "Tallas disponibles: XS a XL.",
   "coleccion": "Nueva colección Primavera/Verano 2024: \n- Vestidos ligeros \n- Jeans sostenibles \n¡Mira el catálogo [aquí](www.karmax.com)!",
   "oferta": "¡OFERTA ESPECIAL! \n30% de descuento con código **QWERTY**. Válido hasta 31/12.",
-  "seguimiento": "Consulta el estado de tu pedido en el email de confirmación o escríbenos tu nº de pedido.",
+  "seguimiento": "Consulta el estado de tu pedido en el email de confirmación o llama a atencion al cliente.",
   "agradecimiento": "¡Gracias por elegir KarmaX! ¿Necesitas algo más?",
   "despedida": "¡Hasta pronto! Si tienes más dudas, aquí estaré.",
 };
@@ -180,8 +180,8 @@ const ChatBot = () => {
         </button>
       </div>
       {/* Sección del Spline (1/3 del ancho en desktop) */}
-      <div className="w-full md:w-1/3 h-1/3 bg-black flex items-center justify-center mx-auto"> {/* mx-auto para centrar en móvil */}
-        <div className="w-full max-w-md flex items-center justify-center "> {/* max-w-md limita el ancho en móvil */}
+      <div className="w-full md:w-1/3 md:h-1/3 bg-black flex items-center justify-center mx-auto"> {/* mx-auto para centrar en móvil */}
+        <div className="w-full h-[30vh] lg:h-full max-w-md  flex justify-center items-center "> {/* max-w-md limita el ancho en móvil */}
           <Spline
             className="w-full h-full "
             scene="https://prod.spline.design/eGGULNkNTtOWHzkD/scene.splinecode"
