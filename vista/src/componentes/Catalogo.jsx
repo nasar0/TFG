@@ -31,7 +31,9 @@ const Catalogo = () => {
                 newText = `Crafted beyond trends — shaped by intention. A space where rarity meets "relevance". For those who move differently. Precision in every stitch. Purpose in every piece. Designed for the few, not the many. Built for moments that aren't repeated.`;
                 break;
             default:
-                newTitle = 'Productos';
+                newTitle = 'ALL';
+                newText = `All from karmax`;
+                action = 'listar';
         }
 
         setTitle(newTitle);

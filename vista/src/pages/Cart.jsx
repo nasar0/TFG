@@ -12,6 +12,8 @@ const Cart = ({ onClose }) => {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const modalRef = useRef(null);
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
+
   const cargarProductosCart = () => {
     fetch('http://localhost/TFG/controlador/c-productos.php', {
       method: 'POST',
@@ -330,6 +332,19 @@ const Cart = ({ onClose }) => {
     return () => mediaQuery.removeEventListener('change', handleResize);
   }, []);
 
+  useEffect(() => {
+    // Detecta si el ancho es de móvil (puedes ajustar el valor si lo necesitas)
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
+
+  const handleClick = () => {
+    if (isMobile) {
+      navigate(-1); // Navega hacia atrás si está en móvil
+    } else {
+      onClose(); // Llama a onClose si está en escritorio
+    }
+  };
+
   return (
     <>
       {message && (
@@ -358,7 +373,7 @@ const Cart = ({ onClose }) => {
                 SHOPPING CART
               </h1>
               <button
-                onClick={() => onClose()} // Asegúrate de llamar a onClose así
+                onClick={() => handleClick()} 
                 className="text-gray-500 hover:text-black text-2xl"
               >
                 &times;

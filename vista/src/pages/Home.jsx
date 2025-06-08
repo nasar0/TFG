@@ -49,7 +49,7 @@ const Home = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ action: "listar" }),
+      body: JSON.stringify({ action: "getProdMujer" }),
     })
       .then((response) => response.json())
       .then((data) => setWomen(data))
@@ -62,7 +62,7 @@ const Home = () => {
       <div className='px-5'>
         <div ><a href="/"><img src="/img/baners/banerinicio.jpg" className='w-full h-[90vh] object-top object-cover' alt="" /></a></div>
         <a href=""><p className="text-[23px] pt-2">"BRB CITY EXCLUSIVES"</p></a>
-        <Link to="/tu-ruta" className="relative inline-block pb-1 transition-all duration-300 hover:text-[#afafaf] text-[13px] uppercase underline hover:underline-offset-4">Explore the new collection
+        <Link to="/catalog/exclusive" className="relative inline-block pb-1 transition-all duration-300 hover:text-[#afafaf] text-[13px] uppercase underline hover:underline-offset-4">Explore the new collection
 
         </Link>
       </div>
@@ -70,14 +70,14 @@ const Home = () => {
       <div className='p-5'>
         <div ><a href="/"><img src="/img/baners/men.jpg" className='w-full h-[90vh] object-top object-cover' alt="" /></a></div>
         <a href=""><p className="text-[23px] pt-2">SS25 Menswear</p></a>
-        <Link to="/tu-ruta" className="relative inline-block pb-1  underline hover:underline-offset-4 transition-all duration-300 hover:text-[#afafaf] text-[13px]">SHOP NOW
+        <Link to="/catalog/men" className="relative inline-block pb-1  underline hover:underline-offset-4 transition-all duration-300 hover:text-[#afafaf] text-[13px]">SHOP NOW
         </Link>
       </div>
       <Carrusel listar={men} />
       <div className='p-5'>
         <div ><a href="/"><img src="/img/baners/woman.jpg" className='w-full h-[90vh] object-top object-cover' alt="" /></a></div>
         <a href=""><p className="text-[23px] pt-2">SS25 Womenswear</p></a>
-        <Link to="/tu-ruta" className="relative inline-block pb-1  underline hover:underline-offset-4 transition-all duration-300 hover:text-[#afafaf] text-[13px]">SHOP NOW
+        <Link to="/catalog/women" className="relative inline-block pb-1  underline hover:underline-offset-4 transition-all duration-300 hover:text-[#afafaf] text-[13px]">SHOP NOW
         </Link>
       </div>
       <Carrusel listar={women} />

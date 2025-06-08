@@ -8,137 +8,122 @@ const Carrusel = ({ listar }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
-
+    const { idUser } = useContext(AuthContext)
     // Estado de favoritos
     const [favoritos, setFavoritos] = useState([])
     const [loadingFavoritos, setLoadingFavoritos] = useState(false)
-    const { idUser } = useContext(AuthContext)
-
-    // Cargar favoritos al montar el componente
+  
     useEffect(() => {
-        const cargarFavoritos = async () => {
-            setLoadingFavoritos(true);
-
-            // Limpiar favoritos si no hay usuario
-            if (!idUser) {
-                setFavoritos([]);
-                setLoadingFavoritos(false);
-                return;
-            }
-
-            // Cargar de BD solo si hay usuario
-            try {
-                const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ action: "getFavoritosByUsuario", id: idUser }),
-                });
-                const data = await response.json();
-                const favoriteIds = data.map(item => item.id_productos || item.id);
-                setFavoritos(favoriteIds);
-            } catch (error) {
-                console.error('Error al cargar favoritos:', error);
-            }
-            setLoadingFavoritos(false);
-        };
-
-        cargarFavoritos();
-    }, [idUser]); // Solo depende de idUser
-
-
-
-    const toggleFavorito = async (id, e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!idUser) {
-            // Para no logueados: usar localStorage directamente
-            const saved = JSON.parse(localStorage.getItem('fav') || '[]');
-
-            const isFavorite = saved.includes(id);
-
-            const newFavoritos = isFavorite
-                ? saved.filter(item => item !== id)
-                : [...saved, id];
-
-            localStorage.setItem('fav', JSON.stringify(newFavoritos));
-            setFavoritos(newFavoritos);
-            return;
-        }
-        if (loadingFavoritos) return;
-
-        const isFavorite = favoritos.includes(id);
+      const cargarFavoritos = async () => {
         setLoadingFavoritos(true);
-
-        try {
-            if (idUser) {
-                // Usuario registrado: operación en base de datos
-                let success;
-                if (isFavorite) {
-                    success = await eliminarFavorito(id);
-                } else {
-                    success = await agregarFavorito(id);
-                }
-
-                if (success) {
-                    setFavoritos(prev =>
-                        isFavorite
-                            ? prev.filter(item => item !== id)
-                            : [...prev, id]
-                    );
-                }
-            } else {
-                // Usuario no registrado: operación en localStorage
-                setFavoritos(prev =>
-                    isFavorite
-                        ? prev.filter(item => item !== id)
-                        : [...prev, id]
-                );
-            }
-        } catch (error) {
-            console.error("Error al actualizar favoritos:", error);
-        } finally {
-            setLoadingFavoritos(false);
+  
+        // Limpiar favoritos si no hay usuario
+        if (!idUser) {
+          setFavoritos([]);
+          setFavoritos(JSON.parse(localStorage.getItem("fav") || "[]"))
+          setLoadingFavoritos(false);
+          return;
         }
-    };
-
-    const agregarFavorito = async (id) => {
-        if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
-
+  
+        // Cargar de BD solo si hay usuario
         try {
-            const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ action: "addAFav", id: idUser, ids: [id] }),
-            })
-            const data = await response.json()
-            return data.success
+          const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: "getFavoritosByUsuario", id: idUser }),
+          });
+          const data = await response.json();
+          const favoriteIds = data.map(item => item.id_productos || item.id);
+          setFavoritos(favoriteIds);
         } catch (error) {
-            console.error('Error al agregar favorito:', error)
-            return false
+          console.error('Error al cargar favoritos:', error);
         }
+        setLoadingFavoritos(false);
+      };
+  
+      cargarFavoritos();
+    }, [idUser]); // Solo depende de idUser
+  
+  
+  const toggleFavorito = async (id, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  
+    const isFavorite = favoritos.includes(id);
+  
+    // Actualización optimista SIEMPRE
+    setFavoritos(prev =>
+      isFavorite
+        ? prev.filter(item => item !== id)
+        : [...prev, id]
+    );
+  
+    if (!idUser) {
+      // Para no logueados: usar localStorage directamente
+      const saved = JSON.parse(localStorage.getItem('fav') || "[]");
+      const newFavoritos = isFavorite
+        ? saved.filter(item => item !== id)
+        : [...saved, id];
+      localStorage.setItem('fav', JSON.stringify(newFavoritos));
+      return;
     }
-
+  
+    if (loadingFavoritos) return;
+    setLoadingFavoritos(true);
+  
+    try {
+      if (isFavorite) {
+        await eliminarFavorito(id);
+      } else {
+        await agregarFavorito(id);
+      }
+      // NO revertimos el cambio nunca, porque confiamos en el backend
+    } catch (error) {
+      // Solo logueamos el error, pero no revertimos el cambio visual
+      console.error("Error al actualizar favoritos:", error);
+    } finally {
+      setLoadingFavoritos(false);
+    }
+  };
+  
+    const agregarFavorito = async (id) => {
+      if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
+  
+      try {
+        const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action: "addAFav", id: idUser, ids: [id] }),
+        })
+        const data = await response.json()
+        return data.success
+      } catch (error) {
+        console.error('Error al agregar favorito:', error)
+        return false
+      }
+    }
+  
     const eliminarFavorito = async (id) => {
-        if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
-
-        try {
-            const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ action: "removeFromFavoritos", id: idUser, ids: id }),
-            })
-            const data = await response.json()
-            return data.success
-        } catch (error) {
-            console.error('Error al eliminar favorito:', error)
-            return false
-        }
+      if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
+  
+      try {
+        const response = await fetch('http://localhost/TFG/controlador/c-productos.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ action: "removeFromFavoritos", id: idUser, ids: id }),
+        })
+        const data = await response.json()
+        return data.success
+      } catch (error) {
+        console.error('Error al eliminar favorito:', error)
+        return false
+      }
     }
 
 

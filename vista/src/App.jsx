@@ -41,14 +41,13 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="*" element={<NotFound />} />
             <Route path="/account" element={<MiPerfil />} />
             <Route path="/search" element={<Buscador />} />  
             <Route path="/prod" element={<Articulobuscado />} />
             <Route path="/fav" element={<Favoritos />} />
-
           </Route>
           <Route path="/chatBot" element={<ChatBot/>} />
+          <Route path="*" element={<NotFound />} />
 
 
           {/* Rutas de administrador */}

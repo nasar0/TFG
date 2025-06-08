@@ -126,10 +126,15 @@ const AdminPromociones = () => {
         setFechaInicioNuevo('');
         setFechaFinNuevo('');
         setMostrarModal(false); // Cierra el modal después de agregar
+        cargarPromociones(); // Refresca la lista
       })
       .catch((error) => {
         console.error('Error:', error);
-      });
+      }).finally(() => {
+        cargarPromociones();
+      })
+
+
   };
 
   return (
@@ -213,7 +218,7 @@ const AdminPromociones = () => {
       </div>
 
       {/* Botón para abrir el modal de agregar promoción */}
-      
+
 
       {/* Modal para agregar una nueva promoción */}
       {mostrarModal && (

@@ -346,24 +346,18 @@ class productos
     }
     public function buscarProd($nombre)
     {
-        $sent = "SELECT * FROM productos WHERE productos.nombre LIKE ?";
-
+        $sent = "SELECT * FROM productos WHERE LOWER(productos.nombre) LIKE ?";
 
         $consulta = $this->db->getCon()->prepare($sent);
 
-
-        // Agregar comodines al parámetro
-        $param = "%" . $nombre . "%";
-
+        // Convertir a minúsculas
+        $param = "%" . strtolower($nombre) . "%";
 
         $consulta->bind_param("s", $param);
 
-
         $consulta->execute();
 
-
         $consulta->bind_result($id, $nombre, $descripcion, $precio, $stock, $tamano, $color, $img_url, $genero, $categoria);
-
 
         $productos = [];
         while ($consulta->fetch()) {
@@ -381,10 +375,10 @@ class productos
             $productos[] = $producto;
         }
 
-
         $consulta->close();
         return $productos;
     }
+
     public function pagoProd($id_carrito, $preciopagado, $id_usuario, $productos)
     {
         try {
