@@ -11,11 +11,11 @@ const Checkout = ({ onPay, onClose }) => {
     const matches = v.match(/\d{4,16}/g);
     const match = matches && matches[0] || '';
     const parts = [];
-    
+
     for (let i = 0, len = match.length; i < len; i += 4) {
       parts.push(match.substring(i, i + 4));
     }
-    
+
     if (parts.length) {
       return parts.join(' ');
     } else {
@@ -28,16 +28,24 @@ const Checkout = ({ onPay, onClose }) => {
   };
 
   const formatExpiry = (value) => {
+    // Quitar todo excepto números
     const v = value.replace(/[^0-9]/g, '');
-    if (v.length >= 3) {
-      return `${v.slice(0, 2)}/${v.slice(2, 4)}`;
+
+    if (v.length === 0) return ''; // vacío si nada
+
+    if (v.length <= 2) {
+      return v; // sólo meses, sin barra aún
     }
-    return value;
+
+    // Si hay más de 2 dígitos, añadimos la barra
+    return `${v.slice(0, 2)}/${v.slice(2, 4)}`;
   };
+
 
   const handleExpiryChange = (e) => {
     setExpiry(formatExpiry(e.target.value));
   };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-40 p-4 w-full">
@@ -75,13 +83,15 @@ const Checkout = ({ onPay, onClose }) => {
                 CARD NUMBER
               </label>
               <input
-                type="text"
+                type="password"
+                name='fake_number'
                 value={cardNumber}
                 onChange={handleCardNumberChange}
                 maxLength={19}
                 className="w-full p-3 border-b-2 border-black focus:outline-none text-sm uppercase tracking-wider bg-transparent"
                 placeholder="1234 5678 9012 3456"
                 required
+                onClick={() => this.type = "text"}
               />
             </div>
 
@@ -93,12 +103,14 @@ const Checkout = ({ onPay, onClose }) => {
                 </label>
                 <input
                   type="text"
+                  name="cfake"
                   value={expiry}
                   onChange={handleExpiryChange}
                   maxLength={5}
                   className="w-full p-3 border-b-2 border-black focus:outline-none text-sm uppercase tracking-wider bg-transparent"
                   placeholder="MM/AA"
                   required
+                  autoComplete="off"
                 />
               </div>
               <div>
@@ -137,7 +149,7 @@ const Checkout = ({ onPay, onClose }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 border-2 border-black text-black text-xs font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors flex items-center"
+                className="btn-i px-6 py-2 border-2 text-xs font-bold uppercase tracking-wider  transition-colors flex items-center"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-2">
                   <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -146,7 +158,7 @@ const Checkout = ({ onPay, onClose }) => {
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-900 transition-colors flex items-center"
+                className="px-6 py-2 btn text-xs font-bold uppercase tracking-wider transition-colors flex items-center"
               >
                 Pay Now
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">

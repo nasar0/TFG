@@ -215,7 +215,6 @@ class productos
                 throw new Exception("Error al ejecutar la consulta: " . $consulta->error);
             }
         } catch (Exception $e) {
-            error_log("Error en insertar: " . $e->getMessage());
             return false;
         }
     }
@@ -234,7 +233,6 @@ class productos
                 return false;
             }
         } catch (Exception $e) {
-            error_log("Error en eliminar: " . $e->getMessage());
             return false;
         }
     }
@@ -282,7 +280,6 @@ class productos
                 throw new Exception("Error al ejecutar la consulta: " . $consulta->error);
             }
         } catch (Exception $e) {
-            error_log("Error en actualizarImagenes: " . $e->getMessage());
             return false;
         }
     }
@@ -324,7 +321,6 @@ class productos
 
 
         if (!$consulta) {
-            error_log("Error en prepare: " . $this->db->getCon()->error);
             return false;
         }
 
@@ -333,7 +329,6 @@ class productos
 
 
         if (!$consulta->execute()) {
-            error_log("Error en execute: " . $consulta->error);
             return false;
         }
 
@@ -344,6 +339,7 @@ class productos
 
         return $affected > 0; // true si se eliminó algo, false si no
     }
+   
     public function buscarProd($nombre)
     {
         $sent = "SELECT * FROM productos WHERE LOWER(productos.nombre) LIKE ?";
@@ -408,8 +404,6 @@ class productos
 
             return true;
         } catch (Exception $th) {
-            // Log del error para debugging
-            error_log("Error en pagoProd: " . $th->getMessage());
             return false;
         }
     }

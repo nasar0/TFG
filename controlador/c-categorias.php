@@ -19,6 +19,7 @@ switch ($data["action"]) {
     case "listar":
             $lista = $GLOBALCATEGORIAS->getAll();
             echo json_encode($lista);
+            
         break;
     case "agregar":
         $resultado = $GLOBALCATEGORIAS->insertar(

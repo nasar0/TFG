@@ -70,7 +70,6 @@
                     throw new Exception("Error al ejecutar la consulta: " . $consulta->error);
                 }
             } catch (Exception $e) {
-                error_log("Error en insertar: " . $e->getMessage());
                 return false;
             }
         }
@@ -86,7 +85,6 @@
                     return false;
                 }
             } catch (Exception $e) {
-                error_log("Error en eliminar: " . $e->getMessage());
                 return false;
             }
         

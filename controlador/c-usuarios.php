@@ -97,7 +97,7 @@ switch ($data["action"]) {
         if ($resultado === true) {
             echo json_encode(["success" => true, "message" => "Usuario eliminado correctamente"]);
         } else {
-            echo json_encode(["success" => false, "message" => "Error al eliminar el usuario" . $id]);
+            echo json_encode(["success" => false, "message" => "Error al eliminar el usuario " . $id]);
         }
         break;
     case "crearUser":
@@ -157,6 +157,14 @@ switch ($data["action"]) {
             } else {
                 echo json_encode(["success" => false, "message" => "Error al cambiar la contrasenna"]);
             }
+        } catch (Exception $e) {
+            echo json_encode(["success" => false, "message" => $e->getMessage()]);
+        }
+        break;
+    case "n_carrito":
+        try {
+            $resultado = $GLOBALUSER->n_carrito($data["id"]);
+            echo json_encode($resultado);
         } catch (Exception $e) {
             echo json_encode(["success" => false, "message" => $e->getMessage()]);
         }

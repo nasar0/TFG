@@ -14,7 +14,6 @@ const Articulobuscado = () => {
       {position === 'left' ? '«' : '»'}
     </span>
   );
-  console.log(productos)
   return (
     <div className="bg-white min-h-screen">
       {/* Hero header with industrial references */}

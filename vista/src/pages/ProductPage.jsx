@@ -9,7 +9,7 @@ const ProductPage = () => {
   const { id } = useParams()
   const [listar, setListar] = useState({})
   const [imagenActual, setImagenActual] = useState(0)
-  const { isAuthenticated, userEmail, idUser, login, logout } = useContext(AuthContext);
+  const { isAuthenticated, userEmail, idUser, login, logout, updateCartCount } = useContext(AuthContext);
   const [errorMsg, setErrorMsg] = useState('');
   const [type, setType] = useState('');
 
@@ -189,7 +189,7 @@ const ProductPage = () => {
               <span>ADDED TO CART</span>
             </div>
           );
-
+          updateCartCount()
         } else {
           setType("error")
           setErrorMsg('ERROR ADDING TO BAG');
@@ -330,7 +330,7 @@ const ProductPage = () => {
                 </button>
               ) : (
                 <button
-                  className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-full transition-colors duration-300 mt-4 cursor-pointer uppercase"
+                  className=" btn w-full flex items-center justify-center gap-2 font-medium py-3 px-6 rounded-full  mt-4 cursor-pointer uppercase"
                   onClick={agregar}
                 >
                   <i className="bx bx-cart text-lg"></i>
@@ -338,7 +338,7 @@ const ProductPage = () => {
                 </button>
               )
             ) : ( // Si no está autenticado, mostrar "Login"
-              <Link to="/login" className="w-full flex items-center justify-center gap-2 bg-black hover:bg-gray-800 text-white font-medium py-3 px-6 rounded-full transition-colors duration-300 mt-4 cursor-pointer" >Login or Register</Link>
+              <Link to="/login" className="btn w-full flex items-center justify-center gap-2 font-medium py-3 px-6 rounded-full  mt-4 cursor-pointer" >Login or Register</Link>
             )}
 
             <div className='mt-6'>

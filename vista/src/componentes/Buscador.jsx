@@ -66,7 +66,6 @@ const Buscador = ({ onClose }) => {
         .then((res) => res.json())
         .then((data) => {
           // Redirigir a /prod con los datos de los productos
-          console.log(data);
           navigate('/prod', { state: { productos: data } });
           onClose(); // Cerrar el buscador
         })

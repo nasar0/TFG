@@ -247,7 +247,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-black text-white py-3 px-4 uppercase text-xs font-bold tracking-wider hover:bg-gray-900 transition-colors flex items-center justify-center"
+              className="w-full btn py-3 px-4 uppercase text-xs font-bold tracking-wider flex items-center justify-center"
             >
               {isSubmitting ? (
                 <>

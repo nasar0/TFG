@@ -52,3 +52,10 @@ button:hover{
     left: 10px;
     z-index: 50;
 }
+/* styles.css o app.css */
+.btn {
+  @apply bg-black text-white border border-transparent hover:bg-white hover:text-black hover:border-black transition-colors duration-400;
+}
+.btn-i {
+  @apply hover:bg-black hover:text-white border hover:border-transparent bg-white text-black border-black transition-colors duration-400;
+}

@@ -53,46 +53,46 @@ const Listarprods = ({ listar }) => {
   }, [idUser]); // Solo depende de idUser
 
 
-const toggleFavorito = async (id, e) => {
-  e.preventDefault();
-  e.stopPropagation();
+  const toggleFavorito = async (id, e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  const isFavorite = favoritos.includes(id);
+    const isFavorite = favoritos.includes(id);
 
-  // Actualización optimista SIEMPRE
-  setFavoritos(prev =>
-    isFavorite
-      ? prev.filter(item => item !== id)
-      : [...prev, id]
-  );
+    // Actualización optimista SIEMPRE
+    setFavoritos(prev =>
+      isFavorite
+        ? prev.filter(item => item !== id)
+        : [...prev, id]
+    );
 
-  if (!idUser) {
-    // Para no logueados: usar localStorage directamente
-    const saved = JSON.parse(localStorage.getItem('fav') || "[]");
-    const newFavoritos = isFavorite
-      ? saved.filter(item => item !== id)
-      : [...saved, id];
-    localStorage.setItem('fav', JSON.stringify(newFavoritos));
-    return;
-  }
-
-  if (loadingFavoritos) return;
-  setLoadingFavoritos(true);
-
-  try {
-    if (isFavorite) {
-      await eliminarFavorito(id);
-    } else {
-      await agregarFavorito(id);
+    if (!idUser) {
+      // Para no logueados: usar localStorage directamente
+      const saved = JSON.parse(localStorage.getItem('fav') || "[]");
+      const newFavoritos = isFavorite
+        ? saved.filter(item => item !== id)
+        : [...saved, id];
+      localStorage.setItem('fav', JSON.stringify(newFavoritos));
+      return;
     }
-    // NO revertimos el cambio nunca, porque confiamos en el backend
-  } catch (error) {
-    // Solo logueamos el error, pero no revertimos el cambio visual
-    console.error("Error al actualizar favoritos:", error);
-  } finally {
-    setLoadingFavoritos(false);
-  }
-};
+
+    if (loadingFavoritos) return;
+    setLoadingFavoritos(true);
+
+    try {
+      if (isFavorite) {
+        await eliminarFavorito(id);
+      } else {
+        await agregarFavorito(id);
+      }
+      // NO revertimos el cambio nunca, porque confiamos en el backend
+    } catch (error) {
+      // Solo logueamos el error, pero no revertimos el cambio visual
+      console.error("Error al actualizar favoritos:", error);
+    } finally {
+      setLoadingFavoritos(false);
+    }
+  };
 
   const agregarFavorito = async (id) => {
     if (!idUser) return true // Para usuarios no registrados, retornamos éxito directamente
@@ -305,12 +305,6 @@ const toggleFavorito = async (id, e) => {
 
                   {/* Footer controls */}
                   <div className="mt-8 flex justify-between items-center">
-                    <button
-                      onClick={clearFilters}
-                      className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 hover:cursor-pointer transition-colors"
-                    >
-                      Clear Filters
-                    </button>
                     <div className="text-sm text-gray-600">
                       {productosFiltrados.length} products found
                     </div>
@@ -318,10 +312,16 @@ const toggleFavorito = async (id, e) => {
                 </div>
 
                 {/* Bottom action button */}
-                <div className="p-4 border-t bg-white">
+                <div className="p-4 border-t  bg-white flex justify-around">
+                  <button
+                    onClick={clearFilters}
+                    className="px-4 py-2 btn-i hover:cursor-pointer transition-colors"
+                  >
+                    Clear Filters
+                  </button>
                   <button
                     onClick={() => setShowFilter(false)}
-                    className="w-full px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-700 text-white rounded-md hover:cursor-pointer transition-colors"
+                    className="px-4 py-2 btn hover:cursor-pointer transition-colors"
                   >
                     Apply Filters
                   </button>

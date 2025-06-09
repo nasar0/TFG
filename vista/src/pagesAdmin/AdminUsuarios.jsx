@@ -9,7 +9,12 @@ const AdminUsuarios = () => {
   const [telefono, setTelefono] = useState('');
   const [rol, setRol] = useState('');
 
+  
   useEffect(() => {
+    cargarUsuarios()
+  }, []);
+
+  const cargarUsuarios = () =>{
     fetch('http://localhost/TFG/controlador/c-usuarios.php', {
       method: 'POST',
       headers: {
@@ -22,7 +27,7 @@ const AdminUsuarios = () => {
       .catch((error) => {
         console.error('Error:', error);
       });
-  }, []);
+  }
 
   const eliminar = (id) => {
     fetch('http://localhost/TFG/controlador/c-usuarios.php', {
@@ -85,6 +90,8 @@ const AdminUsuarios = () => {
       })
       .catch((error) => {
         console.error('Error:', error);
+      }).finally(() => {
+        cargarUsuarios();
       });
   };
 

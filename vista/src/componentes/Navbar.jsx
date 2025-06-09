@@ -14,6 +14,7 @@ function Navbar() {
   const [showBuscador, setShowBuscador] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const navigate = useNavigate()
+  const { idUser,cartCount } = useContext(AuthContext);
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -29,9 +30,7 @@ function Navbar() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-  useEffect(() => {
 
-  }, [isAuthenticated]);
 
 
   return (
@@ -61,10 +60,23 @@ function Navbar() {
             >
               <img src="/img/icons8-search-50.png" alt="Search" />
             </button>
-            <Link to="/cart" className="w-5">
+            <Link to="/cart" className="w-5 relative">
               <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
+              {cartCount > 0 && (
+                <span className="
+                absolute -bottom-[2px] -right-[2px]
+                inline-flex items-center justify-center
+                min-w-[12px] h-[15px] 
+                text-[10px] leading-none font-medium text-white 
+                bg-black rounded-full
+                transform transition-transform duration-150
+                shadow-sm
+              ">
+                  {cartCount > 9 ? "9+" : cartCount}
+                </span>
+              )}
             </Link>
-            <Link to={"/fav"}><i className='bx bx-heart text-gray-500 text-[20px]'></i></Link>
+            <Link to={"/fav"}><i className='bx bx-heart text-black text-[20px]'></i></Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-gray-700 focus:outline-none"
@@ -94,11 +106,32 @@ function Navbar() {
             </button>
             <button
               onClick={() => setShowCart(true)}
-              className="w-5"
+              className="relative p-1 transition-all duration-200"
+              aria-label="Carrito de compras"
             >
-              <img src="../../public/img/icons8-cart-50.png" alt="Cart" />
+              {/* Icono del carrito */}
+              <img
+                src="../../public/img/icons8-cart-50.png"
+                alt="Icono de carrito"
+                className="w-6 h-6 object-contain"
+              />
+
+              {/* Notificación de cantidad */}
+              {cartCount > 0 && (
+                <span className="
+                absolute -bottom-[2px] -right-[2px]
+                inline-flex items-center justify-center
+                min-w-[18px] h-[18px] 
+                text-[10px] leading-none font-medium text-white 
+                bg-black rounded-full
+                transform transition-transform duration-150
+                shadow-sm
+              ">
+                  {cartCount > 9 ? "9+" : cartCount}
+                </span>
+              )}
             </button>
-            <Link to={"/fav"}><i className='bx bx-heart text-gray-500 text-[20px]'></i></Link>
+            <Link to={"/fav"}><i className='bx bx-heart text-black text-[20px]'></i></Link>
           </div>
         </div>
 

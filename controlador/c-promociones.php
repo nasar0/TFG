@@ -19,7 +19,6 @@ switch ($data["action"]) {
     case "listar":
         $lista = $GLOBALPROMOCIONES->getAll();
         echo json_encode($lista);
-        error_log(json_encode($lista));
         break;
 
     case "agregar":
@@ -59,7 +58,6 @@ switch ($data["action"]) {
         ]);
         break;
     case "encontrarPromocion":
-        error_log($data["action"]);
         $resultado = $GLOBALPROMOCIONES->encontrarPromocion($data["nombre"]);
         echo json_encode($resultado);
         break;

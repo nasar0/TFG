@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
+import Alert from '../componentes/Alert';
 
 const Footer = () => {
   // Estado para el formulario de newsletter
@@ -9,20 +10,20 @@ const Footer = () => {
   const [profilingChecked, setProfilingChecked] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-
+  const [message, setMessage] = useState('');
+  const [type, setType] = useState('');
   // Manejar envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!email || !email.trim()) {
       setErrors({ email: 'Please enter a valid email address' });
       return;
     }
-  
+
     setIsSubmitting(true);
     setErrors({});
-  
+
     try {
       const templateParams = {
         email: email.trim(),
@@ -34,20 +35,23 @@ const Footer = () => {
         discount_percentage: '10',
         shop_link: 'https://KKARMAX.com'
       };
-  
+
       await emailjs.send(
         'service_d6spzlh',
         'template_xzic1a5',
         templateParams,
         'gZALR7ztjjMkQ00S9'
       );
-  
-      setSuccessMessage('¡Email sent successfully!');
+
+      setMessage('¡Email sent successfully!');
+      setType("success");
       setEmail('');
-      
+
     } catch (error) {
       console.error('Error:', error);
       setErrors({ form: 'Failed to send. Please try again later.' });
+      setType("error");
+      setMessage("Failed to send. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -68,19 +72,14 @@ const Footer = () => {
                 Join our mailing list and enjoy up to 10% off your first order. Stay up to date with K<span className="mirror">K</span>armx's new arrivals, promotions and events.
               </p>
             </div>
-  
-            {successMessage && (
-              <div className="p-3 mb-4 text-green-700 bg-green-100 rounded">
-                {successMessage}
-              </div>
+
+            {message && (
+              <Alert
+                type={type}
+                message={message}
+                onClose={() => setMessage('')}
+              />
             )}
-  
-            {errors.form && (
-              <div className="p-3 mb-4 text-red-700 bg-red-100 rounded">
-                {errors.form}
-              </div>
-            )}
-  
             <form onSubmit={handleSubmit} className="mb-6">
               <div className="flex flex-col sm:flex-row gap-4 mb-4">
                 <div className="flex-grow relative">
@@ -92,8 +91,8 @@ const Footer = () => {
                     className={`w-full px-4 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent`}
                     placeholder=" "
                   />
-                  <label 
-                    htmlFor="newsletter-email" 
+                  <label
+                    htmlFor="newsletter-email"
                     className={`absolute left-4 top-3 text-gray-500 transition-all pointer-events-none ${email ? 'transform -translate-y-7 left-2 text-xs bg-white px-2' : ''}`}
                   >
                     Your Email
@@ -104,23 +103,23 @@ const Footer = () => {
                     </span>
                   )}
                 </div>
-  
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`flex-shrink-0 px-5 py-3 bg-black text-white hover:bg-gray-900 transition-colors ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`flex-shrink-0 px-5 py-3 btn ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  <svg 
-                    className={`w-5 h-5 ${isSubmitting ? 'animate-spin' : ''}`} 
-                    viewBox="0 0 22 22" 
-                    fill="none" 
+                  <svg
+                    className={`w-5 h-5 ${isSubmitting ? 'animate-spin' : ''}`}
+                    viewBox="0 0 22 22"
+                    fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path d="M8 5L13 11L8 17" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M8 5L13 11L8 17" stroke="currentColor" strokeWidth="2" />
                   </svg>
                 </button>
               </div>
-  
+
               <div className="space-y-4">
                 <div className={`flex items-start ${errors.privacy ? 'text-red-500' : ''}`}>
                   <div className="flex items-center h-5 mt-1 mr-2">
@@ -130,13 +129,14 @@ const Footer = () => {
                       checked={privacyChecked}
                       onChange={(e) => setPrivacyChecked(e.target.checked)}
                       className={`w-4 h-4 border ${errors.privacy ? 'border-red-500 text-red-500' : 'border-gray-300 text-black'} rounded focus:ring-black`}
+                      required
                     />
                   </div>
                   <label htmlFor="privacy" className="text-sm text-gray-700">
                     *I have read the <Link to="/privacy-policy/privacy" className="underline hover:text-black">Privacy Policy</Link> and consent to the processing of my personal data for marketing purposes (Newsletters, News and Promotions)
                   </label>
                 </div>
-  
+
                 <div className="flex items-start">
                   <div className="flex items-center h-5 mt-1 mr-2">
                     <input
@@ -170,7 +170,7 @@ const Footer = () => {
                   <li><Link to="/contact" className="hover:underline">Store Locator</Link></li>
                 </ul>
               </div>
-  
+
               {/* Columna LEGAL AREA */}
               <div>
                 <h3 className="font-bold uppercase mb-4">LEGAL AREA</h3>
@@ -189,7 +189,7 @@ const Footer = () => {
                   <h4 className="text-sm font-medium mt-3 mb-1">Language:</h4>
                   <p>English</p>
                 </div>
-                
+
                 <p className="mb-4">Follow us on:</p>
                 <div className="flex space-x-4">
                   <a href="https://www.facebook.com/" className="text-black hover:text-gray-600">
@@ -212,7 +212,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
-  
+
         {/* Copyright */}
         <div className="pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-500 text-center lg:text-left">© {new Date().getFullYear()} K<span className="mirror">K</span>armx™. All rights reserved.</p>

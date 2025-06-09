@@ -22,7 +22,6 @@ const Login = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.success) {
           login(email); 
           localStorage.removeItem("fav");
@@ -110,7 +109,7 @@ const Login = () => {
   
             <button
               type="submit"
-              className="w-full bg-black text-white py-4 px-6 uppercase text-xs font-bold tracking-widest relative overflow-hidden group"
+              className="w-full btn py-4 px-6 uppercase text-xs font-bold tracking-widest relative overflow-hidden group"
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 Access Account
@@ -118,7 +117,6 @@ const Login = () => {
                   <path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="currentColor" strokeWidth="1.5"/>
                 </svg>
               </span>
-              <span className="absolute inset-0 bg-gray-900 transition-transform origin-bottom transform scale-y-0 group-hover:scale-y-100 duration-300"></span>
             </button>
           </form>
         </div>

@@ -242,7 +242,7 @@ const MiPerfil = () => {
               {/* Botón para cambiar contraseña */}
               <button
                 onClick={() => setShowChangePassword(!showChangePassword)}
-                className="mt-6 px-4 py-2 border border-black text-black text-xs font-bold uppercase tracking-wider hover:bg-gray-100 transition-colors"
+                className={` ${showChangePassword ? 'btn' : 'btn-i'} mt-6 px-4 py-2 text-xs font-bold uppercase tracking-wider `}
               >
                 {showChangePassword ? 'Cancel' : 'Change Password'}
               </button>
@@ -284,7 +284,7 @@ const MiPerfil = () => {
 
                   <button
                     onClick={handleChangePassword}
-                    className="mt-4 px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-900 disabled:opacity-50 transition-colors flex items-center justify-center"
+                    className="mt-4 px-4 py-2 btn text-xs font-bold uppercase tracking-wider  disabled:opacity-50  flex items-center justify-center"
                   >
                     <span>Save New Password</span>
                   </button>
@@ -359,24 +359,22 @@ const MiPerfil = () => {
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={toggleEdicion}
-                  className="px-6 py-2 border-2 border-black text-black text-xs font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors"
+                  className="px-6 py-2 btn-i text-xs font-bold uppercase tracking-wider "
                 >
                   Cancel
                 </button>
                 <button
                   onClick={modificarDatos}
-                  className="px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-900 disabled:opacity-50 transition-colors flex items-center"
+                  className="px-6 py-2 btn text-xs font-bold uppercase tracking-wider  disabled:opacity-50  flex items-center"
                 >
-                  
                     <span>Save Changes →</span>
-                
                 </button>
               </div>
             ) : (
               <div className="flex justify-between">
                 <button
                   onClick={toggleEdicion}
-                  className="px-6 py-2 border-2 border-black text-black text-xs font-bold uppercase tracking-wider hover:bg-gray-200 transition-colors flex items-center"
+                  className="px-6 py-2 border-2 btn-i text-xs font-bold uppercase tracking-wider flex items-center"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-2">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
@@ -387,7 +385,7 @@ const MiPerfil = () => {
 
                 <button
                   onClick={handleLogout}
-                  className="px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-900 transition-colors flex items-center"
+                  className="px-6 py-2 btn text-xs font-bold uppercase tracking-wider transition-colors flex items-center"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-2">
                     <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />

@@ -114,18 +114,14 @@ const Contact = () => {
                 type="file"
                 multiple
                 className="hidden"
-                onChange={(e) => {
-                  // Opcional: manejar archivos seleccionados
-                  console.log(e.target.files);
-                }}
               />
             </div>
           </div>
 
 
-          <div className="pt-4">
+          <div className="pt-4 ">
             <button type="submit"
-              className="w-full bg-black text-white py-3 px-4 uppercase tracking-wider font-medium hover:bg-gray-800 transition-colors duration-200">
+              className="btn w-full py-3 px-4 uppercase tracking-wider font-medium ">
               Submit
             </button>
           </div>
@@ -144,7 +140,7 @@ const Contact = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => setShowModal(true)}
-                  className={`flex w-full sm:w-auto items-center border border-black ${showModal ? "bg-gray-50" : "bg-black text-white"} py-3 px-4 text-center uppercase tracking-wider font-medium hover:bg-gray-50 hover:text-black transition-colors duration-200 group`}
+                  className={`flex w-full sm:w-auto items-center ${showModal ? "btn-i" : "btn"} py-3 px-4 text-center uppercase tracking-wider font-medium group`}
                 >
                   <img
                     src="../../public/img/icons8-telefono-50.png"
@@ -172,10 +168,10 @@ const Contact = () => {
           </div>
         
         </div>
-        <div className="hidden sm:block sticky bottom-6 right-6 z-50 ">
+        <div className="hidden sm:block sticky bottom-6 right-6  ">
             <button
               onClick={() => navigate("/chatBot")}
-              className="border-2 border-gray-500 absolute bottom-6 right-[-50%] z-50 text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform"
+              className="border-2 border-gray-500 absolute bottom-6 right-[-50%]  text-white p-3 rounded-full shadow-lg hover:scale-105 transition-transform"
               title="Abrir chat"
             >
               <img

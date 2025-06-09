@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Alert from '../componentes/Alert';
 import { useNavigate } from 'react-router-dom';
 import Checkout from './Checkout';
+import { AuthContext } from '../context/AuthContext';
 
 const Cart = ({ onClose }) => {
   const [userEmail, setUserEmail] = useState('');
@@ -13,6 +14,7 @@ const Cart = ({ onClose }) => {
   const modalRef = useRef(null);
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
+  const { updateCartCount } = useContext(AuthContext);
 
   const cargarProductosCart = () => {
     fetch('http://localhost/TFG/controlador/c-productos.php', {
@@ -24,7 +26,6 @@ const Cart = ({ onClose }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Datos recibidos:", data);
         setListar(data);
         // Inicializar cantidades y tallas seleccionadas
         const initialQuantities = {};
@@ -196,7 +197,7 @@ const Cart = ({ onClose }) => {
         return response.json();
       })
       .then((data) => {
-        console.log("Respuesta del backend:", data);
+        updateCartCount()
       })
       .catch((error) => {
         console.error("Error al hacer la petición:", error);
@@ -255,7 +256,6 @@ const Cart = ({ onClose }) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
   
         if (data && data.length > 0) {
           const promocion = data[0];
@@ -498,7 +498,7 @@ const Cart = ({ onClose }) => {
                         placeholder="Enter discount code"
                       />
                       <button
-                        className="ml-2 bg-gray-200 text-black px-3 sm:px-4 py-2 text-sm hover:bg-gray-300 transition-colors"
+                        className="ml-2 btn-i px-3 sm:px-4 py-2 text-sm transition-colors"
                         onClick={handleApplyDiscount}
                       >
                         APPLY
@@ -526,7 +526,7 @@ const Cart = ({ onClose }) => {
 
                     <button
                       onClick={() => setShowCheckoutModal(true)}
-                      className="bg-black text-white px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base hover:bg-gray-800 transition-colors"
+                      className="btn px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
                     >
                       PROCEED TO CHECKOUT
                     </button>
