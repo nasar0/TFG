@@ -16,7 +16,7 @@ class productos
     private $genero;
     private $categoria;
 
-
+ 
     // Constructor
     public function __construct()
     {

@@ -200,6 +200,24 @@ const AdminProductos = () => {
         console.error('Error:', error);
       });
   };
+
+  const eliminarProducto = (id) => {
+    fetch('http://localhost/TFG/controlador/c-productos.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: "eliminar", id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setListar(listar.filter(producto => producto.id !== id));
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
   useEffect(() => {
     cargarCategorias();
   }, []);

@@ -1,9 +1,20 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 const Contact = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+   useEffect(() => {
+      if (showModal) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+      return () => {
+        document.body.style.overflow = 'auto';
+      };
+    }, [showModal]);
+  
   return (
     <>
       <div className="max-w-4xl mx-auto p-6 font-sans bg-white relative min-h-screen">

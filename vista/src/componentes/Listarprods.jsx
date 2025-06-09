@@ -168,6 +168,17 @@ const Listarprods = ({ listar }) => {
       (filtros.precioMax === '' || parseFloat(art.precio) <= parseFloat(filtros.precioMax))
     )
   })
+  useEffect(() => {
+    if (showFilter) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [showFilter]);
+
 
   return (
     <>

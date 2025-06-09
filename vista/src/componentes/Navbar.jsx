@@ -31,7 +31,13 @@ function Navbar() {
     };
   }, []);
 
-
+  useEffect(() => {
+   if (showBuscador) {
+    document.body.style.overflow = 'hidden';
+   }else{
+    document.body.style.overflow = 'auto';
+   }
+  }, [showBuscador]);
 
   return (
     <>

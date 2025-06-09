@@ -15,6 +15,15 @@ const Cart = ({ onClose }) => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
   const { updateCartCount } = useContext(AuthContext);
+  useEffect(() => {
+  // Desactiva scroll del body al abrir el carrito
+  document.body.style.overflow = 'hidden';
+
+  return () => {
+    // Restaura scroll del body al cerrar el carrito
+    document.body.style.overflow = 'auto';
+  };
+}, []);
 
   const cargarProductosCart = () => {
     fetch('http://localhost/TFG/controlador/c-productos.php', {
@@ -234,6 +243,7 @@ const Cart = ({ onClose }) => {
       .catch((error) => {
         console.error('Error en el checkout:', error);
       }).finally(() => {
+        updateCartCount()
         onClose();
       });
   };
@@ -355,7 +365,7 @@ const Cart = ({ onClose }) => {
         />
       )}
 
-      <div className="fixed inset-0 z-50 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 backdrop-blur-sm ">
         {/* Overlay de fondo - solo visible en móvil/tablet */}
         <div
           className="absolute inset-0 bg-gray-400/75 backdrop-blur-sm animate__animated animate__fadeIn md:hidden"

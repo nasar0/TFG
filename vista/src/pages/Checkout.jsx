@@ -83,7 +83,7 @@ const Checkout = ({ onPay, onClose }) => {
                 CARD NUMBER
               </label>
               <input
-                type="password"
+                type="text"
                 name='fake_number'
                 value={cardNumber}
                 onChange={handleCardNumberChange}
@@ -91,7 +91,6 @@ const Checkout = ({ onPay, onClose }) => {
                 className="w-full p-3 border-b-2 border-black focus:outline-none text-sm uppercase tracking-wider bg-transparent"
                 placeholder="1234 5678 9012 3456"
                 required
-                onClick={() => this.type = "text"}
               />
             </div>
 

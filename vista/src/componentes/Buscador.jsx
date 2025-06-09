@@ -45,35 +45,41 @@ const Buscador = ({ onClose }) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleSearch = (e) => {
-    if (e.key === 'Enter' && searchTerm.trim()) {
-      const updatedSearches = [
-        searchTerm.trim(),
-        ...recentSearches.filter(item =>
-          item.toLowerCase() !== searchTerm.trim().toLowerCase()
-        )
-      ].slice(0, 5);
 
-      setRecentSearches(updatedSearches);
-      localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
-      
-      // Realizar la búsqueda
-      fetch('http://localhost/TFG/controlador/c-productos.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({action: "buscarProd", nombre: searchTerm.trim() }),
+  const doSearch = () => {
+    if (!searchTerm.trim()) return;
+
+    const updatedSearches = [
+      searchTerm.trim(),
+      ...recentSearches.filter(
+        item => item.toLowerCase() !== searchTerm.trim().toLowerCase()
+      )
+    ].slice(0, 5);
+
+    setRecentSearches(updatedSearches);
+    localStorage.setItem('recentSearches', JSON.stringify(updatedSearches));
+
+    fetch('http://localhost/TFG/controlador/c-productos.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: "buscarProd", nombre: searchTerm.trim() }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        navigate('/prod', { state: { productos: data } });
+        onClose();
       })
-        .then((res) => res.json())
-        .then((data) => {
-          // Redirigir a /prod con los datos de los productos
-          navigate('/prod', { state: { productos: data } });
-          onClose(); // Cerrar el buscador
-        })
-        .catch((err) => {
-          console.error('Error:', err);
-        });
-      
-      setSearchTerm(''); // Limpiar el campo de búsqueda
+      .catch((err) => {
+        console.error('Error:', err);
+      });
+
+    setSearchTerm('');
+  };
+
+  // Handler para el input (Enter)
+  const handleSearch = (e) => {
+    if (e.key === 'Enter') {
+      doSearch();
     }
   };
 
@@ -99,11 +105,17 @@ const Buscador = ({ onClose }) => {
         <div className="max-w-4xl mx-auto">
           {/* Barra de búsqueda */}
           <div className="flex items-center gap-2 mb-6">
-            <img
-              src="/img/icons8-search-50.png"
-              alt="Buscar"
-              className="w-6 h-6"
-            />
+            <button
+              onClick={doSearch}
+              className="ml-2 text-gray-500 hover:text-black text-xl font-bold"
+              aria-label="Buscar"
+            >
+              <img
+                src="/img/icons8-search-50.png"
+                alt="Buscar"
+                className="w-6 h-6"
+              />
+            </button>
             <input
               ref={inputRef}
               type="search"
@@ -114,6 +126,7 @@ const Buscador = ({ onClose }) => {
               onKeyDown={handleSearch}
               autoFocus
             />
+
             <button
               onClick={onClose}
               className="ml-2 text-gray-500 hover:text-black text-xl font-bold"
