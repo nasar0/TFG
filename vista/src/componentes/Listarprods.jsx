@@ -2,22 +2,86 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import 'animate.css';
 import { AuthContext } from '../context/AuthContext';
+import Select from 'react-select';
 
 const Listarprods = ({ listar }) => {
   // Estados para los filtros
   const [showFilter, setShowFilter] = useState(false)
   const [filtros, setFiltros] = useState({
-    color: '',
+    colores: [],
     genero: '',
     tamano: '',
     precioMin: '',
-    precioMax: ''
-  })
-  const { idUser } = useContext(AuthContext)
+    precioMax: '',
+    orden: ''
+  });
 
-  // Estado de favoritos
+  const { idUser } = useContext(AuthContext)
+  const [openFilter, setOpenFilter] = useState(null);
   const [favoritos, setFavoritos] = useState([])
   const [loadingFavoritos, setLoadingFavoritos] = useState(false)
+
+  // Manejar cambios en los filtros (actualizado para colores múltiples)
+  const handleFilterChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    if (name === 'color') {
+      setFiltros(prev => {
+        if (checked) {
+          return { ...prev, colores: [...prev.colores, value] };
+        } else {
+          return { ...prev, colores: prev.colores.filter(c => c !== value) };
+        }
+      });
+    } else {
+      setFiltros(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
+  // Función para limpiar filtros (actualizada)
+  const clearFilters = () => {
+    setFiltros({
+      colores: [],
+      genero: '',
+      tamano: '',
+      precioMin: '',
+      precioMax: '',
+      orden: ''
+    });
+  }
+
+  // Obtener valores únicos para los filtros
+  const coloresUnicos = [...new Set(listar.map(art => art.color))]
+  const generosUnicos = [...new Set(listar.map(art => art.genero))]
+  const tamanosUnicos = Array.from(
+    new Set(listar.flatMap(art => art.tamano.split('-')).map(t => t.trim()))
+  ).sort((a, b) => a - b)
+
+  // Filtrar y ordenar productos
+  const productosFiltrados = listar
+    .filter(art => {
+      return (
+        (filtros.colores.length === 0 || filtros.colores.includes(art.color)) &&
+        (filtros.genero === '' || art.genero.toLowerCase().includes(filtros.genero.toLowerCase())) &&
+        (filtros.tamano === '' || art.tamano.includes(filtros.tamano)) &&
+        (filtros.precioMin === '' || parseFloat(art.precio) >= parseFloat(filtros.precioMin)) &&
+        (filtros.precioMax === '' || parseFloat(art.precio) <= parseFloat(filtros.precioMax))
+      );
+    }) // ← Paréntesis de cierre añadido AQUÍ
+    .sort((a, b) => {
+      if (filtros.orden === 'asc') {
+        return parseFloat(a.precio) - parseFloat(b.precio);
+      } else if (filtros.orden === 'desc') {
+        return parseFloat(b.precio) - parseFloat(a.precio);
+      }
+      return 0;
+    });
+
+  // Estados para los filtros
+
 
   useEffect(() => {
     const cargarFavoritos = async () => {
@@ -132,42 +196,7 @@ const Listarprods = ({ listar }) => {
     }
   }
   // Obtener valores únicos para los filtros
-  const coloresUnicos = [...new Set(listar.map(art => art.color))]
-  const generosUnicos = [...new Set(listar.map(art => art.genero))]
-  const tamanosUnicos = Array.from(
-    new Set(listar.flatMap(art => art.tamano.split('-')).map(t => t.trim()))
-  ).sort((a, b) => a - b)
 
-  // Función para manejar cambios en los filtros
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target
-    setFiltros(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
-
-  // Función para limpiar filtros
-  const clearFilters = () => {
-    setFiltros({
-      color: '',
-      genero: '',
-      tamano: '',
-      precioMin: '',
-      precioMax: ''
-    })
-  }
-
-  // Filtrar productos
-  const productosFiltrados = listar.filter(art => {
-    return (
-      (filtros.color === '' || art.color.toLowerCase().includes(filtros.color.toLowerCase())) &&
-      (filtros.genero === '' || art.genero.toLowerCase().includes(filtros.genero.toLowerCase())) &&
-      (filtros.tamano === '' || art.tamano.includes(filtros.tamano)) &&
-      (filtros.precioMin === '' || parseFloat(art.precio) >= parseFloat(filtros.precioMin)) &&
-      (filtros.precioMax === '' || parseFloat(art.precio) <= parseFloat(filtros.precioMax))
-    )
-  })
   useEffect(() => {
     if (showFilter) {
       document.body.style.overflow = 'hidden';
@@ -183,7 +212,12 @@ const Listarprods = ({ listar }) => {
   return (
     <>
       {/* Filter button */}
-      <div className='w-full flex justify-end'>
+      <div className='w-full flex justify-between items-center px-5'>
+        <div className="flex items-center space-x-4">
+          <p className="text-sm text-gray-600 capitalize">
+            {productosFiltrados.length} Products Found
+          </p>
+        </div>
         <button
           onClick={() => setShowFilter(!showFilter)}
           className="px-4 py-2 rounded-md flex items-center hover:cursor-pointer transition-colors duration-300"
@@ -224,61 +258,139 @@ const Listarprods = ({ listar }) => {
                 <div className="p-5 bg-gray-50 flex-grow">
                   <div className="grid grid-cols-1 gap-4">
 
-                    {/* Color */}
-                    <div>
-                      <label htmlFor="color" className="block text-sm font-medium text-gray-700 mb-1">
-                        Color
-                      </label>
-                      <select
-                        id="color"
-                        name="color"
-                        value={filtros.color}
-                        onChange={handleFilterChange}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:border-gray-500 focus:ring-gray-500"
+                    {/* Ordenación (nuevo filtro) */}
+                    {/* Ordenación */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setOpenFilter(openFilter === 'order' ? null : 'order')}
+                        className={"w-full flex justify-between items-center p-2 hover:bg-gray-100 transition-colors border border-gray-300 rounded " + (openFilter === 'order' ? ' border-b-0' : ' ')}
                       >
-                        <option value="">All colors</option>
-                        {coloresUnicos.map(color => (
-                          <option key={color} value={color}>{color}</option>
-                        ))}
-                      </select>
+                        <span className="font-medium">Sort by</span>
+                        <p className='text-xl'>
+                          {openFilter === 'order' ? '-' : '+'}
+                        </p>
+                      </button>
+
+                      {openFilter === 'order' && (
+                       <div className="mt-2 space-y-2 pl-4 border-l-2 border-gray-200 animate__animated animate__fadeIn animate__faster">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="orden"
+                              checked={filtros.orden === 'desc'}
+                              onChange={() => setFiltros(prev => ({ ...prev, orden: 'desc' }))}
+                              className="rounded text-gray-700"
+                            />
+                            <span>Most expensive</span>
+                          </label>
+
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="orden"
+                              checked={filtros.orden === 'asc'}
+                              onChange={() => setFiltros(prev => ({ ...prev, orden: 'asc' }))}
+                              className="rounded text-gray-700"
+                            />
+                            <span>Less expensive</span>
+                          </label>
+
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="orden"
+                              checked={filtros.orden === ''}
+                              onChange={() => setFiltros(prev => ({ ...prev, orden: '' }))}
+                              className="rounded text-gray-700"
+                            />
+                            <span>None</span>
+                          </label>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Gender */}
-                    <div>
-                      <label htmlFor="genero" className="block text-sm font-medium text-gray-700 mb-1">
-                        Gender
-                      </label>
-                      <select
-                        id="genero"
-                        name="genero"
-                        value={filtros.genero}
-                        onChange={handleFilterChange}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:border-gray-500 focus:ring-gray-500"
+                    {/* Color - Selección múltiple */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setOpenFilter(openFilter === 'color' ? null : 'color')}
+                        className={"w-full flex justify-between items-center p-2 hover:bg-gray-100 transition-colors border border-gray-300 rounded " + (openFilter === 'color' ? ' border-b-0' : ' ')}
                       >
-                        <option value="">All genders</option>
-                        {generosUnicos.map(genero => (
-                          <option key={genero} value={genero}>{genero}</option>
-                        ))}
-                      </select>
+                        <span className="font-medium">Colors</span>
+                        <p className='text-xl'>
+                          {openFilter === 'color' ? '-' : '+'}
+                        </p>
+                      </button>
+
+                      {openFilter === 'color' && (
+                        <div className="mt-2 space-y-2 pl-4 border-l-2 border-gray-200 animate__animated animate__fadeIn animate__faster">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={filtros.colores.length === 0}
+                              onChange={() => setFiltros(prev => ({ ...prev, colores: [] }))}
+                              className="rounded text-gray-700"
+                            />
+                            <span>Todos los colores</span>
+                          </label>
+
+                          {coloresUnicos.map(color => (
+                            <label key={color} className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={filtros.colores.includes(color)}
+                                onChange={(e) => handleFilterChange({
+                                  target: {
+                                    name: 'color',
+                                    value: color,
+                                    checked: e.target.checked
+                                  }
+                                })}
+                                className="rounded text-gray-700"
+                              />
+                              <span>{color}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Size */}
-                    <div>
-                      <label htmlFor="tamano" className="block text-sm font-medium text-gray-700 mb-1">
-                        Size
-                      </label>
-                      <select
-                        id="tamano"
-                        name="tamano"
-                        value={filtros.tamano}
-                        onChange={handleFilterChange}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:border-gray-500 focus:ring-gray-500"
+                    {/* Filtro de Género - Versión Cascada */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setOpenFilter(openFilter === 'genero' ? null : 'genero')}
+                        className={"w-full flex justify-between items-center p-2 hover:bg-gray-100 transition-colors border border-gray-300 rounded " + (openFilter === 'genero' ? ' border-b-0' : ' ')}
                       >
-                        <option value="">All sizes</option>
-                        {tamanosUnicos.map(tamano => (
-                          <option key={tamano} value={tamano}>{tamano}</option>
-                        ))}
-                      </select>
+                        <span className="font-medium">Gender</span>
+                        <p className='text-xl'>
+                          {openFilter === 'genero' ? '-' : '+'}
+                        </p>
+                      </button>
+
+                      {openFilter === 'genero' && (
+                        <div className="mt-2 space-y-2 pl-4 border-l-2 border-gray-200 animate__animated animate__fadeIn animate__faster">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              checked={!filtros.genero}
+                              onChange={() => handleFilterChange({ target: { name: 'genero', value: '' } })}
+                              className="rounded text-gray-700"
+                            />
+                            <span>Todos los géneros</span>
+                          </label>
+
+                          {generosUnicos.map(genero => (
+                            <label key={genero} className="flex items-center space-x-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                checked={filtros.genero === genero}
+                                onChange={() => handleFilterChange({ target: { name: 'genero', value: genero } })}
+                                className="rounded text-gray-700"
+                              />
+                              <span className='capitalize'>{genero}</span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Minimum Price */}
@@ -323,7 +435,7 @@ const Listarprods = ({ listar }) => {
                 </div>
 
                 {/* Bottom action button */}
-                <div className="p-4 border-t  bg-white flex justify-around">
+                <div className="p-4 border-t bg-white flex justify-around">
                   <button
                     onClick={clearFilters}
                     className="px-4 py-2 btn-i hover:cursor-pointer transition-colors"

@@ -59,3 +59,13 @@ button:hover{
 .btn-i {
   @apply hover:bg-black hover:text-white border hover:border-transparent bg-white text-black border-black transition-colors duration-400;
 }
+/* Animación suave para el despliegue */
+.filter-options {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* Estilo para los checkboxes */
+input[type="checkbox"]:checked {
+  background-color: #4f46e5; /* Color cuando está seleccionado */
+}
