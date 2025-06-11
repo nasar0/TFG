@@ -59,10 +59,10 @@ KKARMAX/
 │     usuarios.php
 ├─vista
 │    └───src
-│       │   App.css
-│       │   App.jsx
-│       │   index.css
-│       │   main.jsx
+│       │       App.css
+│       │       App.jsx
+│       │       index.css
+│       │       main.jsx
 │       │
 │       ├───assets
 │       │       react.svg
