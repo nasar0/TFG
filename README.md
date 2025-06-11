@@ -51,12 +51,14 @@ KKARMAX/
 │     c-promociones.php
 │     c-usuarios.php
 │     headers.php
+│       
 ├─controlador
 │     categorias.php
 │     conexion.php
 │     productos.php
 │     promociones.php
 │     usuarios.php
+│       
 ├─vista
 │    └───src
 │       │       App.css
