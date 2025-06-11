@@ -2,7 +2,7 @@
 
 **KKARMAX** es una plataforma de e-commerce de moda desarrollada como proyecto de Fin de Grado en la Escuela Arte Granada, implementando las mejores prácticas de desarrollo web moderno.
 
-## 🌟 Características Destacadas
+## Características Destacadas
 
 ### Experiencia de Usuario
 - Catálogo interactivo con filtros avanzados
@@ -45,31 +45,76 @@
 ```bash
 KKARMAX/
 │
-├── backend/
-│   ├── app/
-│   │   ├── controllers/      # Lógica de negocio
-│   │   ├── models/           # Entidades y DB
-│   │   ├── core/             # Configuración
-│   │   └── middleware/       # Autenticación/validación
-│   ├── public/
-│   │   └── api/              # Endpoints REST
-│   └── config/
-│       └── database.php      # Configuración DB
-│
-├── frontend/
-│   ├── public/               # Assets estáticos
-│   └── src/
-│       ├── components/       # Componentes reutilizables
-│       ├── contexts/         # Estado global
-│       ├── hooks/            # Custom hooks
-│       ├── pages/            # Vistas principales
-│       ├── services/         # Conexión API
-│       ├── styles/           # Estilos globales
-│       └── utils/            # Funciones helpers
+├─modelo
+│     c-categorias.php
+│     c-productos.php
+│     c-promociones.php
+│     c-usuarios.php
+│     headers.php
+├─controlador
+│     categorias.php
+│     conexion.php
+│     productos.php
+│     promociones.php
+│     usuarios.php
+├─vista
+│    └───src
+│       │   App.css
+│       │   App.jsx
+│       │   index.css
+│       │   main.jsx
+│       │
+│       ├───assets
+│       │       react.svg
+│       │
+│       ├───componentes
+│       │       AdminNavbar.jsx
+│       │       Alert.jsx
+│       │       Animatepage.jsx
+│       │       Buscador.jsx
+│       │       Carrusel.jsx
+│       │       Catalogo.jsx
+│       │       Footer.jsx
+│       │       Image.jsx
+│       │       Listarprods.jsx
+│       │       Navbar.jsx
+│       │       RutaProtegida.jsx
+│       │       SizeDetail.jsx
+│       │       Totop.jsx
+│       │
+│       ├───context
+│       │       AuthContext.jsx
+│       │
+│       ├───fonts
+│       │       Helvetica.ttf
+│       │
+│       ├───pages
+│       │       AdminPlantilla.jsx
+│       │       Articulobuscado.jsx
+│       │       Cart.jsx
+│       │       ChatBot.jsx
+│       │       Checkout.jsx
+│       │       Contact.jsx
+│       │       Favoritos.jsx
+│       │       Home.jsx
+│       │       LegalPage.jsx
+│       │       Login.jsx
+│       │       MiPerfil.jsx
+│       │       NotFound.jsx
+│       │       Plantilla.jsx
+│       │       ProductPage.jsx
+│       │       Register.jsx
+│       │
+│       ├───pagesAdmin
+│       │      AdminCategorias.jsx
+│       │      AdminDashboard.jsx
+│       │       AdminProductos.jsx
+│       │       AdminPromociones.jsx
+│       │       AdminUsuarios.jsx
 │
 ├── tfg.sql
 │
-└── docs/                     # Documentación técnica
+└── Documentacion.pdf
 ```
 
 ## Instalación en 5 Pasos
