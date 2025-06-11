@@ -53,7 +53,7 @@ function Navbar() {
           <div className="md:w-2/4 flex justify-center">
             <Link to="/">
               <h2 className={`font-black ${!hasScrolled ? "text-5xl md:text-7xl" : "text-3xl md:text-4xl"} transition-[font-size] duration-500 ease-in-out`}>
-                K<span className="mirror">k</span>armx
+                <span>K<span className="mirror">k</span></span>{!hasScrolled ? <span>armx</span> : ""}
               </h2>
             </Link>
           </div>

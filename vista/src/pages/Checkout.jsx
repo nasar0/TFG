@@ -5,6 +5,7 @@ const Checkout = ({ onPay, onClose }) => {
   const [expiry, setExpiry] = useState('');
   const [cvv, setCvv] = useState('');
   const [name, setName] = useState('');
+  const [expiryError, setExpiryError] = useState(false);
 
   const formatCardNumber = (value) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
@@ -21,6 +22,21 @@ const Checkout = ({ onPay, onClose }) => {
     } else {
       return value;
     }
+  };
+  const isValidExpiryDate = (expiry) => {
+    const [monthStr, yearStr] = expiry.split('/');
+    if (!monthStr || !yearStr) return false;
+
+    const month = parseInt(monthStr, 10);
+    const year = parseInt(`20${yearStr}`, 10); // Asumes formato AA, lo conviertes a 20AA
+
+    if (isNaN(month) || isNaN(year) || month < 1 || month > 12) return false;
+
+    const now = new Date();
+    const inputDate = new Date(year, month - 1); // mes 0-indexado
+    const currentDate = new Date(now.getFullYear(), now.getMonth());
+
+    return inputDate >= currentDate;
   };
 
   const handleCardNumberChange = (e) => {
@@ -69,6 +85,12 @@ const Checkout = ({ onPay, onClose }) => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+              if (!isValidExpiryDate(expiry)) {
+                setExpiryError(true);
+                return;
+              } else {
+                setExpiryError(false);
+              }
               onPay({
                 cardNumber: cardNumber.replace(/\s/g, ''),
                 expiry,
@@ -91,12 +113,14 @@ const Checkout = ({ onPay, onClose }) => {
                 className="w-full p-3 border-b-2 border-black focus:outline-none text-sm uppercase tracking-wider bg-transparent"
                 placeholder="1234 5678 9012 3456"
                 required
+                inputMode="numeric"
               />
+
             </div>
 
             {/* Fila de fecha y CVV */}
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
+              <div className="relative">
                 <label className="block text-xs uppercase font-medium tracking-wider mb-2 opacity-70">
                   EXPIRATION
                 </label>
@@ -106,12 +130,19 @@ const Checkout = ({ onPay, onClose }) => {
                   value={expiry}
                   onChange={handleExpiryChange}
                   maxLength={5}
-                  className="w-full p-3 border-b-2 border-black focus:outline-none text-sm uppercase tracking-wider bg-transparent"
+                  className={`w-full p-3 border-b-2 ${expiryError ? 'border-red-500' : 'border-black'
+                    } focus:outline-none text-sm uppercase tracking-wider bg-transparent`}
                   placeholder="MM/AA"
                   required
                   autoComplete="off"
                 />
+                {expiryError && (
+                  <p className="text-red-500 text-xs mt-1">
+                    Expiration date cannot be in the past.
+                  </p>
+                )}
               </div>
+
               <div>
                 <label className="block text-xs uppercase font-medium tracking-wider mb-2 opacity-70">
                   CVV
@@ -127,6 +158,7 @@ const Checkout = ({ onPay, onClose }) => {
                 />
               </div>
             </div>
+
 
             {/* Nombre en la tarjeta */}
             <div className="mb-8">
