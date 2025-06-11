@@ -106,8 +106,8 @@ KKARMAX/
 │       │       Register.jsx
 │       │
 │       ├───pagesAdmin
-│       │      AdminCategorias.jsx
-│       │      AdminDashboard.jsx
+│       │       AdminCategorias.jsx
+│       │       AdminDashboard.jsx
 │       │       AdminProductos.jsx
 │       │       AdminPromociones.jsx
 │       │       AdminUsuarios.jsx
