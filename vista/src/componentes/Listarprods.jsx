@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import 'animate.css';
 import { AuthContext } from '../context/AuthContext';
-import Select from 'react-select';
 
 const Listarprods = ({ listar }) => {
   // Estados para los filtros
